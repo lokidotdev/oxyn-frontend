@@ -14,6 +14,10 @@ export const Route = createRootRoute({
     links: [
       { rel: 'stylesheet', href: appCss },
     ],
+    // Umami analytics, production builds only.
+    scripts: import.meta.env.PROD
+      ? [{ defer: true, src: 'https://umami.lok1.dev/script.js', 'data-website-id': '15e5e9d1-a056-4a4b-983f-1d3dd05a1097' }]
+      : [],
   }),
   shellComponent: RootDocument,
   notFoundComponent: () => (
