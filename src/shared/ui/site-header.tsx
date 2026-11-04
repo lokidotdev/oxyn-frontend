@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { GitHubIcon } from './icons'
 
-const REPO_URL = 'https://github.com/lokidotdev/oxyn'
+const REPO_URL = 'https://github.com/lokidotdev/oxyn-frontend'
 
 export function SiteHeader() {
   return (
