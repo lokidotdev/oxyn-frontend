@@ -1,0 +1,151 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "oxyn",
+  "homepage": "http://localhost:3000",
+  "items": [
+    {
+      "name": "dot-orb",
+      "type": "registry:component",
+      "title": "Dot Orb",
+      "description": "A sphere of dots spinning on its vertical axis, with far-side dots shrinking and fading for depth.",
+      "files": [
+        {
+          "path": "src/registry/dot-orb/dot-orb.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dot-cascade",
+      "type": "registry:component",
+      "title": "Dot Cascade",
+      "description": "A still dot sphere where each row takes a full 360\u00b0 turn in a staggered wave from top to bottom.",
+      "files": [
+        {
+          "path": "src/registry/dot-cascade/dot-cascade.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dot-lift",
+      "type": "registry:component",
+      "title": "Dot Lift",
+      "description": "A still dot sphere where each ring pushes outward and settles back into place in a staggered wave from top to bottom.",
+      "files": [
+        {
+          "path": "src/registry/dot-lift/dot-lift.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dot-tide",
+      "type": "registry:component",
+      "title": "Dot Tide",
+      "description": "A dot sphere where a narrow wave travels down, pulling a few rows of dots inward as it passes.",
+      "files": [
+        {
+          "path": "src/registry/dot-tide/dot-tide.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "circle-pulse",
+      "type": "registry:component",
+      "title": "Circle Pulse",
+      "description": "A flat circle of dots where a ring of swollen dots spreads from the center to the edge.",
+      "files": [
+        {
+          "path": "src/registry/circle-pulse/circle-pulse.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "square-pulse",
+      "type": "registry:component",
+      "title": "Square Pulse",
+      "description": "A flat square of dots where a ring of swollen dots spreads from the center to the edge.",
+      "files": [
+        {
+          "path": "src/registry/square-pulse/square-pulse.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "circle-breath",
+      "type": "registry:component",
+      "title": "Circle Breath",
+      "description": "A flat circle of dots that grows and shrinks together, with optional center-to-edge ripple.",
+      "files": [
+        {
+          "path": "src/registry/circle-breath/circle-breath.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "square-breath",
+      "type": "registry:component",
+      "title": "Square Breath",
+      "description": "A flat square of dots that grows and shrinks together, with optional center-to-edge ripple.",
+      "files": [
+        {
+          "path": "src/registry/square-breath/square-breath.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "circle-wave",
+      "type": "registry:component",
+      "title": "Circle Wave",
+      "description": "A flat circle of dots that breathes in a sweep from left to right.",
+      "files": [
+        {
+          "path": "src/registry/circle-wave/circle-wave.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "square-wave",
+      "type": "registry:component",
+      "title": "Square Wave",
+      "description": "A flat square of dots that breathes in a sweep from left to right.",
+      "files": [
+        {
+          "path": "src/registry/square-wave/square-wave.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-rings",
+      "type": "registry:component",
+      "title": "Noise Rings",
+      "description": "Thin concentric rings warped by smooth Perlin noise, rippling in soft curves.",
+      "files": [
+        {
+          "path": "src/registry/noise-rings/noise-rings.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-rings",
+      "type": "registry:component",
+      "title": "Arc Rings",
+      "description": "Concentric rings broken into arcs by evenly spaced cuts, rotating around the center.",
+      "files": [
+        {
+          "path": "src/registry/arc-rings/arc-rings.tsx",
+          "type": "registry:component"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Diode";
+  src: url("/fonts/Diode-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tessera";
+  src: url("/fonts/Tessera-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "Diode", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Tessera", ui-sans-serif, system-ui, sans-serif;
+
+  --color-bg: #070708;
+  --color-surface: #0e0e10;
+  --color-raised: #151518;
+  --color-line: #1f1f23;
+  --color-line-strong: #2c2c32;
+  --color-fg: #ededef;
+  --color-muted: #8b8b93;
+  --color-faint: #55555c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #ffffff22;
+}
+
+/* Dotted backdrop for preview stages */
+.stage {
+  background-color: var(--color-surface);
+  background-image: radial-gradient(circle at 1px 1px, #ffffff0d 1px, transparent 0);
+  background-size: 18px 18px;
+}
+
+/* sugar-high token colors */
+.code {
+  --sh-class: #e9b97a;
+  --sh-identifier: #d4d4d8;
+  --sh-sign: #71717a;
+  --sh-property: #93c5fd;
+  --sh-entity: #c4b5fd;
+  --sh-jsxliterals: #a1a1aa;
+  --sh-string: #86efac;
+  --sh-keyword: #f9a8d4;
+  --sh-comment: #52525b;
+}
