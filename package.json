@@ -10,7 +10,7 @@
     "build": "pnpm registry:build && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "registry:build": "shadcn build"
+    "registry:build": "node scripts/registry/build.mjs && shadcn build"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",

@@ -1,19 +1,14 @@
-import { ArcRings } from '#/registry/arc-rings/arc-rings'
-import source from '#/registry/arc-rings/arc-rings.tsx?raw'
 import { sheetParams as p } from '../sheet-params'
-import type { StateDefinition } from '../types'
+import { defineState } from '../define-state'
 
-export const arcRings: StateDefinition = {
+export const arcRings = defineState({
   slug: 'arc-rings',
+  summary: 'Concentric rings broken into arcs by evenly spaced cuts, rotating around the center.',
   shape: 'arcs',
   name: 'Arc Rings',
   description:
     'Concentric rings broken into arcs by evenly spaced cuts, turning steadily around the center with neighbors spinning against each other.',
   dimension: '2D',
-  componentName: 'ArcRings',
-  fileName: 'arc-rings.tsx',
-  Component: ArcRings,
-  source,
   cardProps: { size: 150 },
   params: [
     {
@@ -91,4 +86,4 @@ export const arcRings: StateDefinition = {
     { ...p.color, description: 'Line color.' },
     p.paused,
   ],
-}
+})

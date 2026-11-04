@@ -1,19 +1,14 @@
-import { DotOrb } from '#/registry/dot-orb/dot-orb'
-import source from '#/registry/dot-orb/dot-orb.tsx?raw'
 import { sphereParams as p } from '../sphere-params'
-import type { StateDefinition } from '../types'
+import { defineState } from '../define-state'
 
-export const dotOrb: StateDefinition = {
+export const dotOrb = defineState({
   slug: 'dot-orb',
+  summary: 'A sphere of dots spinning on its vertical axis, with far-side dots shrinking and fading for depth.',
   shape: 'globe',
   name: 'Dot Orb',
   description:
     'A sphere of dots spinning on its vertical axis. Dots on the far side stay visible but shrink and fade, so a flat canvas reads as 3D.',
   dimension: '2.5D',
-  componentName: 'DotOrb',
-  fileName: 'dot-orb.tsx',
-  Component: DotOrb,
-  source,
   cardProps: { size: 150 },
   params: [
     p.pattern,
@@ -41,4 +36,4 @@ export const dotOrb: StateDefinition = {
     p.color,
     p.paused,
   ],
-}
+})

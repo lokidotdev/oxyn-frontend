@@ -1,19 +1,14 @@
-import { DotCascade } from '#/registry/dot-cascade/dot-cascade'
-import source from '#/registry/dot-cascade/dot-cascade.tsx?raw'
 import { sphereParams as p } from '../sphere-params'
-import type { StateDefinition } from '../types'
+import { defineState } from '../define-state'
 
-export const dotCascade: StateDefinition = {
+export const dotCascade = defineState({
   slug: 'dot-cascade',
+  summary: 'A still dot sphere where each row takes a full 360\u00b0 turn in a staggered wave from top to bottom.',
   shape: 'globe',
   name: 'Dot Cascade',
   description:
     'The orb holds still while each row of dots takes a full 360° turn, one after another from top to bottom, so a staggered wave rolls down the sphere.',
   dimension: '2.5D',
-  componentName: 'DotCascade',
-  fileName: 'dot-cascade.tsx',
-  Component: DotCascade,
-  source,
   cardProps: { size: 150 },
   params: [
     p.pattern,
@@ -53,4 +48,4 @@ export const dotCascade: StateDefinition = {
     p.color,
     p.paused,
   ],
-}
+})

@@ -1,19 +1,14 @@
-import { DotTide } from '#/registry/dot-tide/dot-tide'
-import source from '#/registry/dot-tide/dot-tide.tsx?raw'
 import { sphereParams as p } from '../sphere-params'
-import type { StateDefinition } from '../types'
+import { defineState } from '../define-state'
 
-export const dotTide: StateDefinition = {
+export const dotTide = defineState({
   slug: 'dot-tide',
+  summary: 'A dot sphere where a narrow wave travels down, pulling a few rows of dots inward as it passes.',
   shape: 'globe',
   name: 'Dot Tide',
   description:
-    'A narrow wave travels down the orb, pulling a few rows of dots inward toward its axis and letting them back out behind it. Dots never rotate or change height; on the spiral they follow the spiral order instead of moving ring by ring.',
+    'A narrow wave travels down the orb, pulling a few rows of dots inward toward its axis and letting them back out behind it. Dots never rotate or change height; on the spiral the wave becomes a diagonal stripe that follows the spiral arms down the sphere.',
   dimension: '2.5D',
-  componentName: 'DotTide',
-  fileName: 'dot-tide.tsx',
-  Component: DotTide,
-  source,
   cardProps: { size: 150 },
   params: [
     p.pattern,
@@ -62,4 +57,4 @@ export const dotTide: StateDefinition = {
     p.color,
     p.paused,
   ],
-}
+})

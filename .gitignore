@@ -11,3 +11,6 @@ dist-ssr
 .vinxi
 __unconfig*
 todos.json
+
+# Shippable registry files, inlined from src/registry by scripts/registry/build.ts
+generated

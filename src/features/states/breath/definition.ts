@@ -1,8 +1,5 @@
-import { CircleBreath } from '#/registry/circle-breath/circle-breath'
-import sourceCircle from '#/registry/circle-breath/circle-breath.tsx?raw'
-import { SquareBreath } from '#/registry/square-breath/square-breath'
-import sourceSquare from '#/registry/square-breath/square-breath.tsx?raw'
 import { sheetParams as p } from '../sheet-params'
+import { defineState } from '../define-state'
 import type { StateDefinition } from '../types'
 
 const params: StateDefinition['params'] = [
@@ -39,32 +36,26 @@ const params: StateDefinition['params'] = [
   p.paused,
 ]
 
-export const circleBreath: StateDefinition = {
+export const circleBreath = defineState({
   slug: 'circle-breath',
+  summary: 'A flat circle of dots that grows and shrinks together, with optional center-to-edge ripple.',
   shape: 'circle',
   name: 'Circle Breath',
   description:
     'A flat circle of dots that grows and shrinks together, one slow inhale and exhale per loop. Add ripple and the center breathes a beat before the edge.',
   dimension: '2D',
-  componentName: 'CircleBreath',
-  fileName: 'circle-breath.tsx',
-  Component: CircleBreath,
-  source: sourceCircle,
   cardProps: { size: 150 },
   params,
-}
+})
 
-export const squareBreath: StateDefinition = {
+export const squareBreath = defineState({
   slug: 'square-breath',
+  summary: 'A flat square of dots that grows and shrinks together, with optional center-to-edge ripple.',
   shape: 'square',
   name: 'Square Breath',
   description:
     'A flat square of dots that grows and shrinks together, one slow inhale and exhale per loop. Add ripple and the center breathes a beat before the edge.',
   dimension: '2D',
-  componentName: 'SquareBreath',
-  fileName: 'square-breath.tsx',
-  Component: SquareBreath,
-  source: sourceSquare,
   cardProps: { size: 150 },
   params,
-}
+})

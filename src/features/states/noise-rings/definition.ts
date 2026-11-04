@@ -1,19 +1,14 @@
-import { NoiseRings } from '#/registry/noise-rings/noise-rings'
-import source from '#/registry/noise-rings/noise-rings.tsx?raw'
 import { sheetParams as p } from '../sheet-params'
-import type { StateDefinition } from '../types'
+import { defineState } from '../define-state'
 
-export const noiseRings: StateDefinition = {
+export const noiseRings = defineState({
   slug: 'noise-rings',
+  summary: 'Thin concentric rings warped by smooth Perlin noise, rippling in soft curves.',
   shape: 'rings',
   name: 'Noise Rings',
   description:
     'Thin concentric rings warped by smooth Perlin noise, so each line swells and settles in soft curves while its neighbors ripple along with it.',
   dimension: '2D',
-  componentName: 'NoiseRings',
-  fileName: 'noise-rings.tsx',
-  Component: NoiseRings,
-  source,
   cardProps: { size: 150 },
   params: [
     {
@@ -94,4 +89,4 @@ export const noiseRings: StateDefinition = {
     { ...p.color, description: 'Line color.' },
     p.paused,
   ],
-}
+})

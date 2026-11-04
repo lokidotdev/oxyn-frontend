@@ -1,8 +1,5 @@
-import { CircleWave } from '#/registry/circle-wave/circle-wave'
-import sourceCircle from '#/registry/circle-wave/circle-wave.tsx?raw'
-import { SquareWave } from '#/registry/square-wave/square-wave'
-import sourceSquare from '#/registry/square-wave/square-wave.tsx?raw'
 import { sheetParams as p } from '../sheet-params'
+import { defineState } from '../define-state'
 import type { StateDefinition } from '../types'
 
 const params: StateDefinition['params'] = [
@@ -50,32 +47,26 @@ const params: StateDefinition['params'] = [
   p.paused,
 ]
 
-export const circleWave: StateDefinition = {
+export const circleWave = defineState({
   slug: 'circle-wave',
+  summary: 'A flat circle of dots that breathes in a sweep from left to right.',
   shape: 'circle',
   name: 'Circle Wave',
   description:
     'A flat circle of dots that breathes in a sweep from left to right, each column swelling a beat after the one before it.',
   dimension: '2D',
-  componentName: 'CircleWave',
-  fileName: 'circle-wave.tsx',
-  Component: CircleWave,
-  source: sourceCircle,
   cardProps: { size: 150 },
   params,
-}
+})
 
-export const squareWave: StateDefinition = {
+export const squareWave = defineState({
   slug: 'square-wave',
+  summary: 'A flat square of dots that breathes in a sweep from left to right.',
   shape: 'square',
   name: 'Square Wave',
   description:
     'A flat square of dots that breathes in a sweep from left to right, each column swelling a beat after the one before it.',
   dimension: '2D',
-  componentName: 'SquareWave',
-  fileName: 'square-wave.tsx',
-  Component: SquareWave,
-  source: sourceSquare,
   cardProps: { size: 150 },
   params,
-}
+})

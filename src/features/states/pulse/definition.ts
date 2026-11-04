@@ -1,8 +1,5 @@
-import { CirclePulse } from '#/registry/circle-pulse/circle-pulse'
-import sourceCircle from '#/registry/circle-pulse/circle-pulse.tsx?raw'
-import { SquarePulse } from '#/registry/square-pulse/square-pulse'
-import sourceSquare from '#/registry/square-pulse/square-pulse.tsx?raw'
 import { sheetParams as p } from '../sheet-params'
+import { defineState } from '../define-state'
 import type { StateDefinition } from '../types'
 
 const params: StateDefinition['params'] = [
@@ -49,32 +46,26 @@ const params: StateDefinition['params'] = [
   p.paused,
 ]
 
-export const circlePulse: StateDefinition = {
+export const circlePulse = defineState({
   slug: 'circle-pulse',
+  summary: 'A flat circle of dots where a ring of swollen dots spreads from the center to the edge.',
   shape: 'circle',
   name: 'Circle Pulse',
   description:
     'A flat circle of dots where a round ring of swollen dots spreads from the center to the edge.',
   dimension: '2D',
-  componentName: 'CirclePulse',
-  fileName: 'circle-pulse.tsx',
-  Component: CirclePulse,
-  source: sourceCircle,
   cardProps: { size: 150 },
   params,
-}
+})
 
-export const squarePulse: StateDefinition = {
+export const squarePulse = defineState({
   slug: 'square-pulse',
+  summary: 'A flat square of dots where a ring of swollen dots spreads from the center to the edge.',
   shape: 'square',
   name: 'Square Pulse',
   description:
     'A flat square of dots where a square ring of swollen dots spreads from the center to the edge.',
   dimension: '2D',
-  componentName: 'SquarePulse',
-  fileName: 'square-pulse.tsx',
-  Component: SquarePulse,
-  source: sourceSquare,
   cardProps: { size: 150 },
   params,
-}
+})

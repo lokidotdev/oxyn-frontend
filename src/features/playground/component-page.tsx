@@ -1,8 +1,7 @@
 import { Link } from '@tanstack/react-router'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { StateDefinition } from '#/features/states'
-import { changedValues, coerceValues, defaultValues } from '#/shared/lib/params'
-import type { ParamValue, ParamValues } from '#/shared/lib/params'
+import type { ParamValues } from '#/shared/lib/params'
 import { Badge } from '#/shared/ui/badge'
 import { CodeBlock } from '#/shared/ui/code-block'
 import { ArrowLeftIcon } from '#/shared/ui/icons'
@@ -10,6 +9,7 @@ import { ParamPanel } from './param-panel'
 import { PreviewPanel } from './preview-panel'
 import { PropsTable } from './props-table'
 import { usageSnippet } from './usage'
+import { useParamState } from './use-param-state'
 
 interface ComponentPageProps {
   state: StateDefinition
@@ -19,20 +19,7 @@ interface ComponentPageProps {
 }
 
 export function ComponentPage({ state, search, onPersist }: ComponentPageProps) {
-  const [values, setValues] = useState(() => coerceValues(state.params, search))
-  const dirty = Object.keys(changedValues(state.params, values)).length > 0
-
-  // Sliders fire on every pixel; write to the URL once the user settles.
-  const persistTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
-  useEffect(() => {
-    clearTimeout(persistTimer.current)
-    persistTimer.current = setTimeout(() => onPersist(changedValues(state.params, values)), 200)
-    return () => clearTimeout(persistTimer.current)
-  }, [values, state.params, onPersist])
-
-  const setParam = (key: string, value: ParamValue) => setValues((v) => ({ ...v, [key]: value }))
-  const reset = () => setValues(defaultValues(state.params))
-
+  const { values, dirty, setParam, reset } = useParamState(state.params, search, onPersist)
   const usage = useMemo(() => usageSnippet(state, values), [state, values])
   const install = useInstallCommand(state.slug)
 

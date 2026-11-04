@@ -1,19 +1,14 @@
-import { DotLift } from '#/registry/dot-lift/dot-lift'
-import source from '#/registry/dot-lift/dot-lift.tsx?raw'
 import { sphereParams as p } from '../sphere-params'
-import type { StateDefinition } from '../types'
+import { defineState } from '../define-state'
 
-export const dotLift: StateDefinition = {
+export const dotLift = defineState({
   slug: 'dot-lift',
+  summary: 'A still dot sphere where each ring pushes outward and settles back into place in a staggered wave from top to bottom.',
   shape: 'globe',
   name: 'Dot Lift',
   description:
-    'The orb holds still while each ring of dots pushes straight outward and settles back into place, one after another from top to bottom. Dots never rotate or change height; on the spiral they follow the spiral order instead of moving ring by ring.',
+    'The orb holds still while each ring of dots pushes straight outward and settles back into place, one after another from top to bottom. Dots never rotate or change height; on the spiral the wave becomes a diagonal stripe that follows the spiral arms down the sphere.',
   dimension: '2.5D',
-  componentName: 'DotLift',
-  fileName: 'dot-lift.tsx',
-  Component: DotLift,
-  source,
   cardProps: { size: 150 },
   params: [
     p.pattern,
@@ -63,4 +58,4 @@ export const dotLift: StateDefinition = {
     p.color,
     p.paused,
   ],
-}
+})
