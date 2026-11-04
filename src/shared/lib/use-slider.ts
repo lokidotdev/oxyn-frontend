@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 
 export interface SliderOptions {
   value?: number
@@ -36,7 +36,9 @@ export function useSlider({
 
   // Read through refs so `commit` stays stable across renders mid-drag.
   const latest = useRef({ current, onValueChange, controlled: value !== undefined })
-  latest.current = { current, onValueChange, controlled: value !== undefined }
+  useLayoutEffect(() => {
+    latest.current = { current, onValueChange, controlled: value !== undefined }
+  })
 
   const commit = useCallback(
     (next: number) => {

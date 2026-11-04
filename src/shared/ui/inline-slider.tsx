@@ -3,7 +3,7 @@
 
 import {
   animate,
-  motion,
+  m,
   useMotionValue,
   useReducedMotion,
   useTransform,
@@ -205,7 +205,7 @@ export function InlineSlider({
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-[2px] inset-y-0 overflow-hidden rounded-md"
         >
-          <motion.div
+          <m.div
             className="absolute inset-0 rounded-md bg-fg/15"
             style={{ x: fillX }}
           />
@@ -219,7 +219,7 @@ export function InlineSlider({
             />
           ))}
         </div>
-        <motion.div
+        <m.div
           aria-hidden="true"
           animate={reduce ? undefined : { scaleY: dragging ? 1.35 : 1 }}
           transition={SPRING_BOUNCY}

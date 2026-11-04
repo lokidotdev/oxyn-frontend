@@ -19,7 +19,7 @@ export function StateCard({ state, index }: { state: StateDefinition; index: num
       </div>
       <div className="flex items-center justify-between gap-3 border-t border-line px-4 py-3">
         <h3 className="min-w-0 truncate text-sm font-medium">{state.name}</h3>
-        <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-line text-muted transition-all group-hover:border-line-strong group-hover:text-fg">
+        <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-line text-muted transition-colors group-hover:border-line-strong group-hover:text-fg">
           <ArrowUpRightIcon />
         </span>
       </div>

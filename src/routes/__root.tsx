@@ -1,7 +1,10 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { LazyMotion } from 'motion/react'
 import { SiteHeader } from '#/shared/ui/site-header'
 
 import appCss from '../styles.css?url'
+
+const loadMotionFeatures = () => import('#/shared/lib/motion-features').then((mod) => mod.default)
 
 export const Route = createRootRoute({
   head: () => ({
@@ -32,8 +35,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <SiteHeader />
-        {children}
+        <LazyMotion features={loadMotionFeatures} strict>
+          <SiteHeader />
+          {children}
+        </LazyMotion>
         <Scripts />
       </body>
     </html>

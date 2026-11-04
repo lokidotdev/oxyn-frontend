@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'motion/react'
+import { m, useReducedMotion } from 'motion/react'
 import { useId } from 'react'
 import type { ReactNode } from 'react'
 import { cn } from '#/shared/lib/cn'
@@ -52,7 +52,8 @@ export function Tabs<T extends string>({
             key={item.value}
             type="button"
             role={itemRole}
-            {...(mode === 'tabs' ? { 'aria-selected': active } : { 'aria-checked': active })}
+            aria-selected={mode === 'tabs' ? active : undefined}
+            aria-checked={mode === 'tabs' ? undefined : active}
             onClick={() => onChange(item.value)}
             className={cn(
               'relative inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs transition-colors',
@@ -61,7 +62,7 @@ export function Tabs<T extends string>({
             )}
           >
             {active && (
-              <motion.span
+              <m.span
                 layoutId={pillId}
                 transition={reduce ? { duration: 0 } : PILL_SPRING}
                 className="absolute inset-0 rounded-md bg-raised shadow-[inset_0_0_0_1px_var(--color-line-strong)]"
