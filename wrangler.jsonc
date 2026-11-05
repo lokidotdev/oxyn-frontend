@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "oxyn",
+  "name": "oxyn-frontend",
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
   // TanStack Start's SSR handler; the Cloudflare Vite plugin bundles it into the Worker.
