@@ -2,9 +2,9 @@
 
 import type { HTMLAttributes } from "react";
 import { LoaderCanvas } from "../lib/loader-canvas";
-import { drawGlobe, globeShape, globeTargets } from "../lib/globe";
-import type { GlobeSettings, GlobeShape } from "../lib/globe";
-import type { Frame, Scene } from "../lib/loader-canvas";
+import { globeShape, globeTargets } from "../lib/globe";
+import type { GlobeSettings } from "../lib/globe";
+import { liftMotion } from "../lib/globe-motions";
 
 export type DotLiftPattern = "rings" | "fibonacci" | "grid";
 
@@ -43,60 +43,7 @@ type Settings = GlobeSettings & Required<Pick<DotLiftProps, "lift" | "duration" 
 
 /** Every number the drawing reads, as the latest props want it. */
 function targetsOf(s: Settings) {
-  return {
-    ...globeTargets(s),
-    lift: s.lift,
-    duration: s.duration,
-    stagger: s.stagger,
-    gap: s.gap,
-    // 0 runs the wave top to bottom, 1 bottom to top; gliding between them re-routes it smoothly.
-    from: s.from === "bottom" ? 1 : 0,
-  };
-}
-
-type Key = keyof ReturnType<typeof targetsOf>;
-
-function scene(): Scene<Settings, Key, GlobeShape> {
-  // Position within the current wave (0–1), advanced by rate so pausing coasts to a stop.
-  let phase = 0;
-
-  /** Seconds from the first ring leaving to the last one setting off, sized for the tallest orb on screen. */
-  const spanOf = ({ v, layers }: Frame<Settings, Key, GlobeShape>) =>
-    Math.max(...layers.map((layer) => layer.shape.steps)) * Math.max(0, v.stagger);
-  const cycleOf = (frame: Frame<Settings, Key, GlobeShape>) =>
-    spanOf(frame) + Math.max(0.05, frame.v.duration) + Math.max(0, frame.v.gap);
-
-  return {
-    advance(dt, frame) {
-      phase = (phase + (dt * frame.v.rate) / cycleOf(frame)) % 1;
-    },
-    draw(ctx, frame) {
-      const { v, size } = frame;
-      const lift = Math.max(0, v.lift);
-      const fromBottom = v.from;
-      const turn = Math.max(0.05, v.duration);
-      const stagger = Math.max(0, v.stagger);
-      const span = spanOf(frame);
-      const now = phase * cycleOf(frame);
-      // Leave headroom so a ring stays on the canvas at the peak of its push.
-      const radius = (size / 2 - Math.max(0, v.dotSize)) / (1 + lift);
-
-      drawGlobe(ctx, frame, radius, ({ steps }) => {
-        // A shorter orb (fading out mid-change) starts later so both finish together.
-        const lead = span - steps * stagger;
-        return ({ x, y, z, step }, out) => {
-          const d = step + (steps - 2 * step) * fromBottom;
-          const t = Math.min(1, Math.max(0, (now - lead - d * stagger) / turn));
-          // Push out and settle back on a sine bump: starts and lands at rest, no snap at either end.
-          const s = 1 + lift * Math.sin(Math.PI * t) ** 2;
-          // Only x and z scale: each ring widens or narrows around the vertical axis and never leaves its height.
-          out.x = x * s;
-          out.y = y;
-          out.z = z * s;
-        };
-      });
-    },
-  };
+  return { ...globeTargets(s), ...liftMotion.targets(s) };
 }
 
 export function DotLift({
@@ -117,7 +64,7 @@ export function DotLift({
   ...rest
 }: DotLiftProps) {
   const settings: Settings = { pattern, dotSize, density, size, lift, duration, stagger, gap, from, tilt, color, backOpacity, paused };
-  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} scene={scene} label={label} {...rest} />;
+  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} scene={liftMotion.scene} label={label} {...rest} />;
 }
 
 export default DotLift;

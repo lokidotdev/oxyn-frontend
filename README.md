@@ -1,5 +1,7 @@
 Welcome to your new TanStack Start app!
 
+> **Adding or changing a loader?** Follow [docs/component-design.md](docs/component-design.md): file layout, props, drawing, catalog definitions, groups, and a pre-merge checklist. For how dots should move, see [docs/pattern-led-motion.md](docs/pattern-led-motion.md).
+
 # Getting Started
 
 To run this application:

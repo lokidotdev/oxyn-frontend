@@ -1,5 +1,7 @@
-import { states } from '#/features/states'
+import { Link } from '@tanstack/react-router'
+import { groupFor, states } from '#/features/states'
 import type { Shape } from '#/features/states'
+import { ArrowUpRightIcon } from '#/shared/ui/icons'
 import { Tabs } from '#/shared/ui/tabs'
 import type { TabItem } from '#/shared/ui/tabs'
 import { ShapeRow } from './shape-row'
@@ -52,7 +54,7 @@ export function HomePage({ filter, onFilterChange }: HomePageProps) {
           // Placeholders only pad the unfiltered view; a filtered view shows what exists.
           const placeholders = filter === 'all' ? Math.max(0, ROW_TILES - row.length) : 0
           return (
-            <ShapeRow key={row[0].shape} label={SHAPE_LABELS[row[0].shape]}>
+            <ShapeRow key={row[0].shape} label={SHAPE_LABELS[row[0].shape]} aside={<GroupLink shape={row[0].shape} />}>
               {row.map((s) => (
                 <StateCard key={s.slug} state={s} index={states.indexOf(s)} />
               ))}
@@ -64,5 +66,21 @@ export function HomePage({ filter, onFilterChange }: HomePageProps) {
         })}
       </div>
     </main>
+  )
+}
+
+/** Links a row to its group: the one component that switches between all of the row's animations. */
+function GroupLink({ shape }: { shape: Shape }) {
+  const group = groupFor(shape)
+  if (!group?.animations) return null
+  return (
+    <Link
+      to="/components/$slug"
+      params={{ slug: group.slug }}
+      className="inline-flex items-center gap-1 rounded-md border border-line px-1.5 py-0.5 font-mono text-[11px] text-muted transition-colors hover:border-line-strong hover:text-fg"
+    >
+      {`<${group.componentName} animation />`}
+      <ArrowUpRightIcon />
+    </Link>
   )
 }

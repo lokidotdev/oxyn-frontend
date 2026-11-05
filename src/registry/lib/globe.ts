@@ -88,6 +88,11 @@ export function buildGlobe(s: GlobeSettings) {
     steps,
     placed: points.map((): Placed => ({ x: 0, y: 0, z: 0, size: 1, dim: 1 })),
     order: points.map((_, i) => i),
+    // Each row's own spin angle, for animations that turn rows separately. Accumulated so
+    // timing changes mid-turn bend the motion instead of jumping it.
+    rowAngles: new Float64Array(rows + 1),
+    rowSin: new Float64Array(rows + 1),
+    rowCos: new Float64Array(rows + 1).fill(1),
   };
 }
 
@@ -103,7 +108,7 @@ export function globeTargets(s: GlobeSettings) {
   return { ...colorTargets(s.color), dotSize: s.dotSize, tilt: s.tilt, backOpacity: s.backOpacity };
 }
 
-type GlobeKey = keyof ReturnType<typeof globeTargets>;
+export type GlobeKey = keyof ReturnType<typeof globeTargets>;
 
 /**
  * Places, tilts, depth-sorts and paints every orb on screen. `placeFor` is called once per orb and

@@ -4,6 +4,7 @@ import type { HTMLAttributes } from "react";
 import { LoaderCanvas } from "../lib/loader-canvas";
 import { sheetScene, sheetShape, sheetTargets } from "../lib/sheet";
 import type { SheetSettings } from "../lib/sheet";
+import { pulseMotion } from "../lib/sheet-motions";
 
 export interface CirclePulseProps extends Omit<HTMLAttributes<HTMLDivElement>, "color"> {
   /** Shape of each dot. */
@@ -38,33 +39,12 @@ type Settings = SheetSettings & Required<Pick<CirclePulseProps, "duration" | "ga
 
 /** Every number the drawing reads, as the latest props want it. */
 function targetsOf(s: Settings) {
-  return {
-    ...sheetTargets(s),
-    duration: s.duration,
-    gap: s.gap,
-    ringWidth: s.ringWidth,
-    // 0 spreads out from the center, 1 closes in from the edge; between, the ring flattens across.
-    inward: s.direction === "in" ? 1 : 0,
-  };
+  return { ...sheetTargets(s), ...pulseMotion.targets(s) };
 }
 
-const scene = sheetScene<keyof ReturnType<typeof targetsOf>>(
-  (v) => Math.max(0.05, v.duration) + Math.max(0, v.gap),
-  (t, v) => {
-    const turn = Math.max(0.05, v.duration);
-    const width = Math.max(0.05, v.ringWidth);
-    const inward = v.inward;
-    // The ring starts fully inside the center and ends fully past the edge, so
-    // every dot gets one complete swell. During the gap it sits off-sheet.
-    const ring = t < turn ? -width + (t / turn) * (1 + 2 * width) : Infinity;
-    return ({ d }) => {
-      const distance = d + (1 - 2 * d) * inward;
-      const x = Math.abs(distance - ring) / width;
-      // Cosine bump: 1 at the ring's center line, easing to 0 at its edges.
-      return x < 1 ? 0.5 + 0.5 * Math.cos(Math.PI * x) : 0;
-    };
-  },
-);
+function scene() {
+  return sheetScene(pulseMotion);
+}
 
 const shape = sheetShape("circle");
 

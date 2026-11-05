@@ -19,11 +19,11 @@ const config: InlineConfig = {
   plugins: [standaloneRegistry()],
 };
 
-const { module } = await runnerImport<{ states: StateDefinition[] }>(join(root, "src/features/states/index.ts"), config);
+const { module } = await runnerImport<{ components: StateDefinition[] }>(join(root, "src/features/states/index.ts"), config);
 
 rmSync(outDir, { recursive: true, force: true });
 const items = [];
-for (const state of module.states) {
+for (const state of module.components) {
   const path = `generated/registry/${state.slug}/${state.fileName}`;
   mkdirSync(join(root, "generated/registry", state.slug), { recursive: true });
   writeFileSync(join(root, path), state.source);
