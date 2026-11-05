@@ -19,8 +19,8 @@ interface ComponentPageProps {
 }
 
 export function ComponentPage({ state, search, onPersist }: ComponentPageProps) {
-  const { values, dirty, setParam, reset } = useParamState(state.params, search, onPersist)
-  const usage = useMemo(() => usageSnippet(state, values), [state, values])
+  const { values, schema, dirty, setParam, reset } = useParamState(state, search, onPersist)
+  const usage = useMemo(() => usageSnippet(state, schema, values), [state, schema, values])
   const install = useInstallCommand(state.slug)
 
   return (
@@ -37,6 +37,7 @@ export function ComponentPage({ state, search, onPersist }: ComponentPageProps) 
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-semibold tracking-tight">{state.name}</h1>
               <Badge>{state.dimension}</Badge>
+              {state.animations && <Badge>{state.animations.length} animations</Badge>}
             </div>
             <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted">{state.description}</p>
           </header>
@@ -46,7 +47,7 @@ export function ComponentPage({ state, search, onPersist }: ComponentPageProps) 
 
         <aside className="lg:row-span-2">
           <div className="lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100dvh-6rem)] lg:flex-col">
-            <ParamPanel schema={state.params} values={values} onChange={setParam} onReset={reset} dirty={dirty} />
+            <ParamPanel schema={schema} values={values} onChange={setParam} onReset={reset} dirty={dirty} />
           </div>
         </aside>
 
@@ -59,8 +60,8 @@ export function ComponentPage({ state, search, onPersist }: ComponentPageProps) 
             <CodeBlock code={usage} />
           </Section>
 
-          <Section title="Props">
-            <PropsTable schema={state.params} />
+          <Section title="Props" lede={state.animations ? 'For the selected animation. Switch it to see the props each one takes.' : undefined}>
+            <PropsTable schema={schema} />
           </Section>
         </div>
       </div>

@@ -2,10 +2,9 @@
 
 import type { HTMLAttributes } from "react";
 import { LoaderCanvas } from "../lib/loader-canvas";
-import { buildGlobe, drawGlobe, globeKey, globeTargets } from "../lib/globe";
+import { globeShape, globeTargets } from "../lib/globe";
 import type { GlobeSettings } from "../lib/globe";
-import { easeInOutCubic } from "../lib/ease";
-import type { Scene } from "../lib/loader-canvas";
+import { cascadeMotion } from "../lib/globe-motions";
 
 export type DotCascadePattern = "rings" | "fibonacci" | "grid";
 
@@ -38,93 +37,11 @@ export interface DotCascadeProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
   label?: string;
 }
 
-/** Seconds (roughly) a resting row takes to settle back square after a timing change knocked it off. */
-const REALIGN = 0.12;
-
 type Settings = GlobeSettings & Required<Pick<DotCascadeProps, "duration" | "stagger" | "gap" | "direction">>;
 
 /** Every number the drawing reads, as the latest props want it. */
 function targetsOf(s: Settings) {
-  return {
-    ...globeTargets(s),
-    duration: s.duration,
-    stagger: s.stagger,
-    gap: s.gap,
-    // Spin velocity sign; flipping it slows turning rows, stops them, and turns them back the other way.
-    dir: s.direction === "left" ? 1 : -1,
-  };
-}
-
-type Key = keyof ReturnType<typeof targetsOf>;
-
-function buildShape(s: Settings) {
-  const globe = buildGlobe(s);
-  const layers = globe.rows + 1;
-  return {
-    ...globe,
-    layers,
-    // Each row's spin angle, accumulated so timing changes mid-turn bend the motion instead of jumping it.
-    angles: new Float64Array(layers),
-    layerSin: new Float64Array(layers),
-    layerCos: new Float64Array(layers).fill(1),
-  };
-}
-
-type Shape = ReturnType<typeof buildShape>;
-
-const shape = { key: globeKey, build: buildShape };
-
-function scene(): Scene<Settings, Key, Shape> {
-  // Position within the current wave (0–1), advanced by rate so pausing coasts to a stop.
-  let phase = 0;
-
-  return {
-    advance(dt, { v, layers: onScreen }) {
-      const shapes = onScreen.map((layer) => layer.shape);
-      const turn = Math.max(0.05, v.duration);
-      const stagger = Math.max(0, v.stagger);
-      // Sized for the tallest orb on screen, so a fading-out orb's rows still finish their turn.
-      const cycle = (Math.max(...shapes.map((shape) => shape.layers)) - 1) * stagger + turn + Math.max(0, v.gap);
-      const settle = 1 - Math.exp(-dt / REALIGN);
-      const from = phase;
-      const to = phase + (dt * v.rate) / cycle;
-
-      // Each row runs one eased 360° turn, starting `stagger` seconds after the row above.
-      const progress = (p: number, l: number) => {
-        const whole = Math.floor(p);
-        return whole + Math.min(1, Math.max(0, ((p - whole) * cycle - l * stagger) / turn));
-      };
-      const turnsAt = (p: number, l: number) => {
-        const x = progress(p, l);
-        const whole = Math.floor(x);
-        return whole + easeInOutCubic(x - whole);
-      };
-
-      for (const shape of shapes) {
-        for (let l = 0; l < shape.layers; l++) {
-          let a = shape.angles[l] + (turnsAt(to, l) - turnsAt(from, l)) * Math.PI * 2 * v.dir;
-          a %= Math.PI * 2;
-          const x = progress(to, l) % 1;
-          // A row at rest belongs square to the orb; ease it back if a timing change left it skewed.
-          if (x === 0) a -= (a - Math.PI * 2 * Math.round(a / (Math.PI * 2))) * settle;
-          shape.angles[l] = a;
-          shape.layerSin[l] = Math.sin(a);
-          shape.layerCos[l] = Math.cos(a);
-        }
-      }
-      phase = to % 1;
-    },
-    draw(ctx, frame) {
-      drawGlobe(ctx, frame, frame.size / 2 - Math.max(0, frame.v.dotSize), ({ layerSin, layerCos }) => ({ x, y, z, row }, out) => {
-        const sinA = layerSin[row];
-        const cosA = layerCos[row];
-        // Spin the row around the vertical axis.
-        out.x = x * cosA + z * sinA;
-        out.y = y;
-        out.z = -x * sinA + z * cosA;
-      });
-    },
-  };
+  return { ...globeTargets(s), ...cascadeMotion.targets(s) };
 }
 
 export function DotCascade({
@@ -144,7 +61,7 @@ export function DotCascade({
   ...rest
 }: DotCascadeProps) {
   const settings: Settings = { pattern, dotSize, density, size, duration, stagger, gap, direction, tilt, color, backOpacity, paused };
-  return <LoaderCanvas settings={settings} targets={targetsOf} shape={shape} scene={scene} label={label} {...rest} />;
+  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} scene={cascadeMotion.scene} label={label} {...rest} />;
 }
 
 export default DotCascade;

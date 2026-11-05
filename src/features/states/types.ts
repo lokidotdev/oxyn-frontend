@@ -18,6 +18,18 @@ export interface StateDefinition extends RegistryEntry {
   params: ParamDef[]
   /** Props passed to the live card on the home grid. */
   cardProps?: Record<string, unknown>
+  /**
+   * Set on a group: one component for a whole row, whose `animation` prop picks which of the row's
+   * animations it runs. Each animation brings its own params; `params` holds the first one's.
+   */
+  animations?: AnimationOption[]
+}
+
+/** One animation a group can switch to, and the params that apply while it runs. */
+export interface AnimationOption {
+  value: string
+  label: string
+  params: ParamDef[]
 }
 
 /** What a definition declares; the rest is found from the slug. */

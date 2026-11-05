@@ -4,6 +4,7 @@ import type { HTMLAttributes } from "react";
 import { LoaderCanvas } from "../lib/loader-canvas";
 import { sheetScene, sheetShape, sheetTargets } from "../lib/sheet";
 import type { SheetSettings } from "../lib/sheet";
+import { breathMotion } from "../lib/sheet-motions";
 
 export interface SquareBreathProps extends Omit<HTMLAttributes<HTMLDivElement>, "color"> {
   /** Shape of each dot. */
@@ -36,28 +37,12 @@ type Settings = SheetSettings & Required<Pick<SquareBreathProps, "duration" | "g
 
 /** Every number the drawing reads, as the latest props want it. */
 function targetsOf(s: Settings) {
-  return {
-    ...sheetTargets(s),
-    duration: s.duration,
-    gap: s.gap,
-    ripple: s.ripple,
-  };
+  return { ...sheetTargets(s), ...breathMotion.targets(s) };
 }
 
-const scene = sheetScene<keyof ReturnType<typeof targetsOf>>(
-  (v) => Math.max(0.05, v.duration) + Math.max(0, v.gap) + Math.max(0, v.ripple),
-  (t, v) => {
-    const breath = Math.max(0.05, v.duration);
-    const ripple = Math.max(0, v.ripple);
-    const cycle = breath + Math.max(0, v.gap) + ripple;
-    return ({ d }) => {
-      // Each dot runs the same breath, delayed by its distance from the center.
-      const local = (((t - d * ripple) % cycle) + cycle) % cycle;
-      // One cosine swell 0 → 1 → 0 across the breath, then rest at 0.
-      return local < breath ? 0.5 - 0.5 * Math.cos((2 * Math.PI * local) / breath) : 0;
-    };
-  },
-);
+function scene() {
+  return sheetScene(breathMotion);
+}
 
 const shape = sheetShape("square");
 

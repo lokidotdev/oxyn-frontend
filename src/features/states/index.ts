@@ -7,9 +7,11 @@ import { dotTide } from './dot-tide/definition'
 import { noiseRings } from './noise-rings/definition'
 import { circlePulse, squarePulse } from './pulse/definition'
 import { circleWave, squareWave } from './wave/definition'
+import { groups } from './groups'
 import type { StateDefinition } from './types'
 
-export type { Dimension, Shape, StateDefinition } from './types'
+export type { AnimationOption, Dimension, Shape, StateDefinition } from './types'
+export { ANIMATION_KEY, groupFor, groups, paramsFor } from './groups'
 
 export const states: StateDefinition[] = [
   dotOrb,
@@ -26,6 +28,9 @@ export const states: StateDefinition[] = [
   arcRings,
 ]
 
+/** Every component that ships: each single state, then each group. */
+export const components: StateDefinition[] = [...states, ...groups]
+
 export function getState(slug: string): StateDefinition | undefined {
-  return states.find((s) => s.slug === slug)
+  return components.find((s) => s.slug === slug)
 }

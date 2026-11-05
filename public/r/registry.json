@@ -146,6 +146,42 @@
           "type": "registry:component"
         }
       ]
+    },
+    {
+      "name": "dot-globe",
+      "type": "registry:component",
+      "title": "Dot Globe",
+      "description": "Every dot-sphere animation in one component; the animation prop switches between them.",
+      "files": [
+        {
+          "path": "generated/registry/dot-globe/dot-globe.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dot-square",
+      "type": "registry:component",
+      "title": "Dot Square",
+      "description": "Every square-sheet animation in one component; the animation prop switches between them.",
+      "files": [
+        {
+          "path": "generated/registry/dot-square/dot-square.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dot-circle",
+      "type": "registry:component",
+      "title": "Dot Circle",
+      "description": "Every circle-sheet animation in one component; the animation prop switches between them.",
+      "files": [
+        {
+          "path": "generated/registry/dot-circle/dot-circle.tsx",
+          "type": "registry:component"
+        }
+      ]
     }
   ]
 }

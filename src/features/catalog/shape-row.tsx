@@ -11,6 +11,8 @@ const EPS = 1
 
 interface ShapeRowProps {
   label: string
+  /** Shown beside the label, e.g. a link to the row's group component. */
+  aside?: ReactNode
   children: ReactNode
 }
 
@@ -18,7 +20,7 @@ interface ShapeRowProps {
  * A horizontally scrolling row of tiles. Tiles are sized so the next one peeks in at the
  * edge, the edges fade by how much is still hidden, and the arrows page through tiles.
  */
-export function ShapeRow({ label, children }: ShapeRowProps) {
+export function ShapeRow({ label, aside, children }: ShapeRowProps) {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const reduce = useReducedMotion()
   const [canLeft, setCanLeft] = useState(false)
@@ -88,7 +90,10 @@ export function ShapeRow({ label, children }: ShapeRowProps) {
   return (
     <section aria-label={label}>
       <div className="mb-3 flex items-center justify-between gap-4">
-        <h2 className="font-mono text-xs text-faint">{label}</h2>
+        <div className="flex min-w-0 items-center gap-3">
+          <h2 className="font-mono text-xs text-faint">{label}</h2>
+          {aside}
+        </div>
         {(canLeft || canRight) && (
           <div className="flex gap-1.5">
             <button
