@@ -19,6 +19,17 @@ To build this application for production:
 pnpm build
 ```
 
+## Deploying to Cloudflare Workers
+
+The app runs as a Cloudflare Worker (SSR) with static assets served from `dist/client`. Config lives in `wrangler.jsonc`.
+
+```bash
+pnpm preview     # build + run locally in the Workers runtime (workerd)
+pnpm run deploy  # build + wrangler deploy (run `npx wrangler login` once first)
+```
+
+For Git-connected deploys (Workers Builds), use build command `pnpm build` and deploy command `npx wrangler deploy`.
+
 ## Styling
 
 This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
