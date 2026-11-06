@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CatalogDotjsonRouteImport } from './routes/catalog[.]json'
+import { Route as OgImageRouteImport } from './routes/og-image'
 import { Route as ComponentsSlugRouteImport } from './routes/components.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const CatalogDotjsonRoute = CatalogDotjsonRouteImport.update({
   path: '/catalog.json',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OgImageRoute = OgImageRouteImport.update({
+  id: '/og-image',
+  path: '/og-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ComponentsSlugRoute = ComponentsSlugRouteImport.update({
   id: '/components/$slug',
   path: '/components/$slug',
@@ -32,30 +38,34 @@ const ComponentsSlugRoute = ComponentsSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/catalog.json': typeof CatalogDotjsonRoute
+  '/og-image': typeof OgImageRoute
   '/components/$slug': typeof ComponentsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/catalog.json': typeof CatalogDotjsonRoute
+  '/og-image': typeof OgImageRoute
   '/components/$slug': typeof ComponentsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/catalog.json': typeof CatalogDotjsonRoute
+  '/og-image': typeof OgImageRoute
   '/components/$slug': typeof ComponentsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/catalog.json' | '/components/$slug'
+  fullPaths: '/' | '/catalog.json' | '/og-image' | '/components/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/catalog.json' | '/components/$slug'
-  id: '__root__' | '/' | '/catalog.json' | '/components/$slug'
+  to: '/' | '/catalog.json' | '/og-image' | '/components/$slug'
+  id: '__root__' | '/' | '/catalog.json' | '/og-image' | '/components/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CatalogDotjsonRoute: typeof CatalogDotjsonRoute
+  OgImageRoute: typeof OgImageRoute
   ComponentsSlugRoute: typeof ComponentsSlugRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CatalogDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/og-image': {
+      id: '/og-image'
+      path: '/og-image'
+      fullPath: '/og-image'
+      preLoaderRoute: typeof OgImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/components/$slug': {
       id: '/components/$slug'
       path: '/components/$slug'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CatalogDotjsonRoute: CatalogDotjsonRoute,
+  OgImageRoute: OgImageRoute,
   ComponentsSlugRoute: ComponentsSlugRoute,
 }
 export const routeTree = rootRouteImport
