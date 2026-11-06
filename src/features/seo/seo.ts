@@ -30,7 +30,9 @@ export function seoHead(override: SeoEntry | null | undefined, defaults: { title
       ...(override?.keywords ? [{ name: 'keywords', content: override.keywords }] : []),
       { property: 'og:title', content: override?.ogTitle ?? title },
       { property: 'og:description', content: override?.ogDescription ?? description },
-      ...(image ? [{ property: 'og:image', content: image }, { name: 'twitter:card', content: 'summary_large_image' }] : []),
+      { name: 'twitter:title', content: override?.ogTitle ?? title },
+      { name: 'twitter:description', content: override?.ogDescription ?? description },
+      ...(image ? [{ property: 'og:image', content: image }, { name: 'twitter:image', content: image }] : []),
     ],
   }
 }
