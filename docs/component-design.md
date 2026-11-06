@@ -156,22 +156,34 @@ export const dotOrb = defineState({
 
 ## 7. Groups: one component per row
 
-Each home row with more than one animation also ships as a single component whose `animation` prop picks the motion (`DotGlobe`, `DotSquare`, `DotCircle`). When you add an animation to a row, update its group too:
+**Every home row is one component.** A row's loaders are the same dots running different animations, so the row also ships as a single group component whose `animation` prop picks the motion (`DotGlobe`, `DotSquare`, `DotCircle`). Only a few params change with the animation; everything else (pattern, size, color, tilt…) is shared.
 
-1. Put the motion in `lib/globe-motions.ts` or `lib/sheet-motions.ts` (see section 4).
-2. In the group component (`src/registry/dot-<shape>/dot-<shape>.tsx`):
-   - add the name to the `…Animation` union and `ANIMATIONS`, and document it in the comment above the union;
-   - add its defaults to `DEFAULTS`, the same as the single loader's;
-   - add any new props, starting their JSDoc with the animations that use them (`/** tide: … */`);
-   - spread its `targets` into `targetsOf` and add its scene or motion to `scene()`.
-3. Add `{ value, label, from: theSingleDefinition }` to the group's `animations` in `src/features/states/groups.ts`. The playground takes that animation's params from the single definition.
+Each animation also stays a single loader (`DotTide`, `DotTwist`…) for people who want just that one. Both are built from the same motion in `lib/`, so they can't drift apart.
 
-Group rules:
+> **Adding an animation is never just a new single loader.** In the same change, add it to its row's group, so the group's `animation` picker offers it. A new single loader that isn't in its row's group is unfinished. If you create a new row and it has two or more animations, give it a group (`dot-<shape>`).
 
+### Adding an animation to a row
+
+1. **Motion**: put it in `lib/globe-motions.ts` or `lib/sheet-motions.ts` (see section 4), never in the component.
+2. **Single loader**: `src/registry/<slug>/<slug>.tsx` and its definition, added to `states` in `src/features/states/index.ts`.
+3. **Group component** (`src/registry/dot-<shape>/dot-<shape>.tsx`):
+   - add the name to the `…Animation` union and `ANIMATIONS`, and describe it in the comment above the union;
+   - add any new props, starting their JSDoc with the animations that use them (`/** twist: … */`); if it reuses a shared prop (`duration`, `gap`) with its own meaning, name it in that prop's JSDoc too;
+   - add new props to `DEFAULTS` and to the `withDefaults(DEFAULTS, { … })` call;
+   - add its settings type to `Motion`, spread its `targets` into `targetsOf`, and add its scene to `scene()`.
+4. **Group definition**: add `{ value, label, from: theSingleDefinition }` to the group's `animations` in `src/features/states/groups.ts`. The playground takes that animation's params from the single definition, so there's nothing else to declare.
+5. Update the group's `description` in `groups.ts` if it lists the animations.
+
+### Group rules
+
+- **One default per prop across the whole group.** Switching animation must never change another prop's value, so a prop the user didn't pass takes the group's `DEFAULTS`, the same for every animation. Where the single loaders disagree on a default, the group picks one (`defaults` in `groups.ts`) and it must equal `DEFAULTS` in the component. The one exception: when the shared default would break an animation's motion (Dot Globe's lift would push ~10 rings at once at the shared timing), that animation gets its own default, set on its entry in `groups.ts` and in `ANIMATION_DEFAULTS` in the component. A value the user passes still applies to every animation.
 - **Target keys must stay the same while mounted.** `targetsOf` spreads every animation's targets, not only the active one's, so switching never adds a key.
-- **A prop that isn't passed takes the active animation's default** (`withDefaults(DEFAULTS[active], props)`). Never give a timing prop one default for the whole group.
 - **Switching must not jump.** Mix weights (`mixTargets`) glide from 0 to 1. Sheets blend each dot's swell (`sheetMixScene`); globes cross-fade the scenes (`mixScenes`).
 - Fall back to the first animation if `animation` is something unknown.
+
+### Installing
+
+`pnpm registry:build` ships every single loader *and* every group as its own shadcn item, from the same catalog. Users who want one animation install the single loader (`dot-tide`); users who want to switch install the group (`dot-globe`). Each shipped file inlines the lib code it uses, so the two never depend on each other.
 
 ---
 
@@ -184,5 +196,5 @@ Group rules:
 - [ ] Turning `paused` on coasts to a stop, and turning it off eases back up to speed.
 - [ ] With reduced motion on (OS setting or DevTools), the loader holds still.
 - [ ] The shipped file (Code tab or `generated/registry/<slug>/<slug>.tsx`) reads cleanly on its own.
-- [ ] If the row has a group: the new animation is in it, and switching to and from it is smooth.
+- [ ] The new animation is in its row's group: it shows in the group's Animation picker, its params appear when picked, and switching to and from it is smooth.
 - [ ] Commit the regenerated `registry.json` and `public/r/*.json` along with the source.

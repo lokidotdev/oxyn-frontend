@@ -1,11 +1,20 @@
 "use client";
 
 import type { HTMLAttributes } from "react";
-import { colorTargets, rgb } from "../lib/color";
+import { ARC_ANIMATIONS, arcMixSettle, arcScene, arcShape, arcTargets } from "../lib/arcs";
+import type { ArcAnimation, ArcSettings } from "../lib/arcs";
 import { LoaderCanvas } from "../lib/loader-canvas";
-import type { Scene } from "../lib/loader-canvas";
+import { mixTargets } from "../lib/mix";
+import type { MixKey } from "../lib/mix";
+
+export type ArcRingsAnimation = ArcAnimation;
 
 export interface ArcRingsProps extends Omit<HTMLAttributes<HTMLDivElement>, "color"> {
+  /**
+   * Which animation the rings run: spin, chase, step, gather, ripple, gears, comet, unlock, write, tasks or progress.
+   * Changing it morphs the arcs from the old animation into the new one; every other prop keeps its value.
+   */
+  animation?: ArcRingsAnimation;
   /** Number of concentric rings (1–6). */
   lines?: number;
   /** Cuts in each ring (1–8). The ring is split into this many equal arcs. */
@@ -16,10 +25,20 @@ export interface ArcRingsProps extends Omit<HTMLAttributes<HTMLDivElement>, "col
   lineSpacing?: number;
   /** Stroke width of each ring in px. */
   lineWidth?: number;
-  /** Turns per second of the outer ring. */
+  /** Pace of the animation, in turns per second of the outer ring at a steady spin. */
   speed?: number;
-  /** Spin neighboring rings in opposite directions. */
+  /** Turn neighboring rings in opposite directions. */
   alternate?: boolean;
+  /**
+   * Calls still running (0–6), counting inward from the outer ring; the rings inside them close, dim and stop. Left out,
+   * all run. Only tasks reads it.
+   */
+  active?: number;
+  /**
+   * How much has transferred (0–1), filling the outer ring clockwise from 12 o'clock. Leave it out to fill and empty on
+   * a loop. Only progress reads it.
+   */
+  progress?: number;
   /** Canvas size in px (the loader is square). */
   size?: number;
   /** Line color, any CSS color. */
@@ -32,89 +51,32 @@ export interface ArcRingsProps extends Omit<HTMLAttributes<HTMLDivElement>, "col
   label?: string;
 }
 
-const TAU = Math.PI * 2;
+type Settings = ArcSettings & { animation: ArcRingsAnimation };
 
-type Settings = Required<
-  Pick<
-    ArcRingsProps,
-    "lines" | "cuts" | "cutSpacing" | "lineSpacing" | "lineWidth" | "speed" | "alternate" | "size" | "color" | "minOpacity" | "paused"
-  >
->;
-
-/** Every number the drawing reads, as the latest props want it. */
+/** Every number the drawing reads, plus how much of each animation is on screen. */
 function targetsOf(s: Settings) {
-  return {
-    ...colorTargets(s.color),
-    lines: Math.min(6, Math.max(1, Math.round(s.lines))),
-    cutSpacing: s.cutSpacing,
-    lineSpacing: s.lineSpacing,
-    lineWidth: s.lineWidth,
-    speed: s.speed,
-    // 1 = every ring spins the same way, -1 = neighbors counter-rotate. Gliding through 0 eases the switch.
-    direction: s.alternate ? -1 : 1,
-    minOpacity: s.minOpacity,
-  };
+  return { ...arcTargets(s), ...mixTargets(ARC_ANIMATIONS, s.animation) };
 }
 
-type Key = keyof ReturnType<typeof targetsOf>;
-
-function scene(): Scene<Settings, Key, never> {
-  let turns = 0;
-
-  return {
-    advance(dt, { v }) {
-      turns = (turns + dt * v.speed * v.rate) % 1;
-    },
-    draw(ctx, { v, size, settings }) {
-      const lineWidth = Math.max(0, v.lineWidth);
-      const spacing = Math.max(0, v.lineSpacing);
-      const minOpacity = v.minOpacity;
-      // A cut count can't be fractional, so it switches at once instead of gliding.
-      const cuts = Math.min(8, Math.max(1, Math.round(settings.cuts)));
-      const segment = TAU / cuts;
-      const cut = Math.min(segment, (Math.max(0, v.cutSpacing) * Math.PI) / 180);
-      // Fractional while gliding: the ring past the whole count fades in or out.
-      const count = Math.max(1, v.lines);
-      const center = size / 2;
-      const outer = Math.max(1, center - lineWidth);
-
-      ctx.strokeStyle = rgb(v);
-      ctx.lineWidth = lineWidth;
-      ctx.lineCap = "round";
-
-      // Rings are counted inward from the outer edge, so adding one only touches the innermost.
-      for (let j = 0; j < Math.ceil(count); j++) {
-        const radius = outer - j * spacing;
-        if (radius <= lineWidth / 2) break;
-        const presence = Math.min(1, count - j);
-        const k = Math.max(0, 1 - j / Math.max(1, count - 1)); // 1 = outer, 0 = innermost
-        const spin = j % 2 === 0 ? 1 : v.direction;
-        // Each ring starts half a segment on from its neighbor, so the cuts don't line up.
-        const rotation = turns * TAU * spin + j * (segment / 2) - Math.PI / 2;
-
-        ctx.globalAlpha = v.alpha * presence * (minOpacity + (1 - minOpacity) * k);
-        ctx.beginPath();
-        if (cut <= 0) {
-          ctx.arc(center, center, radius, 0, TAU);
-        } else {
-          // Round caps reach past the arc's ends, so pull them back to keep the cut its real width.
-          const cap = lineWidth / 2 / radius;
-          const length = segment - cut - 2 * cap;
-          if (length > 0) {
-            for (let i = 0; i < cuts; i++) {
-              const start = rotation + i * segment + cut / 2 + cap;
-              ctx.moveTo(center + Math.cos(start) * radius, center + Math.sin(start) * radius);
-              ctx.arc(center, center, radius, start, start + length);
-            }
-          }
-        }
-        ctx.stroke();
-      }
-    },
-  };
+function scene() {
+  // Every animation moves the same arcs, so a switch glides one pose into the next.
+  return arcScene<Settings, MixKey<ArcRingsAnimation>>((v) => ({
+    spin: v.mix_spin,
+    chase: v.mix_chase,
+    step: v.mix_step,
+    gather: v.mix_gather,
+    ripple: v.mix_ripple,
+    gears: v.mix_gears,
+    comet: v.mix_comet,
+    unlock: v.mix_unlock,
+    write: v.mix_write,
+    tasks: v.mix_tasks,
+    progress: v.mix_progress,
+  }));
 }
 
 export function ArcRings({
+  animation = "spin",
   lines = 3,
   cuts = 3,
   cutSpacing = 30,
@@ -122,6 +84,8 @@ export function ArcRings({
   lineWidth = 1.5,
   speed = 0.3,
   alternate = true,
+  active,
+  progress,
   size = 160,
   color = "#e4e4e7",
   minOpacity = 0.4,
@@ -129,8 +93,9 @@ export function ArcRings({
   label = "Thinking",
   ...rest
 }: ArcRingsProps) {
-  const settings: Settings = { lines, cuts, cutSpacing, lineSpacing, lineWidth, speed, alternate, size, color, minOpacity, paused };
-  return <LoaderCanvas settings={settings} targets={targetsOf} scene={scene} label={label} {...rest} />;
+  const playing = ARC_ANIMATIONS.includes(animation) ? animation : "spin";
+  const settings: Settings = { animation: playing, lines, cuts, cutSpacing, lineSpacing, lineWidth, speed, alternate, active, progress, size, color, minOpacity, paused };
+  return <LoaderCanvas settings={settings} targets={targetsOf} shape={arcShape} settle={arcMixSettle} scene={scene} label={label} {...rest} />;
 }
 
 export default ArcRings;

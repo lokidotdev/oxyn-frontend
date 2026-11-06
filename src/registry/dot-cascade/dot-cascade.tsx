@@ -4,7 +4,7 @@ import type { HTMLAttributes } from "react";
 import { LoaderCanvas } from "../lib/loader-canvas";
 import { globeShape, globeTargets } from "../lib/globe";
 import type { GlobeSettings } from "../lib/globe";
-import { cascadeMotion } from "../lib/globe-motions";
+import { globeSettle, cascadeMotion } from "../lib/globe-motions";
 
 export type DotCascadePattern = "rings" | "fibonacci" | "grid";
 
@@ -61,7 +61,7 @@ export function DotCascade({
   ...rest
 }: DotCascadeProps) {
   const settings: Settings = { pattern, dotSize, density, size, duration, stagger, gap, direction, tilt, color, backOpacity, paused };
-  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} scene={cascadeMotion.scene} label={label} {...rest} />;
+  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} settle={globeSettle} scene={cascadeMotion.scene} label={label} {...rest} />;
 }
 
 export default DotCascade;

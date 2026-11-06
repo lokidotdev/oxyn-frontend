@@ -18,14 +18,49 @@
   --font-sans: "Diode", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Tessera", ui-sans-serif, system-ui, sans-serif;
 
-  --color-bg: #070708;
-  --color-surface: #0e0e10;
-  --color-raised: #151518;
-  --color-line: #1f1f23;
-  --color-line-strong: #2c2c32;
-  --color-fg: #ededef;
-  --color-muted: #8b8b93;
-  --color-faint: #55555c;
+  /* Dark is the default; the light values live on :root[data-theme="light"] below. See docs/DESIGN.md §2. */
+  --color-bg: oklch(0.129 0.003 286);
+  --color-surface: oklch(0.165 0.004 286);
+  --color-raised: oklch(0.197 0.006 286);
+  --color-line: oklch(0.241 0.008 286);
+  --color-line-strong: oklch(0.296 0.011 286);
+  --color-fg: oklch(0.947 0.003 286);
+  --color-muted: oklch(0.639 0.012 286);
+  --color-faint: oklch(0.452 0.011 286);
+  --color-glow: oklch(1 0 0 / 0.04);
+  --color-glitch-a: oklch(0.65 0.238 17.898);
+  --color-glitch-b: oklch(0.844 0.146 209.285);
+}
+
+/* Same hue, L mirrored, so every layer and contrast relationship holds in both themes. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: oklch(0.967 0.002 286);
+  --color-surface: oklch(0.985 0.001 286);
+  --color-raised: oklch(0.998 0 0);
+  --color-line: oklch(0.912 0.004 286);
+  --color-line-strong: oklch(0.862 0.006 286);
+  --color-fg: oklch(0.21 0.006 286);
+  --color-muted: oklch(0.5 0.012 286);
+  --color-faint: oklch(0.68 0.01 286);
+  --color-glow: oklch(0 0 0 / 0.035);
+  --color-glitch-a: oklch(0.58 0.238 17.898);
+  --color-glitch-b: oklch(0.62 0.12 209.285);
+}
+
+:root {
+  color-scheme: dark;
+  --card-ring: var(--color-line-strong);
+  --card-drop: 0 1px 2px 0 oklch(0 0 0 / 0.5);
+  --button-from: var(--color-raised);
+  --button-to: var(--color-surface);
+}
+
+:root[data-theme="light"] {
+  --card-ring: #ececec;
+  --card-drop: 0 1px 2px 0 rgb(40 40 40 / 0.08);
+  --button-from: #ffffff;
+  --button-to: #f7f7f7;
 }
 
 * {
@@ -46,25 +81,234 @@ body {
 }
 
 ::selection {
-  background: #ffffff22;
+  background: color-mix(in oklch, var(--color-fg) 15%, transparent);
 }
 
-/* Dotted backdrop for preview stages */
-.stage {
-  background-color: var(--color-surface);
-  background-image: radial-gradient(circle at 1px 1px, #ffffff0d 1px, transparent 0);
-  background-size: 18px 18px;
+/* Reserve the scrollbar's space even when the page doesn't scroll, so nothing shifts when a scroll lock
+   (Radix Select's open popover) hides it. The lock pads body by the scrollbar width; the gutter already holds it. */
+html {
+  scrollbar-gutter: stable;
+}
+
+html body[data-scroll-locked] {
+  margin-right: 0 !important;
+}
+
+/* Themed scrollbars. In the base layer so a utility like [scrollbar-width:none] still wins. */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
 }
 
 /* sugar-high token colors */
 .code {
-  --sh-class: #e9b97a;
-  --sh-identifier: #d4d4d8;
-  --sh-sign: #71717a;
-  --sh-property: #93c5fd;
-  --sh-entity: #c4b5fd;
-  --sh-jsxliterals: #a1a1aa;
-  --sh-string: #86efac;
-  --sh-keyword: #f9a8d4;
-  --sh-comment: #52525b;
+  --sh-class: oklch(0.815 0.098 73.3);
+  --sh-identifier: oklch(0.871 0.005 286);
+  --sh-sign: oklch(0.552 0.014 286);
+  --sh-property: oklch(0.809 0.096 251.813);
+  --sh-entity: oklch(0.811 0.101 293.571);
+  --sh-jsxliterals: oklch(0.712 0.013 286);
+  --sh-string: oklch(0.871 0.136 154.449);
+  --sh-keyword: oklch(0.823 0.11 346.018);
+  --sh-comment: oklch(0.442 0.015 286);
+}
+
+/* Same hues, L dropped below 0.55 so each token holds contrast on the light surface. */
+:root[data-theme="light"] .code {
+  --sh-class: oklch(0.52 0.11 73.3);
+  --sh-identifier: oklch(0.3 0.006 286);
+  --sh-sign: oklch(0.55 0.014 286);
+  --sh-property: oklch(0.5 0.14 251.813);
+  --sh-entity: oklch(0.5 0.17 293.571);
+  --sh-jsxliterals: oklch(0.45 0.013 286);
+  --sh-string: oklch(0.5 0.13 154.449);
+  --sh-keyword: oklch(0.52 0.18 346.018);
+  --sh-comment: oklch(0.62 0.012 286);
+}
+
+/* A scrollbar that exactly fills an 8px gutter, its 4px thumb centred with 2px either side.
+   Chromium only honours ::-webkit-scrollbar while the standard properties are left at auto. */
+@supports selector(::-webkit-scrollbar) {
+  .gutter-scroll {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+  .gutter-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+  .gutter-scroll::-webkit-scrollbar-track {
+    background: transparent;
+    margin-block: 12px;
+  }
+  .gutter-scroll::-webkit-scrollbar-thumb {
+    background: var(--color-line-strong) padding-box;
+    border: 2px solid transparent;
+    border-radius: 9999px;
+  }
+  .gutter-scroll::-webkit-scrollbar-button {
+    display: none;
+  }
+}
+
+/* Hover underline that draws in from the left and retracts the same way. It sits on an inner text span and
+   reacts to the padded parent link (.group), so the whole hit area triggers it, not just the glyphs. */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .link-underline::after {
+    transform: scaleX(1);
+  }
+}
+
+.group:focus-visible .link-underline::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-underline::after {
+    transform: scaleX(1);
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  .group:hover .link-underline::after,
+  .group:focus-visible .link-underline::after {
+    opacity: 1;
+  }
+}
+
+/* Landing headline: agent-state word with RGB-split glitch while swapping. */
+.glitch-word {
+  position: relative;
+  display: inline-grid;
+  text-align: left;
+}
+
+.glitch-word-sizer {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+
+/* Out of flow, so scramble glyphs of any width can't nudge the line. */
+.glitch-word-text {
+  position: absolute;
+  inset: 0 auto auto 0;
+  white-space: nowrap;
+}
+
+.glitch-word::before,
+.glitch-word::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.glitch-word[data-glitching]::before {
+  opacity: 0.8;
+  color: var(--color-glitch-a);
+  animation: glitch-shift 120ms steps(2) infinite;
+}
+
+.glitch-word[data-glitching]::after {
+  opacity: 0.8;
+  color: var(--color-glitch-b);
+  animation: glitch-shift 120ms steps(2) infinite reverse;
+}
+
+@keyframes glitch-shift {
+  0% { transform: translate(-2px, 1px); clip-path: inset(10% 0 55% 0); }
+  50% { transform: translate(2px, -1px); clip-path: inset(60% 0 5% 0); }
+  100% { transform: translate(-1px, 0); clip-path: inset(30% 0 35% 0); }
+}
+
+/* Stroke-less elevation: a 1px spread ring stands in for the border, plus a soft 1px drop.
+   Values live per theme in --card-* (light: #ECECEC ring, #282828 @ 8% drop). */
+@utility shadow-card {
+  box-shadow: var(--card-drop), 0 0 0 1px var(--card-ring);
+}
+@utility shadow-card-hover {
+  box-shadow: var(--card-drop), 0 0 0 1px var(--color-line-strong);
+}
+
+/* Button fill: vertical gradient (#FFF → #F7F7F7 in light). */
+@utility bg-button {
+  background-image: linear-gradient(to bottom, var(--button-from), var(--button-to));
+}
+
+/* Press feedback: a quick scale-down on pointer-down, released on the same curve. */
+.press {
+  transition-property: transform, color, box-shadow, opacity;
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+.press:active {
+  transform: scale(0.96);
+}
+
+/* Two states stacked in one grid cell, so the box always fits the wider one and never resizes on swap.
+   The leaving state blurs and shrinks out as the arriving one sharpens in. */
+.swap {
+  display: inline-grid;
+  place-items: center;
+}
+.swap > * {
+  grid-area: 1 / 1;
+  transition-property: opacity, filter, transform, rotate;
+  transition-duration: 220ms;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+.swap > [data-off] {
+  opacity: 0;
+  filter: blur(4px);
+  transform: scale(0.85);
+}
+.swap-start {
+  place-items: center start;
+}
+
+/* Reset: the arrow winds back a little on hover. Fullscreen: the corners push outward. */
+.hover-spin svg,
+.hover-grow svg {
+  transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hover-spin:hover svg {
+    transform: rotate(-90deg);
+  }
+  .hover-grow:hover svg {
+    transform: scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press:active {
+    transform: none;
+  }
+  .swap > [data-off] {
+    filter: none;
+    transform: none;
+  }
+  .hover-spin:hover svg,
+  .hover-grow:hover svg {
+    transform: none;
+  }
 }

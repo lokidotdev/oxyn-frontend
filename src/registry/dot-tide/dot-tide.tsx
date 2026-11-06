@@ -4,7 +4,7 @@ import type { HTMLAttributes } from "react";
 import { LoaderCanvas } from "../lib/loader-canvas";
 import { globeShape, globeTargets } from "../lib/globe";
 import type { GlobeSettings } from "../lib/globe";
-import { tideMotion } from "../lib/globe-motions";
+import { globeSettle, tideMotion } from "../lib/globe-motions";
 
 export type DotTidePattern = "rings" | "fibonacci" | "grid";
 
@@ -64,7 +64,7 @@ export function DotTide({
   ...rest
 }: DotTideProps) {
   const settings: Settings = { pattern, dotSize, density, size, depth, width, duration, gap, from, tilt, color, backOpacity, paused };
-  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} scene={tideMotion.scene} label={label} {...rest} />;
+  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} settle={globeSettle} scene={tideMotion.scene} label={label} {...rest} />;
 }
 
 export default DotTide;

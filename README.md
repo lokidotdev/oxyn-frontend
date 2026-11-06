@@ -1,6 +1,6 @@
 Welcome to your new TanStack Start app!
 
-> **Adding or changing a loader?** Follow [docs/component-design.md](docs/component-design.md): file layout, props, drawing, catalog definitions, groups, and a pre-merge checklist. For how dots should move, see [docs/pattern-led-motion.md](docs/pattern-led-motion.md).
+> **Adding or changing a loader?** Follow [docs/component-design.md](docs/component-design.md): file layout, props, drawing, catalog definitions, groups, and a pre-merge checklist. Every row is one component: a new animation must also be added to its row's group (section 7). For how dots should move, see [docs/pattern-led-motion.md](docs/pattern-led-motion.md). For the bars row (which animation stands for which AI state, its props and its timing), see [docs/bars.md](docs/bars.md).
 
 # Getting Started
 

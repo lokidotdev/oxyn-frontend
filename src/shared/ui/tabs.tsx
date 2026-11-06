@@ -43,7 +43,7 @@ export function Tabs<T extends string>({
     <div
       role={mode === 'tabs' ? 'tablist' : 'radiogroup'}
       aria-label={label}
-      className={cn('flex rounded-lg border border-line bg-bg p-0.5', fill ? 'w-full' : 'w-fit', className)}
+      className={cn('flex rounded-[10px] bg-bg p-1 shadow-card', fill ? 'w-full' : 'w-fit', className)}
     >
       {items.map((item) => {
         const active = item.value === value
@@ -56,7 +56,7 @@ export function Tabs<T extends string>({
             aria-checked={mode === 'tabs' ? undefined : active}
             onClick={() => onChange(item.value)}
             className={cn(
-              'relative inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs transition-colors',
+              'press relative inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs',
               fill && 'flex-1',
               active ? 'text-fg' : 'text-muted hover:text-fg',
             )}
@@ -65,7 +65,7 @@ export function Tabs<T extends string>({
               <m.span
                 layoutId={pillId}
                 transition={reduce ? { duration: 0 } : PILL_SPRING}
-                className="absolute inset-0 rounded-md bg-raised shadow-[inset_0_0_0_1px_var(--color-line-strong)]"
+                className="absolute inset-0 rounded-md bg-button shadow-card"
               />
             )}
             <span className="relative inline-flex items-center gap-1.5">

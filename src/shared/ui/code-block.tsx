@@ -14,7 +14,7 @@ interface CodeBlockProps {
 export function CodeBlock({ code, className, copy = true, highlighted = true }: CodeBlockProps) {
   const html = useMemo(() => (highlighted ? highlight(code) : escapeHtml(code)), [code, highlighted])
   return (
-    <div className={cn('group relative rounded-xl border border-line bg-surface', className)}>
+    <div className={cn('group relative rounded-xl bg-surface shadow-card', className)}>
       {copy && <CopyButton text={code} className="absolute top-2.5 right-2.5 z-10" />}
       <pre className="code overflow-auto p-4 pr-14 font-mono text-[12.5px] leading-relaxed">
         <code dangerouslySetInnerHTML={{ __html: html }} />

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, HTMLAttributes } from "react";
-import { PAUSE_SETTLE, SETTLE, glide, snap, stepGlide } from "./glide";
+import { BLEND_SETTLE, START_SETTLE, STOP_SETTLE, SETTLE, glide, snap, stepGlide } from "./glide";
 import type { Glide } from "./glide";
 
 /** The glided value of every target, plus the canvas `size` and the pause `rate` (0 paused, 1 running). */
@@ -12,6 +12,8 @@ export interface Frame<S, K extends string, L> {
   v: Values<K>;
   layers: { shape: L; fade: number }[];
   size: number;
+  /** The viewer asked for reduced motion: the clock holds still, so a scene that ends somewhere should jump there. */
+  reduced: boolean;
 }
 
 export interface Scene<S, K extends string, L> {
@@ -27,8 +29,22 @@ export interface LoaderCanvasProps<S extends { size: number; paused: boolean }, 
   settings: S;
   /** Every number the scene reads, as the latest settings want it. Each glides to its new value. */
   targets: (s: NoInfer<S>) => Record<K, number>;
-  /** Geometry rebuilt when its key changes; the old shape fades out while the new one fades in. */
-  shape?: { key: (s: NoInfer<S>) => string; build: (s: NoInfer<S>) => L };
+  /**
+   * Geometry rebuilt when its key changes. The old shape's fade glides to 0 while the new one's glides to 1:
+   * a plain cross-fade, unless `morph` links the two so the scene can move one into the other.
+   */
+  shape?: {
+    key: (s: NoInfer<S>) => string;
+    build: (s: NoInfer<S>) => L;
+    /** Called when `to` replaces `from`, whose fade is `fade` at that moment. */
+    morph?: (from: L, to: L, fade: number) => void;
+    /** Seconds (roughly) a shape change takes. Defaults to `BLEND_SETTLE`. */
+    settle?: number;
+  };
+  /** Seconds (roughly) each target takes to glide to a new value, by key. Unlisted keys take `SETTLE`. */
+  settle?: Partial<Record<NoInfer<K> | "size", number>>;
+  /** Seconds (roughly) pausing takes to coast to a stop, and resuming to get back up to speed. */
+  pause?: { stop: number; start: number };
   /** Called once on mount; the returned scene keeps its own clock between frames. */
   scene: () => Scene<NoInfer<S>, K, L>;
   label: string;
@@ -36,12 +52,14 @@ export interface LoaderCanvasProps<S extends { size: number; paused: boolean }, 
 
 /**
  * A square canvas that runs a scene: props glide instead of jumping, pausing coasts, shape changes
- * cross-fade, reduced motion holds still, and the loop sleeps once nothing is moving.
+ * cross-fade or morph, reduced motion holds still, and the loop sleeps once nothing is moving.
  */
 export function LoaderCanvas<S extends { size: number; paused: boolean }, K extends string, L>({
   settings,
   targets,
   shape,
+  settle,
+  pause,
   scene,
   label,
   className,
@@ -52,11 +70,11 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // Only the first size reaches the DOM through React; after that the loop glides it.
   const [initialSize] = useState(settings.size);
-  const latest = useRef({ settings, targets, shape, scene });
+  const latest = useRef({ settings, targets, shape, settle, pause, scene });
   const wakeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    latest.current = { settings, targets, shape, scene };
+    latest.current = { settings, targets, shape, settle, pause, scene };
     wakeRef.current?.();
   });
 
@@ -73,7 +91,7 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
     const glides = {} as Record<string, Glide>;
     const v = {} as Values<K>;
     let shapes = shapeOf ? [{ key: shapeOf.key(first), shape: shapeOf.build(first), fade: glide(1) }] : [];
-    const frameInfo: Frame<S, K, L> = { settings: first, v, layers: [], size: 1 };
+    const frameInfo: Frame<S, K, L> = { settings: first, v, layers: [], size: 1, reduced: reduceMotion.matches };
     let shownSize = -1;
     let frame = 0;
     let last = 0;
@@ -90,6 +108,7 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
       frameInfo.settings = latest.current.settings;
       frameInfo.layers = shapes.map(({ shape, fade }) => ({ shape, fade: fade.value }));
       frameInfo.size = Math.max(1, v.size);
+      frameInfo.reduced = reduceMotion.matches;
     };
 
     const sync = () => {
@@ -101,7 +120,10 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
           for (const shape of shapes) shape.fade.target = 0;
           const fade = glide(0);
           fade.target = 1;
-          shapes.push({ key, shape: shapeOf.build(s), fade });
+          const prev = shapes[shapes.length - 1];
+          const next = { key, shape: shapeOf.build(s), fade };
+          shapeOf.morph?.(prev.shape, next.shape, prev.fade.value);
+          shapes.push(next);
         }
       }
       // Reduced motion: hold still and apply changes at once.
@@ -132,8 +154,20 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
       const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
       last = now;
       let moving = false;
-      for (const [k, g] of Object.entries(glides)) if (stepGlide(g, dt, k === "rate" ? PAUSE_SETTLE : SETTLE)) moving = true;
-      for (const shape of shapes) if (stepGlide(shape.fade, dt, SETTLE)) moving = true;
+      const times: Partial<Record<string, number>> = latest.current.settle ?? {};
+      const pauseTimes = latest.current.pause;
+      for (const [k, g] of Object.entries(glides)) {
+        // Stopping and starting take their own times; every other target its own, else `SETTLE`.
+        const time =
+          k === "rate"
+            ? g.target > 0
+              ? (pauseTimes?.start ?? START_SETTLE)
+              : (pauseTimes?.stop ?? STOP_SETTLE)
+            : (times[k] ?? SETTLE);
+        if (stepGlide(g, dt, time)) moving = true;
+      }
+      const shapeSettle = latest.current.shape?.settle ?? BLEND_SETTLE;
+      for (const shape of shapes) if (stepGlide(shape.fade, dt, shapeSettle)) moving = true;
       shapes = shapes.filter((shape) => shape.fade.target > 0 || shape.fade.value > 0);
 
       if (sceneNow.advance) {

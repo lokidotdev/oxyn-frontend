@@ -18,7 +18,7 @@ export function PropsTable({ schema }: { schema: ParamDef[] }) {
   ]
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-line">
+    <div className="overflow-x-auto rounded-xl shadow-card">
       <table className="w-full min-w-[560px] text-left text-[13px]">
         <thead className="border-b border-line bg-surface font-mono text-xs text-muted">
           <tr>
@@ -34,7 +34,7 @@ export function PropsTable({ schema }: { schema: ParamDef[] }) {
               <td className="px-4 py-2.5 font-mono text-xs whitespace-nowrap text-fg">{r.name}</td>
               <td className="max-w-[180px] px-4 py-2.5 font-mono text-xs text-muted">{r.type}</td>
               <td className="px-4 py-2.5 font-mono text-xs whitespace-nowrap text-muted">{r.default}</td>
-              <td className="px-4 py-2.5 text-muted">{r.description}</td>
+              <td className="px-4 py-2.5 font-mono text-muted">{r.description}</td>
             </tr>
           ))}
         </tbody>

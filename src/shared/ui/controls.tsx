@@ -5,7 +5,7 @@ export function Field({ label, value, children }: { label: string; value?: React
   return (
     <div className="space-y-2.5">
       <div className="flex items-center justify-between text-[13px]">
-        <span className="text-muted">{label}</span>
+        <span className="font-mono text-muted">{label}</span>
         {value !== undefined && <span className="font-mono text-xs text-fg tabular-nums">{value}</span>}
       </div>
       {children}

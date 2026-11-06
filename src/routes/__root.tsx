@@ -1,7 +1,9 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { LazyMotion } from 'motion/react'
 import { SiteHeader } from '#/shared/ui/site-header'
+import { SiteFooter } from '#/shared/ui/site-footer'
 
+import { THEME_INIT_SCRIPT } from '#/shared/lib/theme'
 import appCss from '../styles.css?url'
 
 const loadMotionFeatures = () => import('#/shared/lib/motion-features').then((mod) => mod.default)
@@ -11,7 +13,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { name: 'color-scheme', content: 'dark' },
+      { name: 'color-scheme', content: 'dark light' },
       { title: 'oxyn — loaders for thinking interfaces' },
     ],
     links: [
@@ -30,14 +32,16 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
       <body>
         <LazyMotion features={loadMotionFeatures} strict>
           <SiteHeader />
           {children}
+          <SiteFooter />
         </LazyMotion>
         <Scripts />
       </body>

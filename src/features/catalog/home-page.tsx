@@ -1,15 +1,14 @@
-import { Link } from '@tanstack/react-router'
-import { groupFor, states } from '#/features/states'
+import { states } from '#/features/states'
 import type { Shape } from '#/features/states'
-import { ArrowUpRightIcon } from '#/shared/ui/icons'
 import { Tabs } from '#/shared/ui/tabs'
 import type { TabItem } from '#/shared/ui/tabs'
+import { GlitchWord } from './glitch-word'
 import { ShapeRow } from './shape-row'
 import { PlaceholderCard, StateCard } from './state-card'
 
 /** One grid row per silhouette, top to bottom. */
-const SHAPE_ROWS: Shape[] = ['globe', 'square', 'circle', 'rings', 'arcs']
-const SHAPE_LABELS: Record<Shape, string> = { globe: 'Globe', square: 'Square', circle: 'Circle', rings: 'Rings', arcs: 'Arcs' }
+const SHAPE_ROWS: Shape[] = ['globe', 'square', 'circle', 'rings', 'arcs', 'bars']
+const SHAPE_LABELS: Record<Shape, string> = { globe: 'Globe', square: 'Square', circle: 'Circle', rings: 'Rings', arcs: 'Arcs', bars: 'Bars' }
 /** One more than fits on a wide screen, so every unfiltered row peeks past the edge. */
 const ROW_TILES = 4
 
@@ -34,9 +33,9 @@ export function HomePage({ filter, onFilterChange }: HomePageProps) {
     <main className="mx-auto max-w-7xl px-4 pb-24 sm:px-6">
       <section className="flex flex-col items-center py-16 text-center sm:py-24">
         <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-          Loaders for when your interface is thinking.
+          Loaders for when your interface is <GlitchWord suffix="." />
         </h1>
-        <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted">
+        <p className="mt-5 max-w-xl font-mono text-[15px] leading-relaxed text-muted">
           Configurable, dependency-free thinking states for React. Tune every parameter in the playground, then copy the
           file or install it with the shadcn CLI.
         </p>
@@ -54,9 +53,9 @@ export function HomePage({ filter, onFilterChange }: HomePageProps) {
           // Placeholders only pad the unfiltered view; a filtered view shows what exists.
           const placeholders = filter === 'all' ? Math.max(0, ROW_TILES - row.length) : 0
           return (
-            <ShapeRow key={row[0].shape} label={SHAPE_LABELS[row[0].shape]} aside={<GroupLink shape={row[0].shape} />}>
+            <ShapeRow key={row[0].shape} label={SHAPE_LABELS[row[0].shape]}>
               {row.map((s) => (
-                <StateCard key={s.slug} state={s} index={states.indexOf(s)} />
+                <StateCard key={s.slug} state={s} />
               ))}
               {Array.from({ length: placeholders }, (_, i) => (
                 <PlaceholderCard key={i} />
@@ -69,18 +68,3 @@ export function HomePage({ filter, onFilterChange }: HomePageProps) {
   )
 }
 
-/** Links a row to its group: the one component that switches between all of the row's animations. */
-function GroupLink({ shape }: { shape: Shape }) {
-  const group = groupFor(shape)
-  if (!group?.animations) return null
-  return (
-    <Link
-      to="/components/$slug"
-      params={{ slug: group.slug }}
-      className="inline-flex items-center gap-1 rounded-md border border-line px-1.5 py-0.5 font-mono text-[11px] text-muted transition-colors hover:border-line-strong hover:text-fg"
-    >
-      {`<${group.componentName} animation />`}
-      <ArrowUpRightIcon />
-    </Link>
-  )
-}

@@ -3,7 +3,7 @@ import type { RegistryEntry } from './define-state'
 
 export type Dimension = '2.5D' | '2D'
 
-export type Shape = 'globe' | 'square' | 'circle' | 'rings' | 'arcs'
+export type Shape = 'globe' | 'square' | 'circle' | 'rings' | 'arcs' | 'bars'
 
 export interface StateDefinition extends RegistryEntry {
   slug: string
@@ -29,6 +29,8 @@ export interface StateDefinition extends RegistryEntry {
 export interface AnimationOption {
   value: string
   label: string
+  /** The standalone component that runs just this animation. */
+  slug: string
   params: ParamDef[]
 }
 

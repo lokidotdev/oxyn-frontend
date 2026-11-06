@@ -85,6 +85,28 @@ The motion should change one thing about each dot. In the globe components, dots
 
 Because the dot's position is fixed except for that one in-and-out movement, all the visible structure comes from the pattern's order, which is the point.
 
+### The exception: Dot Twist
+
+Dot Twist turns whole layers of the orb like a twisty cube, so its dots do rotate. The same idea still leads it: **every turn must land the dots back on the pattern.** The orb is cut into thirds (the cut sits halfway between two rows, so no ring is split), and each pattern gets the turns that fit it:
+
+- **Grid**: rows turn the quarter turn nearest to 90° that is a whole number of column spacings; columns flip a half turn over the top. Both map the lattice onto itself.
+- **Rings**: each ring in a turning row goes round by its own whole number of dot spacings, so rings in one layer turn by slightly different angles. A column flip swaps ring *i* with ring *rows − i*; with an odd row count those rings sit half a step apart, so columns turn all the way round instead.
+- **Spiral**: a Fibonacci sphere is symmetric under a half turn about exactly one horizontal axis (it swaps dot *i* with dot *count − 1 − i*). The orb is spun so that axis is the column axis, so column flips land it exactly. No turn about the vertical axis fits it, so its rows turn all the way round.
+
+Because every turn fits, the orb looks solved between any two turns, and the scramble is undone exactly when the turns play back in reverse.
+
+---
+
+## Line rings: the ring is the unit
+
+The arc and noise rows (Arc Spin, Arc Chase, … and Noise Drift, Noise Ripple, …) have no dots, but they have a pattern: concentric rings. Each ring moves as one piece, and its step is its index counted from the outer edge (Noise Ripple counts from the inside, so the push travels outward like a drop in water).
+
+- **Travelling waves** (Arc Gather, Arc Ripple, Noise Ripple): each ring starts a fixed fraction of a cycle after its neighbor and moves for a few times that long, so 3–4 rings are moving at once.
+- **Staggered steps** (Arc Step): each ring turns exactly one arc, starting just after the ring outside it, so the turn works inward like the dials of a lock. Every step lands the arcs back on the pattern.
+- **Inward only** (Arc Ripple): rings pull toward the center and let go; they never push past the outer edge.
+
+Each animation describes a ring as a few numbers (where its arcs sit, how long they are, how far it is pushed). The group components (Arc Rings, Noise Rings) blend those numbers when the `animation` prop changes, so the same rings morph from one motion into the next instead of cross-fading.
+
 ---
 
 ## Checklist for new components

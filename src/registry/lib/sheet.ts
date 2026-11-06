@@ -1,12 +1,17 @@
 import { colorTargets, rgb } from "./color";
+import { BLEND_SETTLE, FADE_SETTLE } from "./glide";
 import type { Frame, Scene, Values } from "./loader-canvas";
 import type { MixKey } from "./mix";
 
 /** Square lays the dots on a grid; circle on concentric rings, so the outline is a true circle. */
 export type SheetLayout = "square" | "circle";
 
-/** A dot in -1..1 plus its distance from the center, measured along the sheet's own outline. */
-export type SheetDot = { u: number; v: number; d: number };
+/**
+ * A dot in -1..1 plus its distance from the center, measured along the sheet's own outline. `row` is its line
+ * (grid row from the top, or ring from the center), `col` how far along that line it sits (0–1), and `rows`
+ * how many lines the sheet has, so motions can follow the pattern's own order.
+ */
+export type SheetDot = { u: number; v: number; d: number; row: number; col: number; rows: number };
 
 /** Props every flat dot sheet takes. */
 export interface SheetSettings {
@@ -26,13 +31,13 @@ function buildSheet(layout: SheetLayout, n: number) {
   if (layout === "circle") {
     // Concentric rings with near-equal arc spacing, so the outline is a true circle.
     const rings = Math.max(1, Math.round((n - 1) / 2));
-    dots.push({ u: 0, v: 0, d: 0 });
+    dots.push({ u: 0, v: 0, d: 0, row: 0, col: 0, rows: rings + 1 });
     for (let k = 1; k <= rings; k++) {
       const r = k / rings;
       const count = Math.round(2 * Math.PI * k);
       for (let j = 0; j < count; j++) {
         const a = (j / count) * Math.PI * 2 - Math.PI / 2;
-        dots.push({ u: Math.cos(a) * r, v: Math.sin(a) * r, d: r });
+        dots.push({ u: Math.cos(a) * r, v: Math.sin(a) * r, d: r, row: k, col: j / count, rows: rings + 1 });
       }
     }
     return dots;
@@ -43,7 +48,7 @@ function buildSheet(layout: SheetLayout, n: number) {
     for (let col = 0; col < n; col++) {
       const u = (col / (n - 1)) * 2 - 1;
       const v = (row / (n - 1)) * 2 - 1;
-      dots.push({ u, v, d: Math.max(Math.abs(u), Math.abs(v)) });
+      dots.push({ u, v, d: Math.max(Math.abs(u), Math.abs(v)), row, col: col / n, rows: n });
     }
   }
   return dots;
@@ -76,6 +81,35 @@ export function sheetTargets(s: SheetSettings) {
 }
 
 export type SheetKey = keyof ReturnType<typeof sheetTargets>;
+
+/**
+ * Seconds (roughly) each sheet target takes to glide to a new value; anything unlisted (size, dot size,
+ * scale, timing) takes `SETTLE`. Shared by the single loaders and DotSquare / DotCircle.
+ */
+export const sheetSettle = {
+  // Color and opacity: nothing moves, so they change quicker.
+  red: FADE_SETTLE,
+  green: FADE_SETTLE,
+  blue: FADE_SETTLE,
+  alpha: FADE_SETTLE,
+  minOpacity: FADE_SETTLE,
+  // Dot shape and direction morph the dots through an in-between, so they take as long as an animation switch.
+  round: BLEND_SETTLE,
+  inward: BLEND_SETTLE,
+  leftward: BLEND_SETTLE,
+  mix_pulse: BLEND_SETTLE,
+  mix_breath: BLEND_SETTLE,
+  mix_wave: BLEND_SETTLE,
+  mix_fill: BLEND_SETTLE,
+  mix_read: BLEND_SETTLE,
+  mix_edit: BLEND_SETTLE,
+  mix_ping: BLEND_SETTLE,
+  mix_stream: BLEND_SETTLE,
+  mix_plan: BLEND_SETTLE,
+  mix_gather: BLEND_SETTLE,
+  mix_await: BLEND_SETTLE,
+  mix_radar: BLEND_SETTLE,
+};
 
 /** The dots for `layout`. A density change cross-fades the old sheet out while the new one fades in. */
 export function sheetShape(layout: SheetLayout) {

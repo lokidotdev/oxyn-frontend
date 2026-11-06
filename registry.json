@@ -52,6 +52,78 @@
       ]
     },
     {
+      "name": "dot-twist",
+      "type": "registry:component",
+      "title": "Dot Twist",
+      "description": "A dot sphere that scrambles and solves itself like a twisty cube, one row or column turn at a time.",
+      "files": [
+        {
+          "path": "generated/registry/dot-twist/dot-twist.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dot-scan",
+      "type": "registry:component",
+      "title": "Dot Scan",
+      "description": "A still dot sphere where a thin band of light reads down from top to bottom, for reading a file.",
+      "files": [
+        {
+          "path": "generated/registry/dot-scan/dot-scan.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dot-rise",
+      "type": "registry:component",
+      "title": "Dot Rise",
+      "description": "A dot sphere where a wave pushes rows outward on its way up and fades them off the top, for uploading or downloading.",
+      "files": [
+        {
+          "path": "generated/registry/dot-rise/dot-rise.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dot-sweep",
+      "type": "registry:component",
+      "title": "Dot Sweep",
+      "description": "A still dot sphere where one lit column sweeps around the axis like a radar with a short fading trail, for searching.",
+      "files": [
+        {
+          "path": "generated/registry/dot-sweep/dot-sweep.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dot-compact",
+      "type": "registry:component",
+      "title": "Dot Compact",
+      "description": "A dot sphere where two inward waves leave the poles and meet at the equator as a thin waist, for compacting context.",
+      "files": [
+        {
+          "path": "generated/registry/dot-compact/dot-compact.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dot-swarm",
+      "type": "registry:component",
+      "title": "Dot Swarm",
+      "description": "A dot sphere where several narrow waves travel down at once, evenly spaced, for parallel tool calls and subagents.",
+      "files": [
+        {
+          "path": "generated/registry/dot-swarm/dot-swarm.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "square-pulse",
       "type": "registry:component",
       "title": "Square Pulse",
@@ -83,6 +155,66 @@
       "files": [
         {
           "path": "generated/registry/square-wave/square-wave.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "square-fill",
+      "type": "registry:component",
+      "title": "Square Fill",
+      "description": "A flat square of dots that swells ring by ring until full, then shrinks back the same way.",
+      "files": [
+        {
+          "path": "generated/registry/square-fill/square-fill.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "square-read",
+      "type": "registry:component",
+      "title": "Square Read",
+      "description": "A flat square of dots read row by row, like eyes moving across lines of text. For reading a file.",
+      "files": [
+        {
+          "path": "generated/registry/square-read/square-read.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "square-edit",
+      "type": "registry:component",
+      "title": "Square Edit",
+      "description": "A flat square of dots where a few rows are typed in, like the changed lines of a diff. For editing a file.",
+      "files": [
+        {
+          "path": "generated/registry/square-edit/square-edit.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "square-stream",
+      "type": "registry:component",
+      "title": "Square Stream",
+      "description": "A flat square of dots where output lines land row by row, the newest brightest, like a terminal. For running a command.",
+      "files": [
+        {
+          "path": "generated/registry/square-stream/square-stream.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "square-plan",
+      "type": "registry:component",
+      "title": "Square Plan",
+      "description": "A flat square of dots where rows tick off one at a time and stay ticked, like a checklist. For working through a plan.",
+      "files": [
+        {
+          "path": "generated/registry/square-plan/square-plan.tsx",
           "type": "registry:component"
         }
       ]
@@ -124,25 +256,421 @@
       ]
     },
     {
-      "name": "noise-rings",
+      "name": "circle-fill",
       "type": "registry:component",
-      "title": "Noise Rings",
-      "description": "Thin concentric rings warped by smooth Perlin noise, rippling in soft curves.",
+      "title": "Circle Fill",
+      "description": "A flat circle of dots that swells ring by ring until full, then shrinks back the same way.",
       "files": [
         {
-          "path": "generated/registry/noise-rings/noise-rings.tsx",
+          "path": "generated/registry/circle-fill/circle-fill.tsx",
           "type": "registry:component"
         }
       ]
     },
     {
-      "name": "arc-rings",
+      "name": "circle-ping",
       "type": "registry:component",
-      "title": "Arc Rings",
-      "description": "Concentric rings broken into arcs by evenly spaced cuts, rotating around the center.",
+      "title": "Circle Ping",
+      "description": "A flat circle of dots sending a ring out and getting a fainter echo back. For a tool call or request.",
       "files": [
         {
-          "path": "generated/registry/arc-rings/arc-rings.tsx",
+          "path": "generated/registry/circle-ping/circle-ping.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "circle-gather",
+      "type": "registry:component",
+      "title": "Circle Gather",
+      "description": "A flat circle of dots where rings swell from the edge inward and the center pops, as if bundled and sent. For uploading.",
+      "files": [
+        {
+          "path": "generated/registry/circle-gather/circle-gather.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "circle-await",
+      "type": "registry:component",
+      "title": "Circle Await",
+      "description": "A flat circle of dots resting dim while the center beats slowly, like a heartbeat. For waiting on user approval.",
+      "files": [
+        {
+          "path": "generated/registry/circle-await/circle-await.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "circle-radar",
+      "type": "registry:component",
+      "title": "Circle Radar",
+      "description": "A flat circle of dots swept by a turning wedge that leaves a fading trail, like radar. For searching the web.",
+      "files": [
+        {
+          "path": "generated/registry/circle-radar/circle-radar.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-drift",
+      "type": "registry:component",
+      "title": "Noise Drift",
+      "description": "Thin concentric rings warped by smooth Perlin noise, rippling in soft curves.",
+      "files": [
+        {
+          "path": "generated/registry/noise-drift/noise-drift.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-ripple",
+      "type": "registry:component",
+      "title": "Noise Ripple",
+      "description": "Noise rings with a push travelling outward from the innermost ring, like a drop landing in water.",
+      "files": [
+        {
+          "path": "generated/registry/noise-ripple/noise-ripple.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-breathe",
+      "type": "registry:component",
+      "title": "Noise Breathe",
+      "description": "Noise rings whose wobble swells, calms almost to circles, and swells again.",
+      "files": [
+        {
+          "path": "generated/registry/noise-breathe/noise-breathe.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-swirl",
+      "type": "registry:component",
+      "title": "Noise Swirl",
+      "description": "Noise rings turning around the center, inner rings trailing behind so the shape twists.",
+      "files": [
+        {
+          "path": "generated/registry/noise-swirl/noise-swirl.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-converge",
+      "type": "registry:component",
+      "title": "Noise Converge",
+      "description": "Noise rings closing up into one bright line, holding, then fanning back out.",
+      "files": [
+        {
+          "path": "generated/registry/noise-converge/noise-converge.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-level",
+      "type": "registry:component",
+      "title": "Noise Level",
+      "description": "Noise rings whose wobble follows a level prop, for voice or audio input.",
+      "files": [
+        {
+          "path": "generated/registry/noise-level/noise-level.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-flow",
+      "type": "registry:component",
+      "title": "Noise Flow",
+      "description": "Noise rings born calm at the center, flowing out to fade at the edge. For uploading or downloading.",
+      "files": [
+        {
+          "path": "generated/registry/noise-flow/noise-flow.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-stream",
+      "type": "registry:component",
+      "title": "Noise Stream",
+      "description": "Noise rings where each token sends a small push out from the center, at uneven gaps. For streaming an answer.",
+      "files": [
+        {
+          "path": "generated/registry/noise-stream/noise-stream.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-focus",
+      "type": "registry:component",
+      "title": "Noise Focus",
+      "description": "Noise rings pulling tight and bright around one ring, the lens moving slowly in and out. For deep reading or analysis.",
+      "files": [
+        {
+          "path": "generated/registry/noise-focus/noise-focus.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-scatter",
+      "type": "registry:component",
+      "title": "Noise Scatter",
+      "description": "Noise rings whose wobble grows ring by ring from the center into tight ripples, then calms. For a broad search.",
+      "files": [
+        {
+          "path": "generated/registry/noise-scatter/noise-scatter.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-spin",
+      "type": "registry:component",
+      "title": "Arc Spin",
+      "description": "Concentric rings broken into arcs, turning steadily around the center.",
+      "files": [
+        {
+          "path": "generated/registry/arc-spin/arc-spin.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-chase",
+      "type": "registry:component",
+      "title": "Arc Chase",
+      "description": "Arcs whose heads run ahead and tails catch up, stretching and shrinking as they turn.",
+      "files": [
+        {
+          "path": "generated/registry/arc-chase/arc-chase.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-step",
+      "type": "registry:component",
+      "title": "Arc Step",
+      "description": "Rings of arcs that each turn exactly one arc and hold, stepping inward like the dials of a lock.",
+      "files": [
+        {
+          "path": "generated/registry/arc-step/arc-step.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-gather",
+      "type": "registry:component",
+      "title": "Arc Gather",
+      "description": "Rings of arcs whose cuts close into whole rings and reopen, one ring after another going inward.",
+      "files": [
+        {
+          "path": "generated/registry/arc-gather/arc-gather.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-ripple",
+      "type": "registry:component",
+      "title": "Arc Ripple",
+      "description": "Rings of arcs pulling inward and letting go, the pull travelling from the outer ring to the inner one.",
+      "files": [
+        {
+          "path": "generated/registry/arc-ripple/arc-ripple.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-gears",
+      "type": "registry:component",
+      "title": "Arc Gears",
+      "description": "Rings of arcs turning at whole-number speed ratios, so their cuts line up on a regular beat.",
+      "files": [
+        {
+          "path": "generated/registry/arc-gears/arc-gears.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-comet",
+      "type": "registry:component",
+      "title": "Arc Comet",
+      "description": "Rings of arcs turning steadily, each arc fading from a bright head to a faint tail.",
+      "files": [
+        {
+          "path": "generated/registry/arc-comet/arc-comet.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-unlock",
+      "type": "registry:component",
+      "title": "Arc Unlock",
+      "description": "Rings of arcs clicking round like a lock trying combinations, then lining up. For searching or matching.",
+      "files": [
+        {
+          "path": "generated/registry/arc-unlock/arc-unlock.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-write",
+      "type": "registry:component",
+      "title": "Arc Write",
+      "description": "Rings of arcs that draw themselves on and erase from the tail, one ring after another going inward. For writing or editing.",
+      "files": [
+        {
+          "path": "generated/registry/arc-write/arc-write.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-tasks",
+      "type": "registry:component",
+      "title": "Arc Tasks",
+      "description": "Rings of arcs each turning at its own pace; finished rings close, dim and stop. For tool calls running in parallel.",
+      "files": [
+        {
+          "path": "generated/registry/arc-tasks/arc-tasks.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-progress",
+      "type": "registry:component",
+      "title": "Arc Progress",
+      "description": "Rings of arcs whose outer ring lights clockwise from 12 o'clock up to a progress. For an upload or download.",
+      "files": [
+        {
+          "path": "generated/registry/arc-progress/arc-progress.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bar-comet",
+      "type": "registry:component",
+      "title": "Bar Comet",
+      "description": "A fence of thin bars around a circle, with a bright head trailing a fading tail as it travels round.",
+      "files": [
+        {
+          "path": "generated/registry/bar-comet/bar-comet.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bar-twin",
+      "type": "registry:component",
+      "title": "Bar Twin",
+      "description": "A fence of thin bars around a circle, with several evenly spaced waves moving them out or in as they travel round.",
+      "files": [
+        {
+          "path": "generated/registry/bar-twin/bar-twin.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bar-read",
+      "type": "registry:component",
+      "title": "Bar Read",
+      "description": "A fence of thin bars around a circle, with a small wave lighting them at a steady pace, like reading down lines.",
+      "files": [
+        {
+          "path": "generated/registry/bar-read/bar-read.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bar-write",
+      "type": "registry:component",
+      "title": "Bar Write",
+      "description": "A fence of thin bars around a circle, typed in bursts until the ring is written, then wiped in order.",
+      "files": [
+        {
+          "path": "generated/registry/bar-write/bar-write.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bar-seek",
+      "type": "registry:component",
+      "title": "Bar Seek",
+      "description": "A fence of thin bars around a circle, with a wave that runs ahead, backs up and runs on, like searching.",
+      "files": [
+        {
+          "path": "generated/registry/bar-seek/bar-seek.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bar-stream",
+      "type": "registry:component",
+      "title": "Bar Stream",
+      "description": "A fence of thin bars around a circle, with short pulses chasing round at uneven gaps, like tokens arriving.",
+      "files": [
+        {
+          "path": "generated/registry/bar-stream/bar-stream.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bar-transfer",
+      "type": "registry:component",
+      "title": "Bar Transfer",
+      "description": "A fence of thin bars around a circle that fills to a progress, its leading bar pulsing, like an upload or download.",
+      "files": [
+        {
+          "path": "generated/registry/bar-transfer/bar-transfer.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bar-ping",
+      "type": "registry:component",
+      "title": "Bar Ping",
+      "description": "A fence of thin bars around a circle, with a pulse going out to 6 o'clock and back, like a request and its response.",
+      "files": [
+        {
+          "path": "generated/registry/bar-ping/bar-ping.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bar-plan",
+      "type": "registry:component",
+      "title": "Bar Plan",
+      "description": "A fence of thin bars around a circle cut into steps: done steps hold, the current one sweeps, the rest wait.",
+      "files": [
+        {
+          "path": "generated/registry/bar-plan/bar-plan.tsx",
           "type": "registry:component"
         }
       ]
@@ -179,6 +707,42 @@
       "files": [
         {
           "path": "generated/registry/dot-circle/dot-circle.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "noise-rings",
+      "type": "registry:component",
+      "title": "Noise Rings",
+      "description": "Every noise-ring animation in one component; the animation prop switches between them.",
+      "files": [
+        {
+          "path": "generated/registry/noise-rings/noise-rings.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "arc-rings",
+      "type": "registry:component",
+      "title": "Arc Rings",
+      "description": "Every arc-ring animation in one component; the animation prop switches between them.",
+      "files": [
+        {
+          "path": "generated/registry/arc-rings/arc-rings.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "bar-ring",
+      "type": "registry:component",
+      "title": "Bar Ring",
+      "description": "Every bar-ring animation in one component; the animation prop switches between them.",
+      "files": [
+        {
+          "path": "generated/registry/bar-ring/bar-ring.tsx",
           "type": "registry:component"
         }
       ]
