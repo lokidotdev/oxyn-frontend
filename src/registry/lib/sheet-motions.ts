@@ -304,10 +304,19 @@ export interface PlanSettings {
   progress?: number;
 }
 
-/** Share of a row's turn its dots take to tick across, left to right. */
-const PLAN_SWEEP = 0.6;
-/** Seconds one dot takes to grow as it's ticked. */
-const PLAN_GROW = 0.2;
+/**
+ * Where the plan stops, as shares of the sheet's dots in reading order. Each pass starts from empty and wanders
+ * forward or back to each stop in turn; a pass always ends on 1, the full sheet, which clears instead of turning back.
+ */
+const PLAN_PASSES = [
+  [0.35, 0.6, 0.42, 0.78, 1],
+  [0.22, 0.5, 0.31, 0.66, 0.88, 1],
+  [0.45, 0.27, 0.71, 1],
+];
+/** Seconds the shortest move takes, so a step of a few dots still reads as a move. */
+const PLAN_MIN_MOVE = 0.35;
+/** Seconds the plan waits at each stop while the dot it stopped on blinks twice. */
+const PLAN_STOP = 0.8;
 /** Seconds the full sheet takes to clear from the top row to the bottom, each row's let-go, and the rest after. */
 const PLAN_CLEAR = 0.6;
 const PLAN_LET_GO = 0.2;
@@ -315,10 +324,31 @@ const PLAN_REST = 0.3;
 /** How far the next dot to tick breathes while a progress is shown, so a still list still reads as working. */
 const PLAN_BLINK = 0.5;
 
+/** Every move in the loop, from where the last one stopped to the next stop, with the pause that follows it. */
+function planMoves(duration: number, gap: number) {
+  const moves: { from: number; to: number; travel: number; pause: number }[] = [];
+  for (const stops of PLAN_PASSES) {
+    let from = 0;
+    for (const to of stops) {
+      // A move takes its share of a full crossing, so the front always runs at the same pace.
+      const travel = Math.max(PLAN_MIN_MOVE, Math.abs(to - from) * duration);
+      moves.push({ from, to, travel, pause: to >= 1 ? gap + PLAN_CLEAR + PLAN_LET_GO + PLAN_REST : PLAN_STOP });
+      from = to;
+    }
+  }
+  return moves;
+}
+
+/** Two smooth blinks off and back across 0–1. */
+function blinkTwice(x: number) {
+  return x <= 0 || x >= 1 ? 0 : bump(((x * 2) % 1) * 2 - 1);
+}
+
 /**
- * Rows tick off one at a time from the top, like items on a checklist, and stay ticked. Once the whole sheet is
- * full it holds, then clears quickly in the same order, a few rows at a time, and starts again. Given a progress, it shows that many rows ticked instead, the
- * next dot breathing.
+ * The checklist ticks forward to a stop somewhere on the sheet, the dot it stopped on blinks, then it carries on
+ * forward or steps back to the next stop. When it reaches the end the full sheet holds, clears row by row from the
+ * top, and the next pass starts from empty; it never turns back from the end. Given a progress, it shows that
+ * many dots ticked instead, the next dot breathing.
  */
 export const planMotion = {
   targets(s: PlanSettings) {
@@ -330,24 +360,50 @@ export const planMotion = {
       progress: Math.min(1, Math.max(0, s.progress ?? 0)),
     };
   },
-  cycle: (v) => Math.max(0.5, v.duration) + Math.max(0, v.gap) + PLAN_CLEAR + PLAN_LET_GO + PLAN_REST,
+  cycle: (v) => planMoves(Math.max(0.5, v.duration), Math.max(0, v.gap)).reduce((sum, m) => sum + m.travel + m.pause, 0),
   swell: (t, v) => {
-    const duration = Math.max(0.5, v.duration);
-    const held = duration + Math.max(0, v.gap);
-    const cycle = held + PLAN_CLEAR + PLAN_LET_GO + PLAN_REST;
+    const gap = Math.max(0, v.gap);
+    const moves = planMoves(Math.max(0.5, v.duration), gap);
+    const cycle = moves.reduce((sum, m) => sum + m.travel + m.pause, 0);
     const determinate = Math.min(1, Math.max(0, v.determinate));
     const progress = Math.min(1, Math.max(0, v.progress));
     // The next dot breathes twice a loop: a cosine swell, so it never jumps.
     const blink = PLAN_BLINK * (0.5 - 0.5 * Math.cos((4 * Math.PI * t) / cycle));
-    // Every row gets the same turn, and the last row's dots finish growing as the fill ends.
-    const fill = duration - PLAN_GROW;
+
+    // Find the move running now and how far into it we are.
+    let at = t;
+    let move = moves[moves.length - 1];
+    for (const m of moves) {
+      if (at < m.travel + m.pause) {
+        move = m;
+        break;
+      }
+      at -= m.travel + m.pause;
+    }
+    const moving = at < move.travel;
+    const paused = at - move.travel;
+
     return ({ row, col, rows }) => {
       let loop = 0;
       if (determinate < 1) {
-        const start = ((row + col * PLAN_SWEEP) / rows) * fill;
-        const clear = held + (row / rows) * PLAN_CLEAR;
-        // Each dot grows in with an ease-out as its row is ticked, and each row lets go whole, easing out.
-        loop = easeOut(Math.min(1, Math.max(0, (t - start) / PLAN_GROW))) * (1 - easeOut(Math.min(1, Math.max(0, (t - clear) / PLAN_LET_GO))));
+        const total = rows * rows;
+        const index = row * rows + Math.round(col * rows);
+        const from = Math.round(move.from * total);
+        const to = Math.max(1, Math.round(move.to * total));
+        // The front glides between stops with the strong ease-in-out of an on-screen move, counted in dots.
+        const front = moving ? from + easeInOut(at / move.travel) * (to - from) : to;
+        // Each dot grows in as the front passes it (or shrinks as it backs over it), easing out.
+        loop = easeOut(Math.min(1, Math.max(0, front - index)));
+        if (!moving) {
+          if (to >= total) {
+            // The full sheet holds, then each row lets go whole, top to bottom, easing out.
+            const clear = gap + (row / rows) * PLAN_CLEAR;
+            loop *= 1 - easeOut(Math.min(1, Math.max(0, (paused - clear) / PLAN_LET_GO)));
+          } else if (index === to - 1) {
+            // The dot the plan stopped on blinks while it waits.
+            loop *= 1 - blinkTwice(paused / PLAN_STOP);
+          }
+        }
       }
       let shown = 0;
       if (determinate > 0) {

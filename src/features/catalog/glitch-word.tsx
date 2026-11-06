@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const WORDS = ['thinking', 'reading', 'writing', 'editing', 'searching', 'planning', 'reasoning', 'compiling', 'uploading', 'debugging', 'still']
 const GLYPHS = '!<>-_\\/[]{}=+*^?#%01'
@@ -9,7 +9,20 @@ const SCRAMBLE_FRAMES = 14
 /** Cycles agent-state words, scrambling through glyphs on each swap. */
 export function GlitchWord({ suffix = '' }: { suffix?: string }) {
   const [text, setText] = useState(WORDS[0])
+  const [target, setTarget] = useState(WORDS[0])
   const [glitching, setGlitching] = useState(false)
+  const [width, setWidth] = useState<number>()
+  const sizer = useRef<HTMLSpanElement>(null)
+
+  // The slot follows the incoming word's width, so the word stays centred on its line.
+  // Observed rather than measured once, so a late web-font swap still lands right.
+  useEffect(() => {
+    const el = sizer.current
+    if (!el) return
+    const observer = new ResizeObserver(() => setWidth(el.offsetWidth))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -21,6 +34,7 @@ export function GlitchWord({ suffix = '' }: { suffix?: string }) {
       const to = WORDS[index]
       const length = Math.max(from.length, to.length)
       let tick = 0
+      setTarget(to)
       setGlitching(true)
       frame = setInterval(() => {
         tick++
@@ -46,15 +60,13 @@ export function GlitchWord({ suffix = '' }: { suffix?: string }) {
   }, [])
 
   return (
-    <span className="glitch-word" data-text={text} data-glitching={glitching || undefined}>
+    <span className="glitch-word" data-text={text} data-glitching={glitching || undefined} style={{ width }}>
       <span className="sr-only">thinking{suffix}</span>
-      {/* Invisible copies of every word reserve the widest slot so the heading never reflows. */}
-      {WORDS.map((word) => (
-        <span key={word} aria-hidden="true" className="glitch-word-sizer">
-          {word}
-          {suffix}
-        </span>
-      ))}
+      {/* Invisible copy of the incoming word sets the slot width; before hydration it sizes the slot on its own. */}
+      <span ref={sizer} aria-hidden="true" className="glitch-word-sizer">
+        {target}
+        {suffix}
+      </span>
       <span aria-hidden="true" className="glitch-word-text">
         {text}
         {suffix}

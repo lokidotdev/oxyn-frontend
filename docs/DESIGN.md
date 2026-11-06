@@ -177,7 +177,7 @@ Every border is **1px**. Depth comes from the `bg → surface → raised` steps,
 | Segmented (`Tabs`) | `rounded-lg border bg-bg p-0.5`. Items `px-3 py-1.5`. The active pill slides between items (shared layout spring). Inside a form, `fill` stretches the items. |
 | Slider (`InlineSlider`) | 20px track `bg-raised`, 10 tick dots, a 4×12 thumb that stretches on grab. Label and value sit on one row above. |
 | Toggle | `h-5 w-9`. On means `fg` fill with a `bg` knob. Label on the left, switch on the right, one row. |
-| Color | `rounded-lg border bg-bg px-2.5 py-1.5`, a 20px swatch, the hex in mono uppercase. |
+| Color | Trigger: `rounded-lg border bg-bg px-2.5 py-1.5`, a 20px swatch, the hex in mono uppercase. It opens on press into a `rounded-xl border-line-strong bg-raised p-2` popover (`color-picker.tsx`) that grows from the trigger's edge and leaves the same way. Inside: a saturation × brightness area, a hue track built like the slider (20px, 4×12 thumb), the theme dot color plus seven swatches, and a hex field. Every control updates the loader live; Escape or an outside press closes it. |
 
 - A **field** is a label row above the control, with a 10px gap (`space-y-2.5`). Fields stack 24px apart (`space-y-6`).
 - Every control is reachable by keyboard and shows `focus-visible:ring-1 ring-fg/40`.

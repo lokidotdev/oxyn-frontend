@@ -1,12 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import { groupedAs, states } from '#/features/states'
 import { ArrowUpRightIcon, GitHubIcon } from './icons'
-import { LogoMark, REPO_URL } from './site-header'
+import { LogoMark } from './logo-mark'
+import { REPO_URL } from './site-header'
 
 const AUTHOR_URL = 'https://github.com/lokidotdev'
 
 // Padding widens the hit area; the negative margin cancels it so text stays aligned with its column.
-const linkClass = 'group -m-1.5 inline-flex p-1.5 text-muted transition-colors hover:text-fg'
+const linkClass = 'group -m-1.5 inline-flex p-1.5 font-mono text-muted transition-colors hover:text-fg'
 const textClass = 'link-underline inline-flex items-center gap-1.5 leading-none'
 
 /** One entry per page: grouped animations collapse into their group's component. */

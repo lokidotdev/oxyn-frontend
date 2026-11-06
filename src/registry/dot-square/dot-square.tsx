@@ -15,7 +15,7 @@ import { mixTargets, withDefaults } from "../lib/mix";
  * - `read`: a read head runs along each row in turn, like eyes across text, leaving a few rows fading behind it.
  * - `edit`: a few whole rows are typed in dot by dot, the cursor blinks, and the block lets go.
  * - `stream`: output lines of uneven length land row by row from the top, the newest brightest, like a terminal.
- * - `plan`: rows tick off one at a time and stay ticked, like a checklist, then the sheet clears; or shows `progress`.
+ * - `plan`: ticks forward to a stop, blinks, then carries on or steps back; at the end the sheet clears and starts over; or shows `progress`.
  */
 export type DotSquareAnimation = "pulse" | "breath" | "wave" | "fill" | "read" | "edit" | "stream" | "plan";
 
@@ -32,7 +32,7 @@ export interface DotSquareProps extends Omit<HTMLAttributes<HTMLDivElement>, "co
   density?: number;
   /** Canvas size in px (the sheet is square). */
   size?: number;
-  /** Seconds for one ring to cross the sheet (pulse), one breath (breath), one dot's breath (wave), one crossing of the fill or empty ring (fill), one read of the sheet (read), one edit (edit), one pass of output lines down the sheet (stream) or ticking off every row (plan). */
+  /** Seconds for one ring to cross the sheet (pulse), one breath (breath), one dot's breath (wave), one crossing of the fill or empty ring (fill), one read of the sheet (read), one edit (edit), one pass of output lines down the sheet (stream) or ticking the whole sheet (plan). */
   duration?: number;
   /** Seconds to rest between loops (plan: seconds the full sheet holds before it clears). stream ignores it. */
   gap?: number;

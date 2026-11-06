@@ -17,9 +17,11 @@ interface ComponentPageProps {
   search: Record<string, unknown>
   /** Persist non-default values (e.g. to the URL). */
   onPersist: (changed: ParamValues) => void
+  /** Admin SEO override for the heading; the registry's name and description otherwise. */
+  heading?: { title: string; description: string } | null
 }
 
-export function ComponentPage({ state, search, onPersist }: ComponentPageProps) {
+export function ComponentPage({ state, search, onPersist, heading }: ComponentPageProps) {
   const { values, schema, dirty, setParam, reset } = useParamState(state, search, onPersist)
   const usage = useMemo(() => usageSnippet(state, schema, values), [state, schema, values])
   const install = useInstallCommand(state.slug)
@@ -33,8 +35,8 @@ export function ComponentPage({ state, search, onPersist }: ComponentPageProps) 
       </Link>
 
       <header className="mt-6">
-        <h1 className="text-3xl font-semibold tracking-tight">{state.name}</h1>
-        <p className="mt-3 max-w-2xl font-mono text-[15px] leading-relaxed text-muted">{state.description}</p>
+        <h1 className="text-3xl font-semibold tracking-tight">{heading?.title ?? state.name}</h1>
+        <p className="mt-3 max-w-2xl font-mono text-[15px] leading-relaxed text-muted">{heading?.description ?? state.description}</p>
       </header>
 
       {/* The header spans the page, so the panel's top edge lines up with the preview card's.
@@ -83,7 +85,7 @@ function Section({ title, lede, children }: { title: string; lede?: string; chil
 }
 
 function useInstallCommand(slug: string) {
-  const [origin, setOrigin] = useState('https://your-domain.com')
+  const [origin, setOrigin] = useState('https://oxyn.space')
   useEffect(() => setOrigin(window.location.origin), [])
   return `npx shadcn@latest add ${origin}/r/${slug}.json`
 }

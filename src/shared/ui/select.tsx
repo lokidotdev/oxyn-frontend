@@ -15,6 +15,9 @@ export interface SelectProps extends Omit<ComponentPropsWithoutRef<typeof Select
   options: { value: string; label: string; disabled?: boolean }[]
 }
 
+/** Same spring as the tabs pill, so the highlight moves like every other pill on the site. */
+const PILL_SPRING = { type: 'spring', stiffness: 500, damping: 38, mass: 0.8 } as const
+
 const enterEase = [0.22, 1, 0.36, 1] as const
 const standardEase = [0.4, 0, 0.2, 1] as const
 
@@ -41,12 +44,14 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
   const shown = currentValue ? options[index]?.label ?? '' : placeholder
   const [previousIndex, setPreviousIndex] = useState(index)
   const [direction, setDirection] = useState(1)
+  const [highlighted, setHighlighted] = useState<string | null>(null)
+  const pillId = `${controlId}-pill`
   if (previousIndex !== index) { setPreviousIndex(index); setDirection(index > previousIndex ? 1 : -1) }
 
   return (
     <div className="space-y-2.5">
       <label htmlFor={controlId} className="block font-mono text-[13px] text-muted">{label}</label>
-      <SelectPrimitive.Root {...rootProps} disabled={disabled} onValueChange={(next) => { setUncontrolledValue(next); onValueChange?.(next) }}>
+      <SelectPrimitive.Root {...rootProps} onOpenChange={(open) => { if (!open) setHighlighted(null); rootProps.onOpenChange?.(open) }} disabled={disabled} onValueChange={(next) => { setUncontrolledValue(next); onValueChange?.(next) }}>
         <SelectPrimitive.Trigger
           ref={ref}
           id={controlId}
@@ -69,7 +74,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
         </SelectPrimitive.Trigger>
         <SelectPrimitive.Portal>
           <SelectPrimitive.Content
-            className="z-50 max-h-[var(--radix-select-content-available-height)] w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg border border-line-strong bg-raised p-1 shadow-xl shadow-black/40"
+            className="select-content z-50 max-h-[var(--radix-select-content-available-height)] w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg border border-line-strong bg-raised p-1 shadow-xl shadow-black/40"
             position="popper"
             sideOffset={4}
             collisionPadding={12}
@@ -77,14 +82,19 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
             <SelectPrimitive.ScrollUpButton className="flex h-6 items-center justify-center text-muted">
               <ChevronUpIcon />
             </SelectPrimitive.ScrollUpButton>
-            <SelectPrimitive.Viewport>
+            <SelectPrimitive.Viewport className="isolate">
               {options.map((option) => (
                 <SelectPrimitive.Item
                   key={option.value}
                   value={option.value}
                   disabled={option.disabled}
-                  className="flex h-8 cursor-default items-center justify-between gap-2 rounded-md px-2 font-mono text-xs text-muted outline-none select-none data-[disabled]:opacity-40 data-[highlighted]:bg-line data-[highlighted]:text-fg data-[state=checked]:text-fg"
+                  onFocus={() => setHighlighted(option.value)}
+                  className="relative flex h-8 cursor-default items-center justify-between gap-2 rounded-md px-2 font-mono text-xs text-muted transition-colors duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] outline-none select-none data-[disabled]:opacity-40 data-[highlighted]:text-fg data-[state=checked]:text-fg"
                 >
+                  {/* One pill slides between options instead of each row lighting up on its own. */}
+                  {highlighted === option.value && (
+                    <m.span layoutId={pillId} transition={reduceMotion ? { duration: 0 } : PILL_SPRING} className="absolute inset-0 -z-10 rounded-md bg-line" />
+                  )}
                   <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
                   <SelectPrimitive.ItemIndicator>
                     <CheckIcon />

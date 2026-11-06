@@ -17,7 +17,7 @@ export interface SquarePlanProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
   density?: number;
   /** Canvas size in px (the sheet is square). */
   size?: number;
-  /** Seconds to tick off every row, top to bottom. */
+  /** Seconds the plan would take to tick the whole sheet; each move takes its share of that. */
   duration?: number;
   /** Seconds the full sheet holds before it clears. */
   gap?: number;

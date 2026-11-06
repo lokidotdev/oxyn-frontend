@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "oxyn",
-  "homepage": "http://localhost:3000",
+  "homepage": "https://oxyn.space",
   "items": [
     {
       "name": "dot-orb",
@@ -211,7 +211,7 @@
       "name": "square-plan",
       "type": "registry:component",
       "title": "Square Plan",
-      "description": "A flat square of dots where rows tick off one at a time and stay ticked, like a checklist. For working through a plan.",
+      "description": "A flat square of dots that ticks forward to a stop, blinks, then carries on or steps back, like a plan being worked and revised.",
       "files": [
         {
           "path": "generated/registry/square-plan/square-plan.tsx",

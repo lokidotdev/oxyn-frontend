@@ -3,10 +3,11 @@ import { useCallback } from 'react'
 import { ComponentPage } from '#/features/playground/component-page'
 import { ANIMATION_KEY, getState, groupedAs } from '#/features/states'
 import type { ParamValues } from '#/shared/lib/params'
+import { seoHead, seoQuery } from '#/features/seo/seo'
 
 export const Route = createFileRoute('/components/$slug')({
   validateSearch: (search: Record<string, unknown>) => search,
-  loader: ({ params, location }) => {
+  loader: async ({ params, location, context }) => {
     const state = getState(params.slug)
     if (!state) throw notFound()
     // A grouped animation opens on its row's component, so switching animation never leaves the page.
@@ -19,14 +20,18 @@ export const Route = createFileRoute('/components/$slug')({
         replace: true,
       })
     }
-    return { slug: state.slug }
+    const seo = await context.queryClient.ensureQueryData(seoQuery(`/components/${state.slug}`))
+    return { slug: state.slug, seo }
   },
-  head: ({ params }) => ({ meta: [{ title: `${getState(params.slug)?.name ?? 'Component'} · oxyn` }] }),
+  head: ({ loaderData }) => {
+    const state = loaderData && getState(loaderData.slug)
+    return seoHead(loaderData?.seo, { title: `${state?.name ?? 'Component'} · oxyn`, description: state?.summary ?? '' })
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { slug } = Route.useLoaderData()
+  const { slug, seo } = Route.useLoaderData()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const state = getState(slug)!
@@ -36,5 +41,5 @@ function RouteComponent() {
     [navigate],
   )
 
-  return <ComponentPage key={slug} state={state} search={search} onPersist={persist} />
+  return <ComponentPage key={slug} state={state} search={search} onPersist={persist} heading={seo && { title: seo.h1 ?? state.name, description: seo.description }} />
 }

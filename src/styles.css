@@ -196,19 +196,22 @@ html body[data-scroll-locked] {
 /* Landing headline: agent-state word with RGB-split glitch while swapping. */
 .glitch-word {
   position: relative;
-  display: inline-grid;
-  text-align: left;
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  transition: width 400ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 .glitch-word-sizer {
-  grid-area: 1 / 1;
+  /* Inline-block so ResizeObserver sees its size; plain inline boxes never report. */
+  display: inline-block;
   visibility: hidden;
 }
 
 /* Out of flow, so scramble glyphs of any width can't nudge the line. */
 .glitch-word-text {
   position: absolute;
-  inset: 0 auto auto 0;
+  inset: 0;
   white-space: nowrap;
 }
 
@@ -285,6 +288,30 @@ html body[data-scroll-locked] {
   place-items: center start;
 }
 
+/* Logo mark: each lit row dips out and back in, staggered so a band of 3–4 rows is out at once (logo-mark.tsx). */
+.logo-mark [data-row] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.logo-mark[data-pass="a"] [data-row] {
+  animation: logo-dip-a 640ms cubic-bezier(0.45, 0, 0.55, 1) both;
+}
+.logo-mark[data-pass="b"] [data-row] {
+  animation: logo-dip-b 640ms cubic-bezier(0.45, 0, 0.55, 1) both;
+}
+@keyframes logo-dip-a {
+  50% {
+    opacity: 0.2;
+    transform: scale(0.45);
+  }
+}
+@keyframes logo-dip-b {
+  50% {
+    opacity: 0.2;
+    transform: scale(0.45);
+  }
+}
+
 /* Reset: the arrow winds back a little on hover. Fullscreen: the corners push outward. */
 .hover-spin svg,
 .hover-grow svg {
@@ -310,5 +337,36 @@ html body[data-scroll-locked] {
   .hover-spin:hover svg,
   .hover-grow:hover svg {
     transform: none;
+  }
+}
+
+/* Select menu: unclips from the trigger's edge, so it grows in height while the options stay put.
+   Radix waits for `animation` (not transitions) before unmounting, hence keyframes. */
+.select-content[data-state="open"] {
+  animation: select-in 260ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.select-content[data-state="closed"] {
+  animation: select-out 180ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.select-content[data-side="top"] {
+  --select-clip: inset(100% 0 0 0 round 8px);
+}
+@keyframes select-in {
+  from { opacity: 0.6; clip-path: var(--select-clip, inset(0 0 100% 0 round 8px)); }
+  to { opacity: 1; clip-path: inset(0 0 0 0 round 8px); }
+}
+@keyframes select-out {
+  from { opacity: 1; clip-path: inset(0 0 0 0 round 8px); }
+  to { opacity: 0; clip-path: var(--select-clip, inset(0 0 100% 0 round 8px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .select-content[data-state] {
+    animation-name: select-fade;
+  }
+  .select-content[data-state="closed"] {
+    animation-direction: reverse;
+  }
+  @keyframes select-fade {
+    from { opacity: 0; }
   }
 }

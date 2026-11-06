@@ -12,7 +12,7 @@ const params: StateDefinition['params'] = [
     kind: 'slider',
     key: 'duration',
     label: 'Duration',
-    description: 'Seconds to tick off every row, top to bottom.',
+    description: 'Seconds the plan would take to tick the whole sheet; each move takes its share of that.',
     default: 4,
     min: 1.5,
     max: 10,
@@ -37,11 +37,11 @@ const params: StateDefinition['params'] = [
 
 export const squarePlan = defineState({
   slug: 'square-plan',
-  summary: 'A flat square of dots where rows tick off one at a time and stay ticked, like a checklist. For working through a plan.',
+  summary: 'A flat square of dots that ticks forward to a stop, blinks, then carries on or steps back, like a plan being worked and revised.',
   shape: 'square',
   name: 'Square Plan',
   description:
-    'A flat square of dots where rows fill one at a time from the top and stay filled, like items ticked off a todo list; once full, the sheet clears and starts again. Pass progress to show that share of rows ticked instead. Use it while an agent works through a plan.',
+    'A flat square of dots that ticks forward in reading order to a stop somewhere on the sheet; the dot it stopped on blinks, then it carries on forward or steps back to the next stop. When it reaches the end the sheet clears and starts again from empty, never turning back from the end. Pass progress to show that share of dots ticked instead. Use it while an agent works through a plan.',
   dimension: '2D',
   cardProps: { size: 150 },
   params,
