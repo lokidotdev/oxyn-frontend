@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CatalogDotjsonRouteImport } from './routes/catalog[.]json'
 import { Route as ComponentsSlugRouteImport } from './routes/components.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogDotjsonRoute = CatalogDotjsonRouteImport.update({
+  id: '/catalog.json',
+  path: '/catalog.json',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComponentsSlugRoute = ComponentsSlugRouteImport.update({
@@ -25,27 +31,31 @@ const ComponentsSlugRoute = ComponentsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/catalog.json': typeof CatalogDotjsonRoute
   '/components/$slug': typeof ComponentsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/catalog.json': typeof CatalogDotjsonRoute
   '/components/$slug': typeof ComponentsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/catalog.json': typeof CatalogDotjsonRoute
   '/components/$slug': typeof ComponentsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/components/$slug'
+  fullPaths: '/' | '/catalog.json' | '/components/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/components/$slug'
-  id: '__root__' | '/' | '/components/$slug'
+  to: '/' | '/catalog.json' | '/components/$slug'
+  id: '__root__' | '/' | '/catalog.json' | '/components/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CatalogDotjsonRoute: typeof CatalogDotjsonRoute
   ComponentsSlugRoute: typeof ComponentsSlugRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalog.json': {
+      id: '/catalog.json'
+      path: '/catalog.json'
+      fullPath: '/catalog.json'
+      preLoaderRoute: typeof CatalogDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/components/$slug': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CatalogDotjsonRoute: CatalogDotjsonRoute,
   ComponentsSlugRoute: ComponentsSlugRoute,
 }
 export const routeTree = rootRouteImport

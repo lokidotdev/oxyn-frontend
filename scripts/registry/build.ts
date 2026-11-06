@@ -4,7 +4,7 @@
  */
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { runnerImport } from "vite";
+import { loadEnv, runnerImport } from "vite";
 import type { InlineConfig } from "vite";
 import type { StateDefinition } from "../../src/features/states/types.ts";
 import { standaloneRegistry } from "./vite-plugin.ts";
@@ -41,6 +41,8 @@ for (const state of module.components) {
   });
 }
 
-const registry = { $schema: "https://ui.shadcn.com/schema/registry.json", name: "oxyn", homepage: "http://localhost:3000", items };
+// The site the registry is served from. Set REGISTRY_HOMEPAGE (e.g. in `.env`) to the deployed origin.
+const homepage = loadEnv("production", root, "REGISTRY_").REGISTRY_HOMEPAGE || "http://localhost:3000";
+const registry = { $schema: "https://ui.shadcn.com/schema/registry.json", name: "oxyn", homepage, items };
 writeFileSync(join(root, "registry.json"), JSON.stringify(registry, null, 2) + "\n");
 console.log(`registry: ${items.length} components`);

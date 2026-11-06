@@ -158,9 +158,9 @@ export function InlineSlider({
   };
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-2.5", className)}>
       <div className="flex items-center justify-between text-[13px]">
-        <span className="text-muted">{label}</span>
+        <span className="font-mono text-muted">{label}</span>
         <span className="font-mono text-xs text-fg tabular-nums">{format(current)}</span>
       </div>
       <div

@@ -1,7 +1,18 @@
-/** Seconds (roughly) a changed prop takes to glide to its new value. */
-export const SETTLE = 0.16;
-/** Seconds (roughly) pausing takes to coast to a stop, and resuming to get back up to speed. */
-export const PAUSE_SETTLE = 0.3;
+/**
+ * Glide times are a spring's time constant, not a duration: a glide is about 90% of the way to its target
+ * after twice its time, so `SETTLE` reads as a ~240ms change.
+ */
+
+/** Seconds (roughly) a changed prop takes to glide to its new value: size, spacing, timing and the like. */
+export const SETTLE = 0.12;
+/** Color and opacity: faster, since nothing moves (~150ms). */
+export const FADE_SETTLE = 0.075;
+/** Changing animation: one motion blending into the next (~300ms). */
+export const BLEND_SETTLE = 0.15;
+/** Pausing: seconds (roughly) the animation takes to coast to a stop (~300ms). */
+export const STOP_SETTLE = 0.15;
+/** Resuming: seconds (roughly) the animation takes to get back up to speed (~400ms). */
+export const START_SETTLE = 0.2;
 
 /** A value that glides toward its target on a critically damped spring: no jump, no overshoot. */
 export type Glide = { value: number; velocity: number; target: number };

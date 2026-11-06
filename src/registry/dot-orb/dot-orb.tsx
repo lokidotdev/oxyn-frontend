@@ -4,7 +4,7 @@ import type { HTMLAttributes } from "react";
 import { LoaderCanvas } from "../lib/loader-canvas";
 import { globeShape, globeTargets } from "../lib/globe";
 import type { GlobeSettings } from "../lib/globe";
-import { spinMotion } from "../lib/globe-motions";
+import { globeSettle, spinMotion } from "../lib/globe-motions";
 
 export type DotOrbPattern = "rings" | "fibonacci" | "grid";
 
@@ -58,7 +58,7 @@ export function DotOrb({
   ...rest
 }: DotOrbProps) {
   const settings: Settings = { pattern, dotSize, density, size, duration, gap, direction, tilt, color, backOpacity, paused };
-  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} scene={spinMotion.scene} label={label} {...rest} />;
+  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} settle={globeSettle} scene={spinMotion.scene} label={label} {...rest} />;
 }
 
 export default DotOrb;

@@ -4,7 +4,7 @@ import type { HTMLAttributes } from "react";
 import { LoaderCanvas } from "../lib/loader-canvas";
 import { globeShape, globeTargets } from "../lib/globe";
 import type { GlobeSettings } from "../lib/globe";
-import { liftMotion } from "../lib/globe-motions";
+import { globeSettle, liftMotion } from "../lib/globe-motions";
 
 export type DotLiftPattern = "rings" | "fibonacci" | "grid";
 
@@ -64,7 +64,7 @@ export function DotLift({
   ...rest
 }: DotLiftProps) {
   const settings: Settings = { pattern, dotSize, density, size, lift, duration, stagger, gap, from, tilt, color, backOpacity, paused };
-  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} scene={liftMotion.scene} label={label} {...rest} />;
+  return <LoaderCanvas settings={settings} targets={targetsOf} shape={globeShape} settle={globeSettle} scene={liftMotion.scene} label={label} {...rest} />;
 }
 
 export default DotLift;

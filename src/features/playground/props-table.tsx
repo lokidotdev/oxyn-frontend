@@ -18,7 +18,7 @@ export function PropsTable({ schema }: { schema: ParamDef[] }) {
   ]
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-line">
+    <div className="overflow-x-auto rounded-xl shadow-card">
       <table className="w-full min-w-[560px] text-left text-[13px]">
         <thead className="border-b border-line bg-surface font-mono text-xs text-muted">
           <tr>
@@ -30,15 +30,33 @@ export function PropsTable({ schema }: { schema: ParamDef[] }) {
         </thead>
         <tbody className="divide-y divide-line">
           {rows.map((r) => (
-            <tr key={r.name}>
-              <td className="px-4 py-2.5 font-mono text-xs whitespace-nowrap text-fg">{r.name}</td>
-              <td className="max-w-[180px] px-4 py-2.5 font-mono text-xs text-muted">{r.type}</td>
-              <td className="px-4 py-2.5 font-mono text-xs whitespace-nowrap text-muted">{r.default}</td>
-              <td className="px-4 py-2.5 text-muted">{r.description}</td>
+            // Top-aligned with one shared line height: when any cell wraps, every first line still sits on the same row.
+            <tr key={r.name} className="align-top leading-5">
+              <td className="px-4 py-3 font-mono text-xs whitespace-nowrap text-fg">{r.name}</td>
+              <td className="max-w-[200px] px-4 py-3 font-mono text-xs text-muted">
+                <TypeLabel type={r.type} />
+              </td>
+              <td className="px-4 py-3 font-mono text-xs whitespace-nowrap text-muted">{r.default}</td>
+              <td className="max-w-[44ch] px-4 py-3 font-mono text-pretty text-muted">{r.description}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+  )
+}
+
+/** Unions wrap between members, never inside one; the pipes recede so the values carry the line. */
+function TypeLabel({ type }: { type: string }) {
+  const members = type.split(' | ')
+  return (
+    <span className="flex flex-wrap gap-x-1.5">
+      {members.map((m, i) => (
+        <span key={m} className="whitespace-nowrap">
+          {m}
+          {i < members.length - 1 && <span className="ml-1.5 text-faint">|</span>}
+        </span>
+      ))}
+    </span>
   )
 }

@@ -2,7 +2,7 @@
 
 import type { HTMLAttributes } from "react";
 import { LoaderCanvas } from "../lib/loader-canvas";
-import { sheetScene, sheetShape, sheetTargets } from "../lib/sheet";
+import { sheetScene, sheetSettle, sheetShape, sheetTargets } from "../lib/sheet";
 import type { SheetSettings } from "../lib/sheet";
 import { waveMotion } from "../lib/sheet-motions";
 
@@ -65,7 +65,7 @@ export function CircleWave({
   ...rest
 }: CircleWaveProps) {
   const settings: Settings = { dotShape, dotSize, scale, density, size, duration, gap, spread, direction, color, minOpacity, paused };
-  return <LoaderCanvas settings={settings} targets={targetsOf} shape={shape} scene={scene} label={label} {...rest} />;
+  return <LoaderCanvas settings={settings} targets={targetsOf} shape={shape} settle={sheetSettle} scene={scene} label={label} {...rest} />;
 }
 
 export default CircleWave;

@@ -8,6 +8,11 @@ import { ChevronLeftIcon, ChevronRightIcon } from '#/shared/ui/icons'
 const FADE = 64
 /** Sub-pixel slack when deciding whether a tile is fully in view. */
 const EPS = 1
+/** Scroller inset (p-1), offset by -m-1, so tile shadows aren't clipped. Tile math works in the inset frame. */
+const PAD = 4
+
+const pos = (t: HTMLElement) => t.offsetLeft - PAD
+const view = (el: HTMLElement) => el.clientWidth - 2 * PAD
 
 interface ShapeRowProps {
   label: string
@@ -25,6 +30,9 @@ export function ShapeRow({ label, aside, children }: ShapeRowProps) {
   const reduce = useReducedMotion()
   const [canLeft, setCanLeft] = useState(false)
   const [canRight, setCanRight] = useState(false)
+  const [count, setCount] = useState(0)
+  /** First and last tile in view. */
+  const [range, setRange] = useState<[number, number]>([0, 0])
 
   const sync = useCallback(() => {
     const el = scrollerRef.current
@@ -36,6 +44,14 @@ export function ShapeRow({ label, aside, children }: ShapeRowProps) {
     el.style.setProperty('--fade-r', `${Math.min(Math.max(rest, 0), FADE)}px`)
     setCanLeft(left > EPS)
     setCanRight(rest > EPS)
+    // One dot per tile; every tile at least half in view lights its dot.
+    const all = Array.from(el.children) as HTMLElement[]
+    const shown = all.flatMap((t, i) => {
+      const visible = Math.min(pos(t) + t.offsetWidth, left + view(el)) - Math.max(pos(t), left)
+      return visible >= t.offsetWidth / 2 ? [i] : []
+    })
+    setCount(rest > EPS || left > EPS ? all.length : 0)
+    setRange((r) => (r[0] === shown[0] && r[1] === shown.at(-1) ? r : [shown[0] ?? 0, shown.at(-1) ?? 0]))
   }, [])
 
   useEffect(() => {
@@ -62,13 +78,13 @@ export function ShapeRow({ label, aside, children }: ShapeRowProps) {
     const el = scrollerRef.current
     if (!el) return
     const start = el.scrollLeft
-    const end = start + el.clientWidth
+    const end = start + view(el)
     const all = tiles()
-    const lastFull = all.findLast((t) => t.offsetLeft >= start - EPS && t.offsetLeft + t.offsetWidth <= end + EPS)
+    const lastFull = all.findLast((t) => pos(t) >= start - EPS && pos(t) + t.offsetWidth <= end + EPS)
     // With one tile or less in full view, step to the next tile instead of standing still.
     const target =
-      lastFull && lastFull.offsetLeft > start + EPS ? lastFull : all.find((t) => t.offsetLeft > start + EPS)
-    if (target) scrollTo(target.offsetLeft)
+      lastFull && pos(lastFull) > start + EPS ? lastFull : all.find((t) => pos(t) > start + EPS)
+    if (target) scrollTo(pos(target))
   }
 
   // Left: the first fully visible tile moves to the right edge.
@@ -76,16 +92,16 @@ export function ShapeRow({ label, aside, children }: ShapeRowProps) {
     const el = scrollerRef.current
     if (!el) return
     const start = el.scrollLeft
-    const end = start + el.clientWidth
+    const end = start + view(el)
     const all = tiles()
-    const firstFull = all.find((t) => t.offsetLeft >= start - EPS && t.offsetLeft + t.offsetWidth <= end + EPS)
-    const rightOf = (t: HTMLElement) => t.offsetLeft + t.offsetWidth
+    const firstFull = all.find((t) => pos(t) >= start - EPS && pos(t) + t.offsetWidth <= end + EPS)
+    const rightOf = (t: HTMLElement) => pos(t) + t.offsetWidth
     const target =
       firstFull && rightOf(firstFull) < end - EPS ? firstFull : all.findLast((t) => rightOf(t) < end - EPS)
-    if (target) scrollTo(rightOf(target) - el.clientWidth)
+    if (target) scrollTo(rightOf(target) - view(el))
   }
 
-  const arrow = 'grid size-7 place-items-center rounded-lg border border-line text-muted transition-colors'
+  const arrow = 'grid size-7 place-items-center rounded-lg bg-button shadow-card text-muted transition-[color,box-shadow]'
 
   return (
     <section aria-label={label}>
@@ -101,7 +117,7 @@ export function ShapeRow({ label, aside, children }: ShapeRowProps) {
               aria-label={`Scroll ${label} left`}
               disabled={!canLeft}
               onClick={prev}
-              className={cn(arrow, canLeft ? 'hover:border-line-strong hover:text-fg' : 'opacity-40')}
+              className={cn(arrow, canLeft ? 'hover:shadow-card-hover hover:text-fg' : 'opacity-40')}
             >
               <ChevronLeftIcon />
             </button>
@@ -110,7 +126,7 @@ export function ShapeRow({ label, aside, children }: ShapeRowProps) {
               aria-label={`Scroll ${label} right`}
               disabled={!canRight}
               onClick={next}
-              className={cn(arrow, canRight ? 'hover:border-line-strong hover:text-fg' : 'opacity-40')}
+              className={cn(arrow, canRight ? 'hover:shadow-card-hover hover:text-fg' : 'opacity-40')}
             >
               <ChevronRightIcon />
             </button>
@@ -121,7 +137,7 @@ export function ShapeRow({ label, aside, children }: ShapeRowProps) {
         ref={scrollerRef}
         onScroll={sync}
         className={cn(
-          'relative flex gap-4 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          'relative -m-1 flex gap-4 overflow-x-auto p-1 overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
           // 1, 2 or 3 whole tiles plus a sliver of the next, so the row reads as scrollable.
           '[&>*]:w-[calc((100%-1rem)/1.2)] [&>*]:shrink-0 sm:[&>*]:w-[calc((100%-2rem)/2.25)] lg:[&>*]:w-[calc((100%-3rem)/3.25)]',
         )}
@@ -132,6 +148,34 @@ export function ShapeRow({ label, aside, children }: ShapeRowProps) {
       >
         {children}
       </div>
+      {count > 1 && (
+        <div className="mt-4 flex justify-center gap-1.5">
+          {Array.from({ length: count }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`${label}, item ${i + 1} of ${count}`}
+              aria-current={i >= range[0] && i <= range[1] ? 'true' : undefined}
+              onClick={() => {
+                // Bring a hidden tile in at the nearer edge; one already in view stays put.
+                const t = tiles()[i]
+                const el = scrollerRef.current
+                if (!t || !el) return
+                if (i < range[0]) scrollTo(pos(t))
+                else if (i > range[1]) scrollTo(pos(t) + t.offsetWidth - view(el))
+              }}
+              className="group grid h-4 place-items-center px-0.5"
+            >
+              <span
+                className={cn(
+                  'block h-1.5 rounded-full transition-all duration-300',
+                  i >= range[0] && i <= range[1] ? 'w-4 bg-fg' : 'w-1.5 bg-line-strong group-hover:bg-muted',
+                )}
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   )
 }
