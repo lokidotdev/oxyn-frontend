@@ -96,7 +96,8 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
     let frame = 0;
     let last = 0;
     // Off screen or in a hidden tab, the loop sleeps; it picks up where it left off once seen again.
-    let onScreen = true;
+    // Starts asleep: the observer's first report wakes it, so a page of loaders only paints the ones in view.
+    let onScreen = false;
     const visible = () => onScreen && document.visibilityState === "visible";
 
     const targetsNow = () => {
@@ -209,8 +210,6 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
     reduceMotion.addEventListener("change", wake);
     document.addEventListener("visibilitychange", sleepOrWake);
     sync();
-    draw();
-    wake();
     return () => {
       cancelAnimationFrame(frame);
       wakeRef.current = null;

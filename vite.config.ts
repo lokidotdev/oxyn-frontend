@@ -15,7 +15,8 @@ const config = defineConfig({
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
     standaloneRegistry(),
     tailwindcss(),
-    tanstackStart(),
+    // Inlines the stylesheet into the SSR HTML so it isn't a render-blocking request.
+    tanstackStart({ server: { build: { inlineCss: true } } }),
     viteReact(),
   ],
 })
