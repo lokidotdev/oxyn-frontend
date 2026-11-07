@@ -23,19 +23,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: 'og:site_name', content: 'oxyn' },
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'en_US' },
-      { property: 'og:url', content: 'https://oxyn.space' },
-      { property: 'og:image', content: 'https://oxyn.space/og-image-no-ghost.webp' },
+      // PNG, not WebP: some link unfurlers still skip WebP cards.
+      { property: 'og:image', content: 'https://oxyn.space/og-image-no-ghost.png' },
       { property: 'og:image:type', content: 'image/png' },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
       { property: 'og:image:alt', content: 'oxyn: loaders that say what your AI agent is doing' },
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:image', content: 'https://oxyn.space/og-image-no-ghost.webp' },
+      { name: 'twitter:image', content: 'https://oxyn.space/og-image-no-ghost.png' },
       { name: 'twitter:image:alt', content: 'oxyn: loaders that say what your AI agent is doing' },
     ],
     links: [
+      // Fetched with the stylesheet rather than after it, so the fonts aren't a second hop on the critical path.
+      { rel: 'preload', href: '/fonts/Diode-Variable.woff2', as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
+      { rel: 'preload', href: '/fonts/Tessera-Variable.woff2', as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
       { rel: 'stylesheet', href: appCss },
       { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      { rel: 'alternate', type: 'text/markdown', title: 'llms.txt', href: '/llms.txt' },
+      { rel: 'sitemap', type: 'application/xml', href: '/sitemap.xml' },
     ],
     // Umami analytics, production builds only, and only when both env values are set.
     scripts:

@@ -11,6 +11,7 @@ import {
   Copy01Icon,
   GithubIcon,
   Moon02Icon,
+  NewTwitterIcon,
   RefreshIcon,
   SourceCodeIcon,
   Sun03Icon,
@@ -37,5 +38,6 @@ export const ArrowUpRightIcon = icon(ArrowUpRight01Icon)
 export const ChevronLeftIcon = icon(ArrowLeft01Icon)
 export const ChevronRightIcon = icon(ArrowRight01Icon)
 export const GitHubIcon = icon(GithubIcon, 16)
+export const XLogoIcon = icon(NewTwitterIcon, 16)
 export const ChevronDownIcon = icon(ArrowDown01Icon)
 export const ChevronUpIcon = icon(ArrowUp01Icon)

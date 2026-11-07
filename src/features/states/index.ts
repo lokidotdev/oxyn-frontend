@@ -38,6 +38,7 @@ import type { StateDefinition } from './types'
 
 export type { AnimationOption, Dimension, Shape, StateDefinition } from './types'
 export { ANIMATION_KEY, groupFor, groups, groupedAs, paramsFor } from './groups'
+export { relatedTo, useCaseFor } from './use-cases'
 
 export const states: StateDefinition[] = [
   dotOrb,

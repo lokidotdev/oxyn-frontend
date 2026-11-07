@@ -1,5 +1,4 @@
 import { Link } from '@tanstack/react-router'
-import { ANIMATION_KEY, groupedAs } from '#/features/states'
 import type { StateDefinition } from '#/features/states'
 import { useDotColor } from '#/shared/lib/theme'
 import { ArrowUpRightIcon } from '#/shared/ui/icons'
@@ -7,13 +6,10 @@ import { ArrowUpRightIcon } from '#/shared/ui/icons'
 export function StateCard({ state }: { state: StateDefinition }) {
   const { Component } = state
   const color = useDotColor()
-  // A grouped animation opens on its row's component, with that animation picked.
-  const grouped = groupedAs(state)
   return (
     <Link
       to="/components/$slug"
-      params={{ slug: grouped?.group.slug ?? state.slug }}
-      search={grouped ? { [ANIMATION_KEY]: grouped.animation } : undefined}
+      params={{ slug: state.slug }}
       className="group relative flex flex-col overflow-hidden rounded-2xl bg-surface shadow-card transition-shadow hover:shadow-card-hover"
     >
       <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden">

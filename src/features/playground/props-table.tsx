@@ -32,7 +32,7 @@ export function PropsTable({ schema }: { schema: ParamDef[] }) {
           {rows.map((r) => (
             // Top-aligned with one shared line height: when any cell wraps, every first line still sits on the same row.
             <tr key={r.name} className="align-top leading-5">
-              <td className="px-4 py-3 font-mono text-xs whitespace-nowrap text-fg">{r.name}</td>
+              <td className="px-4 py-3 text-xs whitespace-nowrap text-fg">{r.name}</td>
               <td className="max-w-[200px] px-4 py-3 font-mono text-xs text-muted">
                 <TypeLabel type={r.type} />
               </td>

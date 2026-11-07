@@ -3,6 +3,7 @@ import { HomePage } from '#/features/catalog/home-page'
 import type { DimensionFilter } from '#/features/catalog/home-page'
 import { layoutQuery } from '#/features/catalog/layout'
 import { seoHead, seoQuery } from '#/features/seo/seo'
+import { homeJsonLd } from '#/features/seo/structured-data'
 
 export const Route = createFileRoute('/')({
   validateSearch: (search: Record<string, unknown>): { d?: Exclude<DimensionFilter, 'all'> } =>
@@ -15,6 +16,8 @@ export const Route = createFileRoute('/')({
     seoHead(loaderData?.seo, {
       title: 'oxyn — loaders for thinking interfaces',
       description: 'Configurable, dependency-free thinking states for React.',
+      path: '/',
+      jsonLd: homeJsonLd(),
     }),
   component: RouteComponent,
 })

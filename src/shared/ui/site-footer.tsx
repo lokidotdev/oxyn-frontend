@@ -4,10 +4,10 @@ import { ArrowUpRightIcon, GitHubIcon } from './icons'
 import { LogoMark } from './logo-mark'
 import { REPO_URL } from './site-header'
 
-const AUTHOR_URL = 'https://github.com/lokidotdev'
+const AUTHOR_URL = 'https://x.com/lokidotdev'
 
 // Padding widens the hit area; the negative margin cancels it so text stays aligned with its column.
-const linkClass = 'group -m-1.5 inline-flex p-1.5 font-mono text-muted transition-colors hover:text-fg'
+const linkClass = 'group -m-1.5 inline-flex p-1.5 font-sans text-muted transition-colors hover:text-fg'
 const textClass = 'link-underline inline-flex items-center gap-1.5 leading-none'
 
 /** One entry per page: grouped animations collapse into their group's component. */
@@ -49,14 +49,23 @@ export function SiteFooter() {
           </ul>
         </FooterGroup>
 
-        <FooterGroup title="Source">
-          <a href={REPO_URL} target="_blank" rel="noreferrer" className={linkClass}>
-            <span className={textClass}>
-              <GitHubIcon size={12} />
-              GitHub
-              <ArrowUpRightIcon />
-            </span>
-          </a>
+        <FooterGroup title="Elsewhere">
+          <ul className="flex flex-col gap-3">
+            <li>
+              <Link to="/about" className={linkClass}>
+                <span className={textClass}>About</span>
+              </Link>
+            </li>
+            <li>
+              <a href={REPO_URL} target="_blank" rel="noreferrer" className={linkClass}>
+                <span className={textClass}>
+                  <GitHubIcon size={12} />
+                  GitHub
+                  <ArrowUpRightIcon />
+                </span>
+              </a>
+            </li>
+          </ul>
         </FooterGroup>
       </div>
 

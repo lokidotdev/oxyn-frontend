@@ -16,7 +16,7 @@ const VIEW_TABS: TabItem<Tab>[] = [
   { value: 'code', label: 'Code', icon: <CodeIcon /> },
 ]
 
-export function PreviewPanel({ state, values }: { state: StateDefinition; values: ParamValues }) {
+export function PreviewPanel({ state, source, values }: { state: StateDefinition; source: string; values: ParamValues }) {
   const [tab, setTab] = useState<Tab>('preview')
   const stageRef = useRef<HTMLDivElement>(null)
   const { Component } = state
@@ -32,7 +32,7 @@ export function PreviewPanel({ state, values }: { state: StateDefinition; values
       <div className="flex items-center justify-between gap-2 p-1 pb-3">
         <Tabs label="View" items={VIEW_TABS} value={tab} onChange={setTab} />
         <div className="flex items-center gap-2">
-          <CopyButton text={state.source} label="Copy component" />
+          <CopyButton text={source} label="Copy component" />
           <button
             type="button"
             onClick={fullscreen}
@@ -55,7 +55,7 @@ export function PreviewPanel({ state, values }: { state: StateDefinition; values
           <Component {...values} color={color} />
         </div>
       ) : (
-        <CodeBlock code={state.source} copy={false} className="max-h-[520px] overflow-hidden [&_pre]:max-h-[520px]" />
+        <CodeBlock code={source} copy={false} className="max-h-[520px] overflow-hidden [&_pre]:max-h-[520px]" />
       )}
         </div>
       </AutoHeight>
