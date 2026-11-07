@@ -7,6 +7,7 @@ import { join, resolve } from "node:path";
 import { loadEnv, runnerImport } from "vite";
 import type { InlineConfig } from "vite";
 import type { StateDefinition } from "../../src/features/states/types.ts";
+import { inlineRegistryFile } from "./inline.ts";
 import { standaloneRegistry } from "./vite-plugin.ts";
 
 const root = resolve(import.meta.dirname, "../..");
@@ -26,7 +27,7 @@ const items = [];
 for (const state of module.components) {
   const path = `generated/registry/${state.slug}/${state.fileName}`;
   mkdirSync(join(root, "generated/registry", state.slug), { recursive: true });
-  writeFileSync(join(root, path), state.source);
+  writeFileSync(join(root, path), inlineRegistryFile(join(root, "src/registry", state.slug, state.fileName)).code);
 
   // The shipped file must stand on its own: evaluate it and check it exports the component.
   const shipped = await runnerImport<Record<string, unknown>>(join(root, path), config);

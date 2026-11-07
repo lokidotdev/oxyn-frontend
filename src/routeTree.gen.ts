@@ -10,8 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as CatalogDotjsonRouteImport } from './routes/catalog[.]json'
+import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as OgImageRouteImport } from './routes/og-image'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ComponentsSlugRouteImport } from './routes/components.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -19,14 +25,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CatalogDotjsonRoute = CatalogDotjsonRouteImport.update({
   id: '/catalog.json',
   path: '/catalog.json',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
+  id: '/llms-full.txt',
+  path: '/llms-full.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OgImageRoute = OgImageRouteImport.update({
   id: '/og-image',
   path: '/og-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComponentsSlugRoute = ComponentsSlugRouteImport.update({
@@ -37,35 +73,90 @@ const ComponentsSlugRoute = ComponentsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/catalog.json': typeof CatalogDotjsonRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/mcp': typeof McpRoute
   '/og-image': typeof OgImageRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/components/$slug': typeof ComponentsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/catalog.json': typeof CatalogDotjsonRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/mcp': typeof McpRoute
   '/og-image': typeof OgImageRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/components/$slug': typeof ComponentsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/catalog.json': typeof CatalogDotjsonRoute
+  '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/llms.txt': typeof LlmsDottxtRoute
+  '/mcp': typeof McpRoute
   '/og-image': typeof OgImageRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/components/$slug': typeof ComponentsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/catalog.json' | '/og-image' | '/components/$slug'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/catalog.json'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/mcp'
+    | '/og-image'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/components/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/catalog.json' | '/og-image' | '/components/$slug'
-  id: '__root__' | '/' | '/catalog.json' | '/og-image' | '/components/$slug'
+  to:
+    | '/'
+    | '/about'
+    | '/catalog.json'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/mcp'
+    | '/og-image'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/components/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/catalog.json'
+    | '/llms-full.txt'
+    | '/llms.txt'
+    | '/mcp'
+    | '/og-image'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/components/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   CatalogDotjsonRoute: typeof CatalogDotjsonRoute
+  LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
+  McpRoute: typeof McpRoute
   OgImageRoute: typeof OgImageRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ComponentsSlugRoute: typeof ComponentsSlugRoute
 }
 
@@ -78,6 +169,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/catalog.json': {
       id: '/catalog.json'
       path: '/catalog.json'
@@ -85,11 +183,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CatalogDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/llms-full.txt': {
+      id: '/llms-full.txt'
+      path: '/llms-full.txt'
+      fullPath: '/llms-full.txt'
+      preLoaderRoute: typeof LlmsFullDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/og-image': {
       id: '/og-image'
       path: '/og-image'
       fullPath: '/og-image'
       preLoaderRoute: typeof OgImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/components/$slug': {
@@ -104,8 +237,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   CatalogDotjsonRoute: CatalogDotjsonRoute,
+  LlmsFullDottxtRoute: LlmsFullDottxtRoute,
+  LlmsDottxtRoute: LlmsDottxtRoute,
+  McpRoute: McpRoute,
   OgImageRoute: OgImageRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ComponentsSlugRoute: ComponentsSlugRoute,
 }
 export const routeTree = rootRouteImport

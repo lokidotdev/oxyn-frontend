@@ -1,37 +1,35 @@
-import { createFileRoute, notFound, redirect } from '@tanstack/react-router'
+import { createFileRoute, notFound } from '@tanstack/react-router'
 import { useCallback } from 'react'
 import { ComponentPage } from '#/features/playground/component-page'
-import { ANIMATION_KEY, getState, groupedAs } from '#/features/states'
+import { getState } from '#/features/states'
 import type { ParamValues } from '#/shared/lib/params'
 import { seoHead, seoQuery } from '#/features/seo/seo'
+import { componentJsonLd } from '#/features/seo/structured-data'
 
 export const Route = createFileRoute('/components/$slug')({
   validateSearch: (search: Record<string, unknown>) => search,
-  loader: async ({ params, location, context }) => {
+  loader: async ({ params, context }) => {
     const state = getState(params.slug)
     if (!state) throw notFound()
-    // A grouped animation opens on its row's component, so switching animation never leaves the page.
-    const grouped = groupedAs(state)
-    if (grouped) {
-      throw redirect({
-        to: '/components/$slug',
-        params: { slug: grouped.group.slug },
-        search: { ...(location.search as Record<string, unknown>), [ANIMATION_KEY]: grouped.animation },
-        replace: true,
-      })
-    }
-    const seo = await context.queryClient.ensureQueryData(seoQuery(`/components/${state.slug}`))
-    return { slug: state.slug, seo }
+    const [seo, source] = await Promise.all([context.queryClient.ensureQueryData(seoQuery(`/components/${state.slug}`)), state.loadSource()])
+    return { slug: state.slug, seo, source }
   },
   head: ({ loaderData }) => {
     const state = loaderData && getState(loaderData.slug)
-    return seoHead(loaderData?.seo, { title: `${state?.name ?? 'Component'} · oxyn`, description: state?.summary ?? '' })
+    if (!state) return {}
+    const description = loaderData.seo?.description ?? state.summary
+    return seoHead(loaderData.seo, {
+      title: `${state.name} · oxyn`,
+      description: state.summary,
+      path: `/components/${state.slug}`,
+      jsonLd: componentJsonLd(state, description),
+    })
   },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { slug, seo } = Route.useLoaderData()
+  const { slug, seo, source } = Route.useLoaderData()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const state = getState(slug)!
@@ -41,5 +39,5 @@ function RouteComponent() {
     [navigate],
   )
 
-  return <ComponentPage key={slug} state={state} search={search} onPersist={persist} heading={seo && { title: seo.h1 ?? state.name, description: seo.description }} />
+  return <ComponentPage key={slug} state={state} source={source} search={search} onPersist={persist} heading={seo && { title: seo.h1 ?? state.name, description: seo.description }} />
 }

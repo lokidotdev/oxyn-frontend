@@ -95,6 +95,9 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
     let shownSize = -1;
     let frame = 0;
     let last = 0;
+    // Off screen or in a hidden tab, the loop sleeps; it picks up where it left off once seen again.
+    let onScreen = true;
+    const visible = () => onScreen && document.visibilityState === "visible";
 
     const targetsNow = () => {
       const { settings: s, targets } = latest.current;
@@ -175,26 +178,45 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
         sceneNow.advance(dt, frameInfo);
       }
       draw();
-      // Sleep once everything has settled and the animation is paused.
-      frame = moving || glides.rate.value > 0 ? requestAnimationFrame(tick) : 0;
+      // Sleep once everything has settled and the animation is paused, or nobody can see it.
+      frame = visible() && (moving || glides.rate.value > 0) ? requestAnimationFrame(tick) : 0;
     };
 
     const wake = () => {
       sync();
-      if (frame) return;
+      if (frame || !visible()) return;
       last = 0;
       frame = requestAnimationFrame(tick);
     };
 
+    const sleepOrWake = () => {
+      if (visible()) wake();
+      else {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
+    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        onScreen = entries[entries.length - 1].isIntersecting;
+        sleepOrWake();
+      },
+      { rootMargin: "64px" },
+    );
+    observer.observe(wrapper);
+
     wakeRef.current = wake;
     reduceMotion.addEventListener("change", wake);
+    document.addEventListener("visibilitychange", sleepOrWake);
     sync();
     draw();
     wake();
     return () => {
       cancelAnimationFrame(frame);
       wakeRef.current = null;
+      observer.disconnect();
       reduceMotion.removeEventListener("change", wake);
+      document.removeEventListener("visibilitychange", sleepOrWake);
     };
   }, []);
 
