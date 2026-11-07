@@ -6,7 +6,8 @@ import { SiteFooter } from '#/shared/ui/site-footer'
 import { AnnouncementBar, bannerQuery } from '#/features/announcements/announcement-bar'
 
 import { THEME_INIT_SCRIPT } from '#/shared/lib/theme'
-import appCss from '../styles.css?url'
+// A plain import, not ?url, so production builds inline it into the HTML (inlineCss in vite.config).
+import '../styles.css'
 
 const loadMotionFeatures = () => import('#/shared/lib/motion-features').then((mod) => mod.default)
 
@@ -34,10 +35,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: 'twitter:image:alt', content: 'oxyn: loaders that say what your AI agent is doing' },
     ],
     links: [
-      // Fetched with the stylesheet rather than after it, so the fonts aren't a second hop on the critical path.
+      // Fetched with the HTML rather than once the inlined CSS is parsed, so the fonts aren't a second hop on the critical path.
       { rel: 'preload', href: '/fonts/Diode-Variable.woff2', as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
       { rel: 'preload', href: '/fonts/Tessera-Variable.woff2', as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
-      { rel: 'stylesheet', href: appCss },
       { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
       { rel: 'alternate', type: 'text/markdown', title: 'llms.txt', href: '/llms.txt' },
       { rel: 'sitemap', type: 'application/xml', href: '/sitemap.xml' },
