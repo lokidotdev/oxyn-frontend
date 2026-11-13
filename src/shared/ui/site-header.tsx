@@ -44,15 +44,52 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="-mr-2 flex items-center gap-1 text-[13px] text-muted">
-          <a href={REPO_URL} target="_blank" rel="noreferrer" aria-label="GitHub repository" className={iconButtonClass}>
-            <GitHubIcon />
-          </a>
           <ThemeToggle />
+          <GitHubStarButton />
           <MenuButton open={open} onToggle={() => setOpen((o) => !o)} />
         </div>
       </div>
       <MobileMenu open={open} />
     </header>
+  )
+}
+
+const REPO_API_URL = REPO_URL.replace('https://github.com/', 'https://api.github.com/repos/')
+
+/** Compact star count: 1234 → "1.2k". */
+const formatStars = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10_000 ? 0 : 1).replace(/\.0$/, '')}k` : String(n))
+
+function useStarCount() {
+  const [stars, setStars] = useState<number | null>(null)
+  useEffect(() => {
+    const ctrl = new AbortController()
+    fetch(REPO_API_URL, { signal: ctrl.signal, headers: { Accept: 'application/vnd.github+json' } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { stargazers_count?: number } | null) => {
+        if (typeof d?.stargazers_count === 'number') setStars(d.stargazers_count)
+      })
+      .catch(() => {})
+    return () => ctrl.abort()
+  }, [])
+  return stars
+}
+
+function GitHubStarButton() {
+  const stars = useStarCount()
+  return (
+    <a
+      href={REPO_URL}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={stars === null ? 'Star on GitHub' : `Star on GitHub (${stars} stars)`}
+      className="press ml-1 flex h-8 items-center gap-1.5 rounded-lg bg-fg px-3 text-[13px] font-medium text-bg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg/40 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+    >
+      <GitHubIcon />
+      <span>Star</span>
+      {stars !== null && (
+        <span className="ml-0.5 border-l border-bg/25 pl-2 font-mono tabular-nums">{formatStars(stars)}</span>
+      )}
+    </a>
   )
 }
 
