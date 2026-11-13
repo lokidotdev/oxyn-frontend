@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { groupedAs, states } from '#/features/states'
-import { ArrowUpRightIcon, GitHubIcon } from './icons'
+import { ArrowUpRightIcon } from './icons'
 import { LogoMark } from './logo-mark'
 import { REPO_URL } from './site-header'
 
@@ -59,7 +59,6 @@ export function SiteFooter() {
             <li>
               <a href={REPO_URL} target="_blank" rel="noreferrer" className={linkClass}>
                 <span className={textClass}>
-                  <GitHubIcon size={12} />
                   GitHub
                   <ArrowUpRightIcon />
                 </span>

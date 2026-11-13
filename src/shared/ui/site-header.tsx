@@ -44,8 +44,8 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="-mr-2 flex items-center gap-1 text-[13px] text-muted">
-          <GitHubStarButton />
           <ThemeToggle />
+          <GitHubStarButton />
           <MenuButton open={open} onToggle={() => setOpen((o) => !o)} />
         </div>
       </div>
@@ -82,7 +82,7 @@ function GitHubStarButton() {
       target="_blank"
       rel="noreferrer"
       aria-label={stars === null ? 'Star on GitHub' : `Star on GitHub (${stars} stars)`}
-      className="press mr-1 flex h-8 items-center gap-1.5 rounded-lg bg-fg px-3 text-[13px] font-medium text-bg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg/40 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+      className="press ml-1 flex h-8 items-center gap-1.5 rounded-lg bg-fg px-3 text-[13px] font-medium text-bg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg/40 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
     >
       <GitHubIcon />
       <span>Star</span>
