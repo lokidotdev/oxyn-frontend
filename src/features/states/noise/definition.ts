@@ -105,11 +105,11 @@ const level: ParamDef = {
   step: 0.01,
 }
 
-export const noiseDrift = defineState({
-  slug: 'noise-drift',
+export const noiseThink = defineState({
+  slug: 'noise-think',
   summary: 'Thin concentric rings warped by smooth Perlin noise, rippling in soft curves.',
   shape: 'rings',
-  name: 'Noise Drift',
+  name: 'Noise Think',
   description:
     'Thin concentric rings warped by smooth Perlin noise, so each line swells and settles in soft curves while its neighbors ripple along with it.',
   dimension: '2D',
@@ -117,11 +117,11 @@ export const noiseDrift = defineState({
   params: withDefault(params, 'speed', 0.7),
 })
 
-export const noiseRipple = defineState({
-  slug: 'noise-ripple',
+export const noiseRespond = defineState({
+  slug: 'noise-respond',
   summary: 'Noise rings with a push travelling outward from the innermost ring, like a drop landing in water.',
   shape: 'rings',
-  name: 'Noise Ripple',
+  name: 'Noise Respond',
   description:
     'Thin noise rings that calm down while a push travels outward from the innermost ring, like a drop landing in water. Each ring brightens as the push passes through it.',
   dimension: '2D',
@@ -129,11 +129,11 @@ export const noiseRipple = defineState({
   params: withDuration(params, 3.2, 'Seconds for one push to travel from the innermost ring out through the outer one.'),
 })
 
-export const noiseBreathe = defineState({
-  slug: 'noise-breathe',
+export const noiseListen = defineState({
+  slug: 'noise-listen',
   summary: 'Noise rings whose wobble swells, calms almost to circles, and swells again.',
   shape: 'rings',
-  name: 'Noise Breathe',
+  name: 'Noise Listen',
   description:
     'Thin noise rings whose wobble swells and calms almost to perfect circles, over and over. The outer ring leads and each ring inward follows a moment later.',
   dimension: '2D',
@@ -141,11 +141,11 @@ export const noiseBreathe = defineState({
   params: withDuration(params, 2.7, 'Seconds for one breath: the wobble swelling, calming and swelling again.'),
 })
 
-export const noiseSwirl = defineState({
-  slug: 'noise-swirl',
+export const noisePonder = defineState({
+  slug: 'noise-ponder',
   summary: 'Noise rings turning around the center, inner rings trailing behind so the shape twists.',
   shape: 'rings',
-  name: 'Noise Swirl',
+  name: 'Noise Ponder',
   description:
     'Thin noise rings whose shape turns around the center. Inner rings fall a little behind as the turn winds up, then catch up, so the whole field twists and untwists.',
   dimension: '2D',
@@ -153,11 +153,11 @@ export const noiseSwirl = defineState({
   params: withDuration(params, 5.7, 'Seconds for one full turn of the noise around the center.', 12),
 })
 
-export const noiseConverge = defineState({
-  slug: 'noise-converge',
+export const noiseDecide = defineState({
+  slug: 'noise-decide',
   summary: 'Noise rings closing up into one bright line, holding, then fanning back out.',
   shape: 'rings',
-  name: 'Noise Converge',
+  name: 'Noise Decide',
   description:
     'Thin noise rings that close up onto the outer ring until they read as one bright line, hold a moment, then fan back out.',
   dimension: '2D',
@@ -165,11 +165,11 @@ export const noiseConverge = defineState({
   params: withDuration(params, 3.8, 'Seconds for one close-up and fan-out.', 12),
 })
 
-export const noiseLevel = defineState({
-  slug: 'noise-level',
+export const noiseVoice = defineState({
+  slug: 'noise-voice',
   summary: 'Noise rings whose wobble follows a level prop, for voice or audio input.',
   shape: 'rings',
-  name: 'Noise Level',
+  name: 'Noise Voice',
   description:
     'Thin noise rings whose wobble follows the level prop: calm circles at 0, full noise at 1. Feed it a live microphone or audio level; it glides, so raw readings are fine.',
   dimension: '2D',
@@ -189,11 +189,11 @@ const direction: ParamDef = {
   ],
 }
 
-export const noiseFlow = defineState({
-  slug: 'noise-flow',
+export const noiseTransfer = defineState({
+  slug: 'noise-transfer',
   summary: 'Noise rings born calm at the center, flowing out to fade at the edge. For uploading or downloading.',
   shape: 'rings',
-  name: 'Noise Flow',
+  name: 'Noise Transfer',
   description:
     'Thin noise rings that are born as calm circles at the center and travel steadily outward, picking up their wobble, until they fade at the edge. Use it while an agent uploads or sends something; set direction to in for downloading or receiving.',
   dimension: '2D',
@@ -224,11 +224,11 @@ export const noiseStream = defineState({
   params: [rate, ...params],
 })
 
-export const noiseFocus = defineState({
-  slug: 'noise-focus',
+export const noiseAnalyze = defineState({
+  slug: 'noise-analyze',
   summary: 'Noise rings pulling tight and bright around one ring, the lens moving slowly in and out. For deep reading or analysis.',
   shape: 'rings',
-  name: 'Noise Focus',
+  name: 'Noise Analyze',
   description:
     'Thin noise rings where a lens of three or four rings closes up around one ring, brightening and calming inside, while the lens glides slowly from the innermost ring to the outer and back. Use it while an agent reads closely or analyzes.',
   dimension: '2D',
@@ -236,13 +236,13 @@ export const noiseFocus = defineState({
   params: withDuration(params, 7.6, 'Seconds for the lens to travel from the innermost ring out to the outer one and back.', 20),
 })
 
-export const noiseScatter = defineState({
-  slug: 'noise-scatter',
+export const noiseSearch = defineState({
+  slug: 'noise-search',
   summary: 'Noise rings whose wobble grows ring by ring from the center into tight ripples, then calms. For a broad search.',
   shape: 'rings',
-  name: 'Noise Scatter',
+  name: 'Noise Search',
   description:
-    'Thin noise rings whose wobble grows ring by ring from the center outward, sharpening into tight, fast ripples, then calms the same way. Use it while an agent searches broadly; switch to Noise Converge when it finds what it was after.',
+    'Thin noise rings whose wobble grows ring by ring from the center outward, sharpening into tight, fast ripples, then calms the same way. Use it while an agent searches broadly; switch to Noise Decide when it finds what it was after.',
   dimension: '2D',
   cardProps: { size: 150 },
   params: withDuration(params, 4.8, 'Seconds for one scatter: the wobble growing out through the rings, then calming.'),

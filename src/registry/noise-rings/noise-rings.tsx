@@ -11,13 +11,13 @@ export type NoiseRingsAnimation = NoiseAnimation;
 
 export interface NoiseRingsProps extends Omit<HTMLAttributes<HTMLDivElement>, "color"> {
   /**
-   * Which animation the rings run: drift, ripple, breathe, swirl, converge, level, flow, stream, focus or scatter.
+   * Which animation the rings run: think, respond, listen, ponder, decide, voice, transfer, stream, analyze or search.
    * Changing it morphs the rings from the old animation into the new one; every other prop keeps its value.
    */
   animation?: NoiseRingsAnimation;
-  /** How strong the wobble is while `animation` is `level` (0–1), e.g. a live microphone level. It glides, so raw readings are fine. */
+  /** How strong the wobble is while `animation` is `voice` (0–1), e.g. a live microphone level. It glides, so raw readings are fine. */
   level?: number;
-  /** Which way rings travel while `animation` is `flow`: "out" from the center (sending), "in" from the edge (receiving). */
+  /** Which way rings travel while `animation` is `transfer`: "out" from the center (sending), "in" from the edge (receiving). */
   direction?: "out" | "in";
   /** Tokens per second while `animation` is `stream`. Gaps between tokens are uneven; this sets their average. */
   rate?: number;
@@ -33,7 +33,7 @@ export interface NoiseRingsProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
   speed?: number;
   /**
    * Seconds for one loop of the animation. Left out, each animation uses its own: the loops run from a couple of
-   * seconds to several, so no one default suits them all. Drift, level and
+   * seconds to several, so no one default suits them all. Think, voice and
    * stream have no loop and ignore it.
    */
   duration?: number;
@@ -57,19 +57,19 @@ type Settings = NoiseSettings & { animation: NoiseRingsAnimation };
 
 /** Each animation's own `duration`, matching its single component. */
 const DURATIONS: Partial<Record<NoiseRingsAnimation, number>> = {
-  ripple: 3.2,
-  breathe: 2.7,
-  swirl: 5.7,
-  converge: 3.8,
-  flow: 2.4,
-  focus: 7.6,
-  scatter: 4.8,
+  respond: 3.2,
+  listen: 2.7,
+  ponder: 5.7,
+  decide: 3.8,
+  transfer: 2.4,
+  analyze: 7.6,
+  search: 4.8,
 };
 
 /** Each animation's own `speed` where it differs from the shared 0.35, matching its single component. */
 const SPEEDS: Partial<Record<NoiseRingsAnimation, number>> = {
-  drift: 0.7,
-  level: 0.7,
+  think: 0.7,
+  voice: 0.7,
 };
 
 /** Every number the drawing reads, plus how much of each animation is on screen. */
@@ -80,21 +80,21 @@ function targetsOf(s: Settings) {
 function scene() {
   // Every animation bends the same rings, so a switch glides one shape into the next.
   return noiseScene<Settings, MixKey<NoiseRingsAnimation>>((v) => ({
-    drift: v.mix_drift,
-    ripple: v.mix_ripple,
-    breathe: v.mix_breathe,
-    swirl: v.mix_swirl,
-    converge: v.mix_converge,
-    level: v.mix_level,
-    flow: v.mix_flow,
+    think: v.mix_think,
+    respond: v.mix_respond,
+    listen: v.mix_listen,
+    ponder: v.mix_ponder,
+    decide: v.mix_decide,
+    voice: v.mix_voice,
+    transfer: v.mix_transfer,
     stream: v.mix_stream,
-    focus: v.mix_focus,
-    scatter: v.mix_scatter,
+    analyze: v.mix_analyze,
+    search: v.mix_search,
   }));
 }
 
 export function NoiseRings({
-  animation = "drift",
+  animation = "think",
   level = 0.5,
   direction = "out",
   rate = 6,
@@ -113,7 +113,7 @@ export function NoiseRings({
   label = "Thinking",
   ...rest
 }: NoiseRingsProps) {
-  const active = NOISE_ANIMATIONS.includes(animation) ? animation : "drift";
+  const active = NOISE_ANIMATIONS.includes(animation) ? animation : "think";
   const settings: Settings = { animation: active, level, direction, rate, lines, lineWidth, amplitude, frequency, speed: speed ?? SPEEDS[active] ?? 0.35, duration: duration ?? DURATIONS[active], spread, lineSpacing, size, color, minOpacity, paused };
   return <LoaderCanvas settings={settings} targets={targetsOf} settle={noiseSettle} scene={scene} label={label} {...rest} />;
 }

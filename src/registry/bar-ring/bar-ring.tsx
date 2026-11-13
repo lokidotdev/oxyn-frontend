@@ -9,11 +9,11 @@ import { mixTargets } from "../lib/mix";
 import type { MixKey } from "../lib/mix";
 
 /**
- * - `comet`: the wave snaps each bar longer and lets it fall back slowly, so a bright head drags a fading tail.
- * - `twin`: several evenly spaced waves travel round together (see `heads`).
+ * - `think`: the wave snaps each bar longer and lets it fall back slowly, so a bright head drags a fading tail.
+ * - `parallel`: several evenly spaced waves travel round together (see `heads`).
  * - `read`: a small wave travels round at a steady pace, lighting bars more than moving them.
  * - `write`: bars are typed in bursts of four, each leaving a short mark, then the marks are wiped in order.
- * - `seek`: the wave runs forward, backs up part of the way and runs on, like hunting for a match.
+ * - `search`: the wave runs forward, backs up part of the way and runs on, like hunting for a match.
  * - `stream`: short pulses chase each other round with uneven gaps, like tokens arriving.
  * - `transfer`: bars fill clockwise to `progress`, the leading bar pulsing; with no `progress` it loops.
  * - `ping`: a pulse leaves 12 o'clock both ways, meets at 6, waits, and comes back, like a request and its response.
@@ -40,7 +40,7 @@ export interface BarRingProps extends Omit<HTMLAttributes<HTMLDivElement>, "colo
   stagger?: number;
   /** Which way the push carries a bar: `out` away from the center, `in` toward it. */
   direction?: BarDirection;
-  /** Waves travelling round the ring at once (1–4); only twin uses it. */
+  /** Waves travelling round the ring at once (1–4); only parallel uses it. */
   heads?: number;
   /** How much has transferred (0–1); leave it out to loop. Only transfer uses it. */
   progress?: number;
@@ -70,11 +70,11 @@ function targetsOf(s: Settings) {
 function scene() {
   // Every animation pushes the same bars, so a switch glides each bar's push from one animation into the next.
   return barScene<Settings, MixKey<BarRingAnimation>>((v) => ({
-    comet: v.mix_comet,
-    twin: v.mix_twin,
+    think: v.mix_think,
+    parallel: v.mix_parallel,
     read: v.mix_read,
     write: v.mix_write,
-    seek: v.mix_seek,
+    search: v.mix_search,
     stream: v.mix_stream,
     transfer: v.mix_transfer,
     ping: v.mix_ping,

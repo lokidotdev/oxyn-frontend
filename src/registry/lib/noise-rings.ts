@@ -5,52 +5,52 @@ import type { Scene, Values } from "./loader-canvas";
 import type { MixKey } from "./mix";
 
 /**
- * - `drift`: the noise drifts on its own, each ring a little behind the one outside it.
- * - `ripple`: a push starts at the innermost ring and travels outward, like a drop landing in water.
- * - `breathe`: the wobble swells, then calms almost to circles, and swells again.
- * - `swirl`: the noise turns around the center, inner rings trailing behind, so the shape twists.
- * - `converge`: the rings close up into one line, then fan back out.
- * - `level`: the wobble follows the `level` prop, so the rings can react to a voice or audio input.
- * - `flow`: rings are born at the center as calm circles and travel out, gaining wobble, to fade at the edge
+ * - `think`: the noise drifts on its own, each ring a little behind the one outside it.
+ * - `respond`: a push starts at the innermost ring and travels outward, like a drop landing in water.
+ * - `listen`: the wobble swells, then calms almost to circles, and swells again.
+ * - `ponder`: the noise turns around the center, inner rings trailing behind, so the shape twists.
+ * - `decide`: the rings close up into one line, then fan back out.
+ * - `voice`: the wobble follows the `level` prop, so the rings can react to a voice or audio input.
+ * - `transfer`: rings are born at the center as calm circles and travel out, gaining wobble, to fade at the edge
  *   (sending, uploading); `direction: "in"` runs them the other way (receiving, downloading).
  * - `stream`: each token sends a small push out from the innermost ring, at uneven gaps set by `rate` (streaming an answer).
- * - `focus`: a lens of 3–4 rings pulls tight and brightens around one ring, calming inside, and slowly moves
+ * - `analyze`: a lens of 3–4 rings pulls tight and brightens around one ring, calming inside, and slowly moves
  *   from the innermost ring to the outer and back (deep reading, analysis).
- * - `scatter`: the wobble grows ring by ring from the center outward, sharpening into tight ripples, then calms
- *   (broad search). Pairs with `converge` for "found".
+ * - `search`: the wobble grows ring by ring from the center outward, sharpening into tight ripples, then calms
+ *   (broad search). Pairs with `decide` for "found".
  */
 export type NoiseAnimation =
-  | "drift"
-  | "ripple"
-  | "breathe"
-  | "swirl"
-  | "converge"
-  | "level"
-  | "flow"
+  | "think"
+  | "respond"
+  | "listen"
+  | "ponder"
+  | "decide"
+  | "voice"
+  | "transfer"
   | "stream"
-  | "focus"
-  | "scatter";
+  | "analyze"
+  | "search";
 
 export const NOISE_ANIMATIONS: NoiseAnimation[] = [
-  "drift",
-  "ripple",
-  "breathe",
-  "swirl",
-  "converge",
-  "level",
-  "flow",
+  "think",
+  "respond",
+  "listen",
+  "ponder",
+  "decide",
+  "voice",
+  "transfer",
   "stream",
-  "focus",
-  "scatter",
+  "analyze",
+  "search",
 ];
 
-/** Props every noise ring takes. `level` only matters to `level`, `direction` only to `flow`, and `rate` only to `stream`. */
+/** Props every noise ring takes. `level` only matters to `voice`, `direction` only to `transfer`, and `rate` only to `stream`. */
 export interface NoiseSettings {
   level?: number;
   direction?: "out" | "in";
   /** Tokens per second while streaming. */
   rate?: number;
-  /** Seconds for one loop of the animation. Drift, level and stream have no loop and ignore it. */
+  /** Seconds for one loop of the animation. Think, voice and stream have no loop and ignore it. */
   duration?: number;
   lines: number;
   lineWidth: number;
@@ -101,16 +101,16 @@ export const noiseSettle: Partial<Record<NoiseKey | MixKey<NoiseAnimation>, numb
   minOpacity: FADE_SETTLE,
   level: FADE_SETTLE,
   inward: BLEND_SETTLE,
-  mix_drift: BLEND_SETTLE,
-  mix_ripple: BLEND_SETTLE,
-  mix_breathe: BLEND_SETTLE,
-  mix_swirl: BLEND_SETTLE,
-  mix_converge: BLEND_SETTLE,
-  mix_level: BLEND_SETTLE,
-  mix_flow: BLEND_SETTLE,
+  mix_think: BLEND_SETTLE,
+  mix_respond: BLEND_SETTLE,
+  mix_listen: BLEND_SETTLE,
+  mix_ponder: BLEND_SETTLE,
+  mix_decide: BLEND_SETTLE,
+  mix_voice: BLEND_SETTLE,
+  mix_transfer: BLEND_SETTLE,
   mix_stream: BLEND_SETTLE,
-  mix_focus: BLEND_SETTLE,
-  mix_scatter: BLEND_SETTLE,
+  mix_analyze: BLEND_SETTLE,
+  mix_search: BLEND_SETTLE,
 };
 
 /** How much of each animation is on screen. The radii are blended, so a switch morphs the rings. */
@@ -346,7 +346,7 @@ export function noiseScene<S extends NoiseSettings, K extends string>(
           pose.detail = 1;
 
           switch (NOISE_ANIMATIONS[a]) {
-            case "ripple": {
+            case "respond": {
               // Counted from the innermost ring, so the push travels outward. Each ring takes 40% of a cycle
               // and starts 12% after the ring inside it, so 3–4 rings are moving at once.
               const pushed = bump(loop - (rings - 1 - j) * 0.12, 0.4);
@@ -355,18 +355,18 @@ export function noiseScene<S extends NoiseSettings, K extends string>(
               pose.glow = pushed;
               break;
             }
-            case "breathe":
+            case "listen":
               // The outer ring leads; each ring inward follows a moment later.
               pose.wobble = 0.08 + 0.92 * (0.5 - 0.5 * Math.cos(TAU * (loop - j * 0.05)));
               break;
-            case "swirl":
+            case "ponder":
               // The field turns while it changes slowly, so the twist reads. Inner rings fall behind as it winds up,
               // then catch up again, so the lag stays small enough that neighbors never tangle.
               pose.z = time * 0.4 - j * spread;
               // One full turn per loop; the lag winds up and back over two.
               pose.turn = loop * TAU - j * SWIRL_LAG * (0.5 - 0.5 * Math.cos(loop * Math.PI));
               break;
-            case "converge": {
+            case "decide": {
               // Hold a moment closed and a moment open: the cosine is clipped at both ends before easing.
               const wave = 0.5 - 0.5 * Math.cos(TAU * (loop - j * 0.04));
               const closed = easeInOutCubic(Math.min(1, Math.max(0, (wave - 0.15) / 0.7)));
@@ -376,10 +376,10 @@ export function noiseScene<S extends NoiseSettings, K extends string>(
               pose.glow = closed * 0.5;
               break;
             }
-            case "level":
+            case "voice":
               pose.wobble = v.level;
               break;
-            case "flow": {
+            case "transfer": {
               // The ring is the unit: each one is a whole crossing apart ÷ the ring count, so they stay evenly
               // spaced, and travels at a steady pace (linear), since the flow never stops.
               const trip = loop + (rings - 1 - j) / rings;
@@ -414,7 +414,7 @@ export function noiseScene<S extends NoiseSettings, K extends string>(
               pose.glow = pushed;
               break;
             }
-            case "focus": {
+            case "analyze": {
               // The lens sits on a ring counted from the innermost, gliding out to the outer ring and back. It is
               // moving on screen, so each leg eases in and out and lingers a moment at either end.
               const leg = loop;
@@ -431,7 +431,7 @@ export function noiseScene<S extends NoiseSettings, K extends string>(
               pose.glow = lens * 0.8;
               break;
             }
-            case "scatter": {
+            case "search": {
               // Counted from the innermost ring, so the wobble travels outward; each ring starts 10% of a cycle after
               // the one inside it and grows over 35%, so 3–4 rings are growing at once. The swell and calm are
               // on-screen morphs, so both ease in and out.

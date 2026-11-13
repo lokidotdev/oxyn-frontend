@@ -32,29 +32,29 @@ export interface BarSettings {
 export type BarDirection = "out" | "in";
 
 /**
- * - `comet`: the wave snaps a bar longer and lets it fall back slowly, so a bright head drags a fading tail.
- * - `twin`: several waves, evenly spaced, travel round together, moving the bars.
+ * - `think`: the wave snaps a bar longer and lets it fall back slowly, so a bright head drags a fading tail.
+ * - `parallel`: several waves, evenly spaced, travel round together, moving the bars.
  * - `read`: a small wave travels round at a steady pace, lighting bars more than it moves them, like a cursor down lines.
  * - `write`: bars are typed in bursts of four, each popping and leaving a short mark, until the ring is written; then
  *   the marks are wiped in the same order.
- * - `seek`: the wave runs forward, slows, backs up part of the way and runs on, like hunting for a match.
+ * - `search`: the wave runs forward, slows, backs up part of the way and runs on, like hunting for a match.
  * - `stream`: short pulses chase each other round with uneven gaps, like tokens arriving.
  * - `transfer`: bars fill clockwise to `progress`, the leading bar pulsing; with no `progress` it fills and drains on a loop.
  * - `ping`: a pulse leaves 12 o'clock both ways, meets at 6, waits, and comes back, like a request and its response.
  * - `plan`: the ring is cut into `steps` segments; done steps hold grown, the `current` one sweeps, the rest rest.
  */
-export type BarAnimation = "comet" | "twin" | "read" | "write" | "seek" | "stream" | "transfer" | "ping" | "plan";
+export type BarAnimation = "think" | "parallel" | "read" | "write" | "search" | "stream" | "transfer" | "ping" | "plan";
 
-export const BAR_ANIMATIONS: BarAnimation[] = ["comet", "twin", "read", "write", "seek", "stream", "transfer", "ping", "plan"];
+export const BAR_ANIMATIONS: BarAnimation[] = ["think", "parallel", "read", "write", "search", "stream", "transfer", "ping", "plan"];
 
 /** How each animation spends its push: `grow` stretches the bar's leading end, `rise` moves the whole bar. */
 const BAR_SPEND: Record<BarAnimation, { grow: number; rise: number }> = {
-  comet: { grow: 1, rise: 0 },
-  twin: { grow: 0, rise: 1 },
+  think: { grow: 1, rise: 0 },
+  parallel: { grow: 0, rise: 1 },
   // Reading lights the bars more than it moves them.
   read: { grow: 0.35, rise: 0 },
   write: { grow: 1, rise: 0 },
-  seek: { grow: 0, rise: 1 },
+  search: { grow: 0, rise: 1 },
   stream: { grow: 1, rise: 0 },
   transfer: { grow: 1, rise: 0 },
   ping: { grow: 0, rise: 1 },
@@ -260,14 +260,14 @@ export function barScene<S extends BarSettings, K extends string>(mix: (v: Value
             // How lit the bar is, when that differs from how far it is pushed.
             let light: number | undefined;
             switch (name) {
-              case "comet": {
+              case "think": {
                 // Snaps out on the strong ease-out, then falls back on its mirror image: the drop is quick right
                 // behind the head and lingers at the end, so the tail fades out instead of cutting off.
                 const u = local / duration;
                 lift = u < BAR_COMET_ATTACK ? easeOut(u / BAR_COMET_ATTACK) : u < 1 ? 1 - easeOut((u - BAR_COMET_ATTACK) / (1 - BAR_COMET_ATTACK)) : 0;
                 break;
               }
-              case "twin":
+              case "parallel":
                 // Heads sit evenly round the ring; while the count glides, the newest head fades in.
                 for (let h = 0; h < Math.ceil(heads); h++) {
                   const back = (h * bars) / heads;
@@ -287,7 +287,7 @@ export function barScene<S extends BarSettings, K extends string>(mix: (v: Value
                 lift = stroke * (1 - easeOut(barClamp((writeTime - writes.wipe - (i * stagger) / 2) / duration)));
                 break;
               }
-              case "seek": {
+              case "search": {
                 let d = (((seekHead - i) % bars) + bars) % bars;
                 if (d > bars / 2) d -= bars;
                 lift = Math.abs(d) < seekWidth / 2 ? 0.5 + 0.5 * Math.cos((TAU * d) / seekWidth) : 0;

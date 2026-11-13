@@ -5,25 +5,25 @@ import type { Scene, Values } from "./loader-canvas";
 import type { MixKey } from "./mix";
 
 /**
- * - `spin`: every ring turns steadily.
- * - `chase`: each arc's head runs ahead and its tail catches up, so arcs stretch and shrink as they turn.
- * - `step`: each ring turns exactly one arc, then holds; the step starts at the outer ring and works inward.
- * - `gather`: the cuts close until a ring is whole, then reopen, one ring after another going inward.
- * - `ripple`: a ring pulls inward and lets go, the pull travelling from the outer ring to the inner one.
- * - `gears`: rings turn at whole-number speed ratios (1:2:3…), so the cuts line up on a regular beat.
- * - `comet`: rings turn steadily and each arc fades from a bright head to a faint tail.
- * - `unlock`: rings click round by whole arcs in different amounts, like a lock trying combinations, then turn
+ * - `load`: every ring turns steadily.
+ * - `work`: each arc's head runs ahead and its tail catches up, so arcs stretch and shrink as they turn.
+ * - `plan`: each ring turns exactly one arc, then holds; the step starts at the outer ring and works inward.
+ * - `assemble`: the cuts close until a ring is whole, then reopen, one ring after another going inward.
+ * - `process`: a ring pulls inward and lets go, the pull travelling from the outer ring to the inner one.
+ * - `run`: rings turn at whole-number speed ratios (1:2:3…), so the cuts line up on a regular beat.
+ * - `think`: rings turn steadily and each arc fades from a bright head to a faint tail.
+ * - `search`: rings click round by whole arcs in different amounts, like a lock trying combinations, then turn
  *   so every cut lines up, glow while they hold, and fall back to rest.
  * - `write`: each arc draws itself on from its tail, holds, then erases from its tail, one ring after another going
  *   inward; each pass writes one arc further on.
- * - `tasks`: each ring is a running call turning at its own pace, surging and easing off; rings past `active`
+ * - `parallel`: each ring is a running call turning at its own pace, surging and easing off; rings past `active`
  *   (counting inward from the outer ring) close their cuts, dim and stop.
- * - `progress`: the outer ring lights clockwise from 12 o'clock up to `progress` over a faint track while the inner
+ * - `transfer`: the outer ring lights clockwise from 12 o'clock up to `progress` over a faint track while the inner
  *   rings turn slowly; with no `progress` it fills and empties on a loop.
  */
-export type ArcAnimation = "spin" | "chase" | "step" | "gather" | "ripple" | "gears" | "comet" | "unlock" | "write" | "tasks" | "progress";
+export type ArcAnimation = "load" | "work" | "plan" | "assemble" | "process" | "run" | "think" | "search" | "write" | "parallel" | "transfer";
 
-export const ARC_ANIMATIONS: ArcAnimation[] = ["spin", "chase", "step", "gather", "ripple", "gears", "comet", "unlock", "write", "tasks", "progress"];
+export const ARC_ANIMATIONS: ArcAnimation[] = ["load", "work", "plan", "assemble", "process", "run", "think", "search", "write", "parallel", "transfer"];
 
 /** Props every arc ring takes. */
 export interface ArcSettings {
@@ -40,7 +40,7 @@ export interface ArcSettings {
   paused: boolean;
   /** Calls still running (0–6), counting inward from the outer ring; left out, all run. Only tasks reads it. */
   active?: number;
-  /** How much has transferred (0–1); left out, progress fills and empties on a loop. Only progress reads it. */
+  /** How much has transferred (0–1); left out, progress fills and empties on a loop. Only transfer reads it. */
   progress?: number;
 }
 
@@ -92,17 +92,17 @@ export const arcSettle: Partial<Record<ArcKey | "size", number>> = {
 /** `arcSettle` plus the animation switch, for Arc Rings: one motion morphs into the next. */
 export const arcMixSettle: Partial<Record<ArcKey | MixKey<ArcAnimation> | "size", number>> = {
   ...arcSettle,
-  mix_spin: BLEND_SETTLE,
-  mix_chase: BLEND_SETTLE,
-  mix_step: BLEND_SETTLE,
-  mix_gather: BLEND_SETTLE,
-  mix_ripple: BLEND_SETTLE,
-  mix_gears: BLEND_SETTLE,
-  mix_comet: BLEND_SETTLE,
-  mix_unlock: BLEND_SETTLE,
+  mix_load: BLEND_SETTLE,
+  mix_work: BLEND_SETTLE,
+  mix_plan: BLEND_SETTLE,
+  mix_assemble: BLEND_SETTLE,
+  mix_process: BLEND_SETTLE,
+  mix_run: BLEND_SETTLE,
+  mix_think: BLEND_SETTLE,
+  mix_search: BLEND_SETTLE,
   mix_write: BLEND_SETTLE,
-  mix_tasks: BLEND_SETTLE,
-  mix_progress: BLEND_SETTLE,
+  mix_parallel: BLEND_SETTLE,
+  mix_transfer: BLEND_SETTLE,
 };
 
 /** The cut count, clamped to 1–8. */
@@ -338,7 +338,7 @@ export function arcScene<S extends ArcSettings, K extends string>(motion: (v: Va
             let litTo = 1;
 
             switch (ARC_ANIMATIONS[a]) {
-              case "chase": {
+              case "work": {
                 // Two cycles a turn. The head runs out in the first half, the tail catches up in the second;
                 // a slow drift makes each cycle move the arcs on exactly one segment, so the loop is seamless.
                 // easeInOutCubic rather than the stronger easeInOut: head and tail hand over at rest while the
@@ -355,7 +355,7 @@ export function arcScene<S extends ArcSettings, K extends string>(motion: (v: Va
                 turn = n * segment + drift + (head + back) / 2 - full / 2;
                 break;
               }
-              case "step": {
+              case "plan": {
                 // Two steps a turn. Each ring takes 40% of a cycle to move one arc, starting 12% after the ring
                 // outside it, so 3–4 rings are moving at once. The strong ease-in-out makes each step a dial's
                 // click: a quick turn that settles firmly onto the next arc.
@@ -366,7 +366,7 @@ export function arcScene<S extends ArcSettings, K extends string>(motion: (v: Va
                 glow = Math.sin(Math.PI * move);
                 break;
               }
-              case "gather": {
+              case "assemble": {
                 // One wave a turn, travelling inward; the rings drift at half the spin speed.
                 const g = bump(turns - j * 0.15, 0.5);
                 turn = turns * TAU * 0.5;
@@ -374,24 +374,24 @@ export function arcScene<S extends ArcSettings, K extends string>(motion: (v: Va
                 glow = g;
                 break;
               }
-              case "ripple": {
+              case "process": {
                 const pull = bump(turns - j * 0.12, 0.4);
                 turn = turns * TAU * 0.5;
                 dr = -Math.min(spacing * 0.6, restRadius * 0.5) * pull;
                 glow = pull;
                 break;
               }
-              case "gears": {
+              case "run": {
                 // Ring j turns (j + 1) half-turns for every half-turn of the outer ring. Taking the ring's offset
                 // back out leaves no offset between them, so every ring's cuts line up again whenever the outer
                 // ring has turned a whole number of arcs ÷ 2.
                 turn = turns * TAU * 0.5 * (j + 1) - j * (segment / 2);
                 break;
               }
-              case "comet":
+              case "think":
                 tail = 1;
                 break;
-              case "unlock": {
+              case "search": {
                 // Every move is a whole number of arcs, except the line-up and the fall back, which are each half an
                 // arc times the ring index: that cancels the half-arc offset between neighbors, so the cuts align.
                 // Each move takes the strong ease-in-out of a dial clicking from one stop onto the next.
@@ -428,7 +428,7 @@ export function arcScene<S extends ArcSettings, K extends string>(motion: (v: Va
                 turn = n * segment - full / 2 + full * erased + len / 2 + (segment - full) * across;
                 break;
               }
-              case "tasks": {
+              case "parallel": {
                 // The ring's own clock stops as its call finishes, so the turn holds; the pace surges on its own beat.
                 const c = taskClocks[j % taskClocks.length];
                 const pace = TASK_PACE[j % TASK_PACE.length];
@@ -439,7 +439,7 @@ export function arcScene<S extends ArcSettings, K extends string>(motion: (v: Va
                 dim = done;
                 break;
               }
-              case "progress": {
+              case "transfer": {
                 // The outer ring holds with a cut at 12 o'clock so the fill starts there; the inner rings drift at half
                 // the spin speed. The loop fills and empties with the ease-in-out of something moving on screen.
                 if (j > 0) {

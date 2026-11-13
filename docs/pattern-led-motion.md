@@ -16,8 +16,8 @@ The pattern isn't just how the dots are arranged. It also sets the order they mo
 
 Each pattern gives every dot a **step**: a number that says where the dot sits in the pattern's own order. The animation never looks at screen position. It only looks at steps.
 
-- A **staggered** animation (like Dot Lift) starts each dot `step × stagger` seconds after the first.
-- A **travelling wave** (like Dot Tide) moves a band along the steps and affects the dots whose step is near the band's middle.
+- A **staggered** animation (like Dot Process) starts each dot `step × stagger` seconds after the first.
+- A **travelling wave** (like Dot Work) moves a band along the steps and affects the dots whose step is near the band's middle.
 
 Dots that share a step move together as one unit. That's what keeps the motion tidy: a whole ring, a whole row or a whole stripe moves at once, never a scatter of single dots.
 
@@ -69,8 +69,8 @@ Following the pattern only helps if you can actually see it. When too many rows 
 
 oxyn keeps **only 3–4 rows in motion at a time**:
 
-- **Staggered** (Dot Lift): the number of rows moving at once is about `duration ÷ stagger`. The defaults are `0.5s ÷ 0.14s ≈ 3.5`.
-- **Travelling** (Dot Tide): the `width` prop sets the band in rows directly. The default is `3.5`, and the band fades out softly at both edges.
+- **Staggered** (Dot Process): the number of rows moving at once is about `duration ÷ stagger`. The defaults are `0.5s ÷ 0.14s ≈ 3.5`.
+- **Travelling** (Dot Work): the `width` prop sets the band in rows directly. The default is `3.5`, and the band fades out softly at both edges.
 
 A narrow wave reads as one clear thing moving through the structure.
 
@@ -80,14 +80,14 @@ A narrow wave reads as one clear thing moving through the structure.
 
 The motion should change one thing about each dot. In the globe components, dots move **only toward or away from the vertical axis**. A ring gets narrower or wider at the height it's at. It never slides up or down, and it never spins.
 
-- **Dot Lift**: each ring pushes outward and settles back into place.
-- **Dot Tide**: a band of rings pulls inward, toward the inside of the globe, and lets go. The pulled-in dots also shrink and dim, so the wave reads as passing *inside* the orb.
+- **Dot Process**: each ring pushes outward and settles back into place.
+- **Dot Work**: a band of rings pulls inward, toward the inside of the globe, and lets go. The pulled-in dots also shrink and dim, so the wave reads as passing *inside* the orb.
 
 Because the dot's position is fixed except for that one in-and-out movement, all the visible structure comes from the pattern's order, which is the point.
 
-### The exception: Dot Twist
+### The exception: Dot Reason
 
-Dot Twist turns whole layers of the orb like a twisty cube, so its dots do rotate. The same idea still leads it: **every turn must land the dots back on the pattern.** The orb is cut into thirds (the cut sits halfway between two rows, so no ring is split), and each pattern gets the turns that fit it:
+Dot Reason turns whole layers of the orb like a twisty cube, so its dots do rotate. The same idea still leads it: **every turn must land the dots back on the pattern.** The orb is cut into thirds (the cut sits halfway between two rows, so no ring is split), and each pattern gets the turns that fit it:
 
 - **Grid**: rows turn the quarter turn nearest to 90° that is a whole number of column spacings; columns flip a half turn over the top. Both map the lattice onto itself.
 - **Rings**: each ring in a turning row goes round by its own whole number of dot spacings, so rings in one layer turn by slightly different angles. A column flip swaps ring *i* with ring *rows − i*; with an odd row count those rings sit half a step apart, so columns turn all the way round instead.
@@ -99,11 +99,11 @@ Because every turn fits, the orb looks solved between any two turns, and the scr
 
 ## Line rings: the ring is the unit
 
-The arc and noise rows (Arc Spin, Arc Chase, … and Noise Drift, Noise Ripple, …) have no dots, but they have a pattern: concentric rings. Each ring moves as one piece, and its step is its index counted from the outer edge (Noise Ripple counts from the inside, so the push travels outward like a drop in water).
+The arc and noise rows (Arc Load, Arc Work, … and Noise Think, Noise Respond, …) have no dots, but they have a pattern: concentric rings. Each ring moves as one piece, and its step is its index counted from the outer edge (Noise Respond counts from the inside, so the push travels outward like a drop in water).
 
-- **Travelling waves** (Arc Gather, Arc Ripple, Noise Ripple): each ring starts a fixed fraction of a cycle after its neighbor and moves for a few times that long, so 3–4 rings are moving at once.
-- **Staggered steps** (Arc Step): each ring turns exactly one arc, starting just after the ring outside it, so the turn works inward like the dials of a lock. Every step lands the arcs back on the pattern.
-- **Inward only** (Arc Ripple): rings pull toward the center and let go; they never push past the outer edge.
+- **Travelling waves** (Arc Assemble, Arc Process, Noise Respond): each ring starts a fixed fraction of a cycle after its neighbor and moves for a few times that long, so 3–4 rings are moving at once.
+- **Staggered steps** (Arc Plan): each ring turns exactly one arc, starting just after the ring outside it, so the turn works inward like the dials of a lock. Every step lands the arcs back on the pattern.
+- **Inward only** (Arc Process): rings pull toward the center and let go; they never push past the outer edge.
 
 Each animation describes a ring as a few numbers (where its arcs sit, how long they are, how far it is pushed). The group components (Arc Rings, Noise Rings) blend those numbers when the `animation` prop changes, so the same rings morph from one motion into the next instead of cross-fading.
 

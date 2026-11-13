@@ -11,7 +11,7 @@ export type ArcRingsAnimation = ArcAnimation;
 
 export interface ArcRingsProps extends Omit<HTMLAttributes<HTMLDivElement>, "color"> {
   /**
-   * Which animation the rings run: spin, chase, step, gather, ripple, gears, comet, unlock, write, tasks or progress.
+   * Which animation the rings run: load, work, plan, assemble, process, run, think, search, write, parallel or transfer.
    * Changing it morphs the arcs from the old animation into the new one; every other prop keeps its value.
    */
   animation?: ArcRingsAnimation;
@@ -31,12 +31,12 @@ export interface ArcRingsProps extends Omit<HTMLAttributes<HTMLDivElement>, "col
   alternate?: boolean;
   /**
    * Calls still running (0–6), counting inward from the outer ring; the rings inside them close, dim and stop. Left out,
-   * all run. Only tasks reads it.
+   * all run. Only parallel reads it.
    */
   active?: number;
   /**
    * How much has transferred (0–1), filling the outer ring clockwise from 12 o'clock. Leave it out to fill and empty on
-   * a loop. Only progress reads it.
+   * a loop. Only transfer reads it.
    */
   progress?: number;
   /** Canvas size in px (the loader is square). */
@@ -61,22 +61,22 @@ function targetsOf(s: Settings) {
 function scene() {
   // Every animation moves the same arcs, so a switch glides one pose into the next.
   return arcScene<Settings, MixKey<ArcRingsAnimation>>((v) => ({
-    spin: v.mix_spin,
-    chase: v.mix_chase,
-    step: v.mix_step,
-    gather: v.mix_gather,
-    ripple: v.mix_ripple,
-    gears: v.mix_gears,
-    comet: v.mix_comet,
-    unlock: v.mix_unlock,
+    load: v.mix_load,
+    work: v.mix_work,
+    plan: v.mix_plan,
+    assemble: v.mix_assemble,
+    process: v.mix_process,
+    run: v.mix_run,
+    think: v.mix_think,
+    search: v.mix_search,
     write: v.mix_write,
-    tasks: v.mix_tasks,
-    progress: v.mix_progress,
+    parallel: v.mix_parallel,
+    transfer: v.mix_transfer,
   }));
 }
 
 export function ArcRings({
-  animation = "spin",
+  animation = "load",
   lines = 3,
   cuts = 3,
   cutSpacing = 30,
@@ -93,7 +93,7 @@ export function ArcRings({
   label = "Thinking",
   ...rest
 }: ArcRingsProps) {
-  const playing = ARC_ANIMATIONS.includes(animation) ? animation : "spin";
+  const playing = ARC_ANIMATIONS.includes(animation) ? animation : "load";
   const settings: Settings = { animation: playing, lines, cuts, cutSpacing, lineSpacing, lineWidth, speed, alternate, active, progress, size, color, minOpacity, paused };
   return <LoaderCanvas settings={settings} targets={targetsOf} shape={arcShape} settle={arcMixSettle} scene={scene} label={label} {...rest} />;
 }

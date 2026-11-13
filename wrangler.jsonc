@@ -3,7 +3,10 @@
   "name": "oxyn-frontend",
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
-  // TanStack Start's SSR handler; the Cloudflare Vite plugin bundles it into the Worker.
-  "main": "@tanstack/react-start/server-entry",
+  // TanStack Start's SSR handler, wrapped to count registry installs; the Cloudflare Vite plugin bundles it into the Worker.
+  "main": "./src/server.ts",
+  // Registry files run the Worker first so CLI installs can be counted (see src/server.ts).
+  // Set the INSTALLS_TOKEN secret here and on the backend: `wrangler secret put INSTALLS_TOKEN`.
+  "assets": { "binding": "ASSETS", "run_worker_first": ["/r/*"] },
   "observability": { "enabled": true }
 }

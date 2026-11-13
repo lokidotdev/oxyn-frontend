@@ -18,10 +18,10 @@ For *how the dots should move* on a patterned component, read [Let the pattern l
 | Catalog list | `src/features/states/index.ts` (`states`) |
 | Groups (one component per row) | `src/features/states/groups.ts` (`groups`) |
 
-- The **slug** is kebab-case and unique: `dot-orb`, `square-pulse`.
-- The file **must export a component named after the slug in PascalCase** (`dot-orb` → `DotOrb`), plus `export default DotOrb`. `defineState` throws if it can't find it.
-- Export the props interface as `<Name>Props`, and any string-union types the props use (`DotOrbPattern`).
-- Name single loaders `<shape>-<motion>` (`circle-wave`) or `dot-<motion>` for globes. Name groups `dot-<shape>` (`dot-globe`).
+- The **slug** is kebab-case and unique: `dot-think`, `square-think`.
+- The file **must export a component named after the slug in PascalCase** (`dot-think` → `DotThink`), plus `export default DotThink`. `defineState` throws if it can't find it.
+- Export the props interface as `<Name>Props`, and any string-union types the props use (`DotThinkPattern`).
+- Name single loaders `<shape>-<motion>` (`circle-process`) or `dot-<motion>` for globes. Name groups `dot-<shape>` (`dot-globe`).
 
 ---
 
@@ -133,9 +133,9 @@ function scene() {
 ## 6. The catalog definition
 
 ```ts
-export const dotOrb = defineState({
-  slug: 'dot-orb',
-  name: 'Dot Orb',
+export const dotThink = defineState({
+  slug: 'dot-think',
+  name: 'Dot Think',
   summary: 'One line for the shadcn registry.',
   description: 'A sentence or two for the component page.',
   shape: 'globe',        // which home row it sits in
@@ -158,7 +158,7 @@ export const dotOrb = defineState({
 
 **Every home row is one component.** A row's loaders are the same dots running different animations, so the row also ships as a single group component whose `animation` prop picks the motion (`DotGlobe`, `DotSquare`, `DotCircle`). Only a few params change with the animation; everything else (pattern, size, color, tilt…) is shared.
 
-Each animation also stays a single loader (`DotTide`, `DotTwist`…) for people who want just that one. Both are built from the same motion in `lib/`, so they can't drift apart.
+Each animation also stays a single loader (`DotWork`, `DotReason`…) for people who want just that one. Both are built from the same motion in `lib/`, so they can't drift apart.
 
 > **Adding an animation is never just a new single loader.** In the same change, add it to its row's group, so the group's `animation` picker offers it. A new single loader that isn't in its row's group is unfinished. If you create a new row and it has two or more animations, give it a group (`dot-<shape>`).
 
@@ -168,7 +168,7 @@ Each animation also stays a single loader (`DotTide`, `DotTwist`…) for people 
 2. **Single loader**: `src/registry/<slug>/<slug>.tsx` and its definition, added to `states` in `src/features/states/index.ts`.
 3. **Group component** (`src/registry/dot-<shape>/dot-<shape>.tsx`):
    - add the name to the `…Animation` union and `ANIMATIONS`, and describe it in the comment above the union;
-   - add any new props, starting their JSDoc with the animations that use them (`/** twist: … */`); if it reuses a shared prop (`duration`, `gap`) with its own meaning, name it in that prop's JSDoc too;
+   - add any new props, starting their JSDoc with the animations that use them (`/** reason: … */`); if it reuses a shared prop (`duration`, `gap`) with its own meaning, name it in that prop's JSDoc too;
    - add new props to `DEFAULTS` and to the `withDefaults(DEFAULTS, { … })` call;
    - add its settings type to `Motion`, spread its `targets` into `targetsOf`, and add its scene to `scene()`.
 4. **Group definition**: add `{ value, label, from: theSingleDefinition }` to the group's `animations` in `src/features/states/groups.ts`. The playground takes that animation's params from the single definition, so there's nothing else to declare.
@@ -183,7 +183,7 @@ Each animation also stays a single loader (`DotTide`, `DotTwist`…) for people 
 
 ### Installing
 
-`pnpm registry:build` ships every single loader *and* every group as its own shadcn item, from the same catalog. Users who want one animation install the single loader (`dot-tide`); users who want to switch install the group (`dot-globe`). Each shipped file inlines the lib code it uses, so the two never depend on each other.
+`pnpm registry:build` ships every single loader *and* every group as its own shadcn item, from the same catalog. Users who want one animation install the single loader (`dot-work`); users who want to switch install the group (`dot-globe`). Each shipped file inlines the lib code it uses, so the two never depend on each other.
 
 ---
 
