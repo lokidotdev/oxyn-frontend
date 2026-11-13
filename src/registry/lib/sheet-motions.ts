@@ -6,7 +6,7 @@ import type { SheetMotion } from "./sheet";
  * much each dot swells over time, so single loaders and the switchable DotSquare / DotCircle agree.
  */
 
-export interface PulseSettings {
+export interface ThinkSettings {
   duration: number;
   gap: number;
   ringWidth: number;
@@ -14,8 +14,8 @@ export interface PulseSettings {
 }
 
 /** A ring of swollen dots spreads from the center to the edge (or closes in). */
-export const pulseMotion = {
-  targets(s: PulseSettings) {
+export const thinkMotion = {
+  targets(s: ThinkSettings) {
     return {
       duration: s.duration,
       gap: s.gap,
@@ -42,8 +42,8 @@ export const pulseMotion = {
 } satisfies SheetMotion<"duration" | "gap" | "ringWidth" | "inward"> & { targets: unknown };
 
 /** The pulse's ring swells each dot and leaves it swollen until the whole sheet is full, then a second pass shrinks them back in the same order. */
-export const fillMotion = {
-  targets: pulseMotion.targets,
+export const loadMotion = {
+  targets: thinkMotion.targets,
   cycle: (v) => 2 * Math.max(0.05, v.duration) + Math.max(0, v.gap),
   swell: (t, v) => {
     const turn = Math.max(0.05, v.duration);
@@ -65,15 +65,15 @@ export const fillMotion = {
   },
 } satisfies SheetMotion<"duration" | "gap" | "ringWidth" | "inward"> & { targets: unknown };
 
-export interface BreathSettings {
+export interface IdleSettings {
   duration: number;
   gap: number;
   ripple: number;
 }
 
 /** Every dot grows and shrinks together, with an optional center-to-edge lag. */
-export const breathMotion = {
-  targets(s: BreathSettings) {
+export const idleMotion = {
+  targets(s: IdleSettings) {
     return { duration: s.duration, gap: s.gap, ripple: s.ripple };
   },
   cycle: (v) => Math.max(0.05, v.duration) + Math.max(0, v.gap) + Math.max(0, v.ripple),
@@ -90,7 +90,7 @@ export const breathMotion = {
   },
 } satisfies SheetMotion<"duration" | "gap" | "ripple"> & { targets: unknown };
 
-export interface WaveSettings {
+export interface ProcessSettings {
   duration: number;
   gap: number;
   spread: number;
@@ -98,8 +98,8 @@ export interface WaveSettings {
 }
 
 /** The sheet breathes in a sweep from one side to the other. */
-export const waveMotion = {
-  targets(s: WaveSettings) {
+export const processMotion = {
+  targets(s: ProcessSettings) {
     return {
       duration: s.duration,
       gap: s.gap,
@@ -440,7 +440,7 @@ function pop(p: number, rise: number, fall: number) {
  * Rings swell in turn from the edge inward, like things being collected, then the center dot pops once with
  * the first ring, as if the bundle were sent.
  */
-export const gatherMotion = {
+export const uploadMotion = {
   targets(s: CircleSettings) {
     return { duration: s.duration, gap: s.gap };
   },
@@ -491,7 +491,7 @@ export const awaitMotion = {
   },
 } satisfies SheetMotion<"duration" | "gap"> & { targets: unknown };
 
-export interface RadarSettings {
+export interface SearchSettings {
   duration: number;
 }
 
@@ -502,8 +502,8 @@ const RADAR_TRAIL = 0.3;
 const RADAR_HUB = 0.5;
 
 /** A wedge sweeps clockwise around the center at a steady pace, swelling the dots it passes and leaving a fading trail. */
-export const radarMotion = {
-  targets(s: RadarSettings) {
+export const searchMotion = {
+  targets(s: SearchSettings) {
     return { duration: s.duration };
   },
   // One turn per loop, with no rest: the sweep never stops.

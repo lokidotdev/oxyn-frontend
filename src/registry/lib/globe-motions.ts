@@ -12,7 +12,7 @@ import type { Frame, Scene, Values } from "./loader-canvas";
 type GlobeFrame<K extends string> = Frame<unknown, K | GlobeKey, GlobeShape>;
 
 /**
- * The orb's radius, the same for every motion. Where lift is in play (DotLift, or DotGlobe whatever
+ * The orb's radius, the same for every motion. Where lift is in play (DotProcess, or DotGlobe whatever
  * animation it runs), it leaves room for a ring at the peak of its push, so switching animation never resizes the orb.
  */
 function radiusOf({ v, size }: GlobeFrame<never>) {
@@ -40,16 +40,16 @@ export const globeSettle = {
   backOpacity: FADE_SETTLE,
   dir: BLEND_SETTLE,
   from: BLEND_SETTLE,
-  mix_spin: BLEND_SETTLE,
-  mix_cascade: BLEND_SETTLE,
-  mix_lift: BLEND_SETTLE,
-  mix_tide: BLEND_SETTLE,
-  mix_twist: BLEND_SETTLE,
-  mix_scan: BLEND_SETTLE,
-  mix_rise: BLEND_SETTLE,
-  mix_sweep: BLEND_SETTLE,
+  mix_think: BLEND_SETTLE,
+  mix_ponder: BLEND_SETTLE,
+  mix_process: BLEND_SETTLE,
+  mix_work: BLEND_SETTLE,
+  mix_reason: BLEND_SETTLE,
+  mix_read: BLEND_SETTLE,
+  mix_transfer: BLEND_SETTLE,
+  mix_search: BLEND_SETTLE,
   mix_compact: BLEND_SETTLE,
-  mix_swarm: BLEND_SETTLE,
+  mix_parallel: BLEND_SETTLE,
   down: BLEND_SETTLE,
 };
 
@@ -90,15 +90,15 @@ function runMoveLoop(loop: MoveLoop, seconds: number, length: number, gap: numbe
   }
 }
 
-export interface SpinSettings {
+export interface ThinkSettings {
   duration: number;
   gap: number;
   direction: GlobeDirection;
 }
 
 /** The whole orb spins on its vertical axis. */
-export const spinMotion = {
-  targets(s: SpinSettings) {
+export const thinkMotion = {
+  targets(s: ThinkSettings) {
     return {
       duration: s.duration,
       gap: s.gap,
@@ -137,7 +137,7 @@ export const spinMotion = {
   },
 };
 
-export interface CascadeSettings {
+export interface PonderSettings {
   duration: number;
   stagger: number;
   gap: number;
@@ -145,8 +145,8 @@ export interface CascadeSettings {
 }
 
 /** The orb holds still while each row takes a full turn, one after another from the top. */
-export const cascadeMotion = {
-  targets(s: CascadeSettings) {
+export const ponderMotion = {
+  targets(s: PonderSettings) {
     return {
       duration: s.duration,
       stagger: s.stagger,
@@ -211,7 +211,7 @@ export const cascadeMotion = {
   },
 };
 
-export interface LiftSettings {
+export interface ProcessSettings {
   lift: number;
   duration: number;
   stagger: number;
@@ -220,8 +220,8 @@ export interface LiftSettings {
 }
 
 /** The orb holds still while each ring pushes outward and settles back, one after another. */
-export const liftMotion = {
-  targets(s: LiftSettings) {
+export const processMotion = {
+  targets(s: ProcessSettings) {
     return {
       lift: s.lift,
       duration: s.duration,
@@ -271,7 +271,7 @@ export const liftMotion = {
   },
 };
 
-export interface TideSettings {
+export interface WorkSettings {
   depth: number;
   width: number;
   duration: number;
@@ -280,8 +280,8 @@ export interface TideSettings {
 }
 
 /** A narrow wave travels down the orb, pulling a few rows inward as it passes. */
-export const tideMotion = {
-  targets(s: TideSettings) {
+export const workMotion = {
+  targets(s: WorkSettings) {
     return {
       depth: s.depth,
       width: s.width,
@@ -331,7 +331,7 @@ export const tideMotion = {
   },
 };
 
-export interface TwistSettings {
+export interface ReasonSettings {
   moves: number;
   duration: number;
   gap: number;
@@ -435,8 +435,8 @@ function rotateDot(pos: Float64Array, i: number, turn: Turn, angle: number, out:
  * The orb scrambles and solves itself like a twisty cube. Each turn spins a third of it, a row about the
  * vertical axis or a column over the top; after `moves` turns the same turns play back in reverse.
  */
-export const twistMotion = {
-  targets(s: TwistSettings) {
+export const reasonMotion = {
+  targets(s: ReasonSettings) {
     return { moves: s.moves, duration: s.duration, gap: s.gap };
   },
   scene(): Scene<unknown, "moves" | "duration" | "gap" | GlobeKey, GlobeShape> {
@@ -602,14 +602,14 @@ const SCAN_REST_OPACITY = 0.5;
 /** How much bigger a dot draws at the middle of the scan band. */
 const SCAN_SWELL = 0.35;
 
-export interface ScanSettings {
+export interface ReadSettings {
   duration: number;
   gap: number;
 }
 
 /** A thin band of light reads down the orb at a steady pace, brightening and swelling the dots it is on. */
-export const scanMotion = {
-  targets(s: ScanSettings) {
+export const readMotion = {
+  targets(s: ReadSettings) {
     return { duration: s.duration, gap: s.gap };
   },
   scene(): Scene<unknown, "duration" | "gap" | GlobeKey, GlobeShape> {
@@ -644,7 +644,7 @@ export const scanMotion = {
 /** Opacity a dot keeps as the upload wave carries it off the top pole, so the wave reads as sent. */
 const RISE_SENT_OPACITY = 0.3;
 
-export interface RiseSettings {
+export interface TransferSettings {
   lift: number;
   depth: number;
   width: number;
@@ -657,8 +657,8 @@ export interface RiseSettings {
  * Up (upload): a wave travels up the orb pushing a few rows outward, fading them as it passes the top pole.
  * Down (download): it travels down pulling them inward, like the tide.
  */
-export const riseMotion = {
-  targets(s: RiseSettings) {
+export const transferMotion = {
+  targets(s: TransferSettings) {
     return {
       lift: s.lift,
       depth: s.depth,
@@ -729,14 +729,14 @@ function aroundOf({ pattern, steps, rows }: GlobeShape, { x, z, step }: GlobePoi
   return Math.atan2(z, x) / (Math.PI * 2);
 }
 
-export interface SweepSettings {
+export interface SearchSettings {
   duration: number;
   direction: GlobeDirection;
 }
 
 /** One column lights up and sweeps around the orb like a radar, with a short fading trail. The dots never move. */
-export const sweepMotion = {
-  targets(s: SweepSettings) {
+export const searchMotion = {
+  targets(s: SearchSettings) {
     return {
       duration: s.duration,
       // Sweep velocity sign, as spin's; flipping it slows the head, stops it, and sends it back the other way.
@@ -841,7 +841,7 @@ const SWARM_WIDTH = 1.5;
 /** Most waves a swarm runs; each one is a call running alongside the others. */
 const SWARM_MAX = 4;
 
-export interface SwarmSettings {
+export interface ParallelSettings {
   waves: number;
   lift: number;
   depth: number;
@@ -852,8 +852,8 @@ export interface SwarmSettings {
  * Several narrow waves travel down the orb at once, evenly spaced, like that many tides running side by side.
  * Waves take turns pulling their rows inward and pushing them outward, so neighboring waves read apart.
  */
-export const swarmMotion = {
-  targets(s: SwarmSettings) {
+export const parallelMotion = {
+  targets(s: ParallelSettings) {
     return { waves: Math.min(SWARM_MAX, Math.max(1, Math.round(s.waves))), lift: s.lift, depth: s.depth, duration: s.duration };
   },
   scene(): Scene<unknown, "waves" | "lift" | "depth" | "duration" | GlobeKey, GlobeShape> {

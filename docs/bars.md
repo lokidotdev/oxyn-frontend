@@ -6,7 +6,7 @@ The bars row is a fence of thin bars standing round a circle. Every animation is
 
 ```tsx
 <BarRing animation={state} direction="out" />
-// "seek" → "read" → "write" glides through search, read, edit
+// "search" → "read" → "write" glides through search, read, edit
 ```
 
 ---
@@ -15,11 +15,11 @@ The bars row is a fence of thin bars standing round a circle. Every animation is
 
 | Animation | Component | AI state | What the user sees |
 | --- | --- | --- | --- |
-| `comet` | `BarComet` | Thinking, running a command or tool | A bright head drags a fading tail round the ring. |
-| `twin` | `BarTwin` | Parallel tool calls, agents working together | 1–4 evenly spaced waves travel round together (`heads`). |
+| `think` | `BarThink` | Thinking, running a command or tool | A bright head drags a fading tail round the ring. |
+| `parallel` | `BarParallel` | Parallel tool calls, agents working together | 1–4 evenly spaced waves travel round together (`heads`). |
 | `read` | `BarRead` | Reading a file, generic working | A small, steady wave lights bars more than it moves them, like a cursor going down lines. |
 | `write` | `BarWrite` | Editing or writing a file | Bars are typed in bursts of four, each leaving a short mark; once the ring is written the marks are wiped. |
-| `seek` | `BarSeek` | Searching, grep, web search | The wave runs 8 bars ahead, backs up 3 and runs on, like hunting for a match. |
+| `search` | `BarSearch` | Searching, grep, web search | The wave runs 8 bars ahead, backs up 3 and runs on, like hunting for a match. |
 | `stream` | `BarStream` | Generating, tokens arriving | Short pulses chase round with uneven gaps: a burst of three, a pair, a long pause. |
 | `transfer` | `BarTransfer` | Uploading (`out`) or downloading (`in`) | Bars fill to `progress`, the leading bar pulsing. With no `progress`, it fills and drains on a loop. |
 | `ping` | `BarPing` | API call, MCP request, waiting on the network | A pulse goes out to 6 o'clock, waits, and comes back to 12: the request and its response. |
@@ -47,7 +47,7 @@ Props only some animations read:
 
 | Prop | Used by | Meaning |
 | --- | --- | --- |
-| `heads` | `twin` | Waves at once, 1–4 (default 2). |
+| `heads` | `parallel` | Waves at once, 1–4 (default 2). |
 | `progress` | `transfer` | 0–1. Leave it out to loop. Changes glide, so you can feed it raw upload events. |
 | `steps` | `plan` | Steps in the plan, 2–8 (default 4). |
 | `current` | `plan` | The step running now, from 0 (default 1). Set it to `steps` when all are done. Changes glide, so the finished step fills in. |
@@ -59,17 +59,17 @@ Props only some animations read:
 The curves are the oxyn tokens in `lib/ease.ts`: `easeOut` is `cubic-bezier(0.23, 1, 0.32, 1)` and `easeInOut` is `cubic-bezier(0.77, 0, 0.175, 1)`. They're picked the same way every time:
 
 - **Something arriving or leaving** (a bar popping out, a mark being wiped) uses `easeOut`, so it moves the moment its turn comes.
-- **Something moving on screen** (the seek head backing up) uses `easeInOut`.
+- **Something moving on screen** (the search head backing up) uses `easeInOut`.
 - **Constant travel** (every wave's head going round) is linear, and each bar's push is a raised-cosine bump, so a wave starts and ends at rest with no jolt.
 - Bars stay inside the **3–4 moving at once** rule from [pattern-led-motion.md](./pattern-led-motion.md): roughly `duration ÷ stagger`.
 
 | Animation | Push curve | `duration` | `stagger` | One loop |
 | --- | --- | --- | --- | --- |
-| `comet` | `easeOut` snap over 20%, then the mirrored fall | 500ms | 50ms | 1.8s lap |
-| `twin` | bump | 240ms | 60ms | 2.2s lap |
+| `think` | `easeOut` snap over 20%, then the mirrored fall | 500ms | 50ms | 1.8s lap |
+| `parallel` | bump | 240ms | 60ms | 2.2s lap |
 | `read` | bump, about a third of the push | 320ms | 90ms | 3.2s lap |
 | `write` | `easeOut` pop settling to a 35% mark; `easeOut` wipe | 200ms | 50ms | about 5s |
-| `seek` | bump; head moves on `easeInOut` | 240ms | 60ms | 0.75s per run-and-back |
+| `search` | bump; head moves on `easeInOut` | 240ms | 60ms | 0.75s per run-and-back |
 | `stream` | bump | 80ms | 30ms | 1.1s lap |
 | `transfer` | `easeOut` per bar; leading-bar pulse is a bump every 4 × `duration` | 160ms | 40ms | follows `progress` |
 | `ping` | bump | 200ms | 40ms | 2.4s round trip |

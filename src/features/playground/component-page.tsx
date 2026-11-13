@@ -53,7 +53,7 @@ export function ComponentPage({ state, source, search, onPersist, heading }: Com
   // Opens another loader in the row, carrying over every value the user changed.
   const switchTo = (slug: string) =>
     slug === state.slug ? Promise.resolve() : navigate({ to: '/components/$slug', params: { slug }, search: changedValues(schema, values), resetScroll: false })
-  // The row's short animation names ("Lift", not "Dot Lift"), keyed by each single loader's slug.
+  // The row's short animation names ("Lift", not "Dot Process"), keyed by each single loader's slug.
   const animationLabels = useMemo(() => new Map(related.group?.animations?.map((a) => [a.slug, a.label])), [related.group])
   const onParamChange = (key: string, value: ParamValue) => {
     if (picker && key === ANIMATION_KEY) {

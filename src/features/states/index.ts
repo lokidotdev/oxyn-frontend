@@ -1,38 +1,38 @@
-import { arcChase, arcComet, arcGather, arcGears, arcProgress, arcRipple, arcSpin, arcStep, arcTasks, arcUnlock, arcWrite } from './arcs/definition'
+import { arcWork, arcThink, arcAssemble, arcRun, arcTransfer, arcProcess, arcLoad, arcPlan, arcParallel, arcSearch, arcWrite } from './arcs/definition'
 import {
-  barComet,
+  barThink,
   barPing,
   barPlan,
   barRead,
-  barSeek,
+  barSearch,
   barStream,
   barTransfer,
-  barTwin,
+  barParallel,
   barWrite,
 } from './bars/definition'
-import { circleBreath, squareBreath } from './breath/definition'
-import { dotCascade } from './dot-cascade/definition'
-import { dotLift } from './dot-lift/definition'
-import { dotOrb } from './dot-orb/definition'
-import { dotTide } from './dot-tide/definition'
-import { dotTwist } from './dot-twist/definition'
+import { circleIdle, squareIdle } from './idle/definition'
+import { dotPonder } from './dot-ponder/definition'
+import { dotProcess } from './dot-process/definition'
+import { dotThink } from './dot-think/definition'
+import { dotWork } from './dot-work/definition'
+import { dotReason } from './dot-reason/definition'
 import { dotCompact } from './dot-compact/definition'
-import { dotRise } from './dot-rise/definition'
-import { dotScan } from './dot-scan/definition'
-import { dotSwarm } from './dot-swarm/definition'
-import { dotSweep } from './dot-sweep/definition'
-import { circleFill, squareFill } from './fill/definition'
-import { noiseBreathe, noiseConverge, noiseDrift, noiseFlow, noiseFocus, noiseLevel, noiseRipple, noiseScatter, noiseStream, noiseSwirl } from './noise/definition'
+import { dotTransfer } from './dot-transfer/definition'
+import { dotRead } from './dot-read/definition'
+import { dotParallel } from './dot-parallel/definition'
+import { dotSearch } from './dot-search/definition'
+import { circleLoad, squareLoad } from './load/definition'
+import { noiseListen, noiseDecide, noiseThink, noiseTransfer, noiseAnalyze, noiseVoice, noiseRespond, noiseSearch, noiseStream, noisePonder } from './noise/definition'
 import { circlePing } from './ping/definition'
-import { circlePulse, squarePulse } from './pulse/definition'
+import { circleThink, squareThink } from './think/definition'
 import { squareRead } from './read/definition'
 import { squareEdit } from './edit/definition'
 import { squareStream } from './stream/definition'
 import { squarePlan } from './plan/definition'
-import { circleGather } from './gather/definition'
+import { circleUpload } from './upload/definition'
 import { circleAwait } from './await/definition'
-import { circleRadar } from './radar/definition'
-import { circleWave, squareWave } from './wave/definition'
+import { circleSearch } from './search/definition'
+import { circleProcess, squareProcess } from './process/definition'
 import { groups } from './groups'
 import type { StateDefinition } from './types'
 
@@ -41,58 +41,58 @@ export { ANIMATION_KEY, groupFor, groups, groupedAs, paramsFor } from './groups'
 export { relatedTo, useCaseFor } from './use-cases'
 
 export const states: StateDefinition[] = [
-  dotOrb,
-  dotCascade,
-  dotLift,
-  dotTide,
-  dotTwist,
-  dotScan,
-  dotRise,
-  dotSweep,
+  dotThink,
+  dotPonder,
+  dotProcess,
+  dotWork,
+  dotReason,
+  dotRead,
+  dotTransfer,
+  dotSearch,
   dotCompact,
-  dotSwarm,
-  squarePulse,
-  squareBreath,
-  squareWave,
-  squareFill,
+  dotParallel,
+  squareThink,
+  squareIdle,
+  squareProcess,
+  squareLoad,
   squareRead,
   squareEdit,
   squareStream,
   squarePlan,
-  circlePulse,
-  circleBreath,
-  circleWave,
-  circleFill,
+  circleThink,
+  circleIdle,
+  circleProcess,
+  circleLoad,
   circlePing,
-  circleGather,
+  circleUpload,
   circleAwait,
-  circleRadar,
-  noiseDrift,
-  noiseRipple,
-  noiseBreathe,
-  noiseSwirl,
-  noiseConverge,
-  noiseLevel,
-  noiseFlow,
+  circleSearch,
+  noiseThink,
+  noiseRespond,
+  noiseListen,
+  noisePonder,
+  noiseDecide,
+  noiseVoice,
+  noiseTransfer,
   noiseStream,
-  noiseFocus,
-  noiseScatter,
-  arcSpin,
-  arcChase,
-  arcStep,
-  arcGather,
-  arcRipple,
-  arcGears,
-  arcComet,
-  arcUnlock,
+  noiseAnalyze,
+  noiseSearch,
+  arcLoad,
+  arcWork,
+  arcPlan,
+  arcAssemble,
+  arcProcess,
+  arcRun,
+  arcThink,
+  arcSearch,
   arcWrite,
-  arcTasks,
-  arcProgress,
-  barComet,
-  barTwin,
+  arcParallel,
+  arcTransfer,
+  barThink,
+  barParallel,
   barRead,
   barWrite,
-  barSeek,
+  barSearch,
   barStream,
   barTransfer,
   barPing,

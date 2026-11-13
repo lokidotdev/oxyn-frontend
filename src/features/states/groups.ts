@@ -1,40 +1,40 @@
 import type { ParamDef, ParamValue } from '#/shared/lib/params'
 import { defineState } from './define-state'
-import { arcChase, arcComet, arcGather, arcGears, arcProgress, arcRipple, arcSpin, arcStep, arcTasks, arcUnlock, arcWrite } from './arcs/definition'
+import { arcWork, arcThink, arcAssemble, arcRun, arcTransfer, arcProcess, arcLoad, arcPlan, arcParallel, arcSearch, arcWrite } from './arcs/definition'
 import {
-  barComet,
+  barThink,
   barPing,
   barPlan,
   barRead,
-  barSeek,
+  barSearch,
   barStream,
   barTransfer,
-  barTwin,
+  barParallel,
   barWrite,
 } from './bars/definition'
-import { circleBreath, squareBreath } from './breath/definition'
-import { dotCascade } from './dot-cascade/definition'
-import { dotLift } from './dot-lift/definition'
-import { dotOrb } from './dot-orb/definition'
-import { dotTide } from './dot-tide/definition'
-import { dotTwist } from './dot-twist/definition'
+import { circleIdle, squareIdle } from './idle/definition'
+import { dotPonder } from './dot-ponder/definition'
+import { dotProcess } from './dot-process/definition'
+import { dotThink } from './dot-think/definition'
+import { dotWork } from './dot-work/definition'
+import { dotReason } from './dot-reason/definition'
 import { dotCompact } from './dot-compact/definition'
-import { dotRise } from './dot-rise/definition'
-import { dotScan } from './dot-scan/definition'
-import { dotSwarm } from './dot-swarm/definition'
-import { dotSweep } from './dot-sweep/definition'
-import { circleFill, squareFill } from './fill/definition'
-import { noiseBreathe, noiseConverge, noiseDrift, noiseFlow, noiseFocus, noiseLevel, noiseRipple, noiseScatter, noiseStream, noiseSwirl } from './noise/definition'
+import { dotTransfer } from './dot-transfer/definition'
+import { dotRead } from './dot-read/definition'
+import { dotParallel } from './dot-parallel/definition'
+import { dotSearch } from './dot-search/definition'
+import { circleLoad, squareLoad } from './load/definition'
+import { noiseListen, noiseDecide, noiseThink, noiseTransfer, noiseAnalyze, noiseVoice, noiseRespond, noiseSearch, noiseStream, noisePonder } from './noise/definition'
 import { circlePing } from './ping/definition'
-import { circlePulse, squarePulse } from './pulse/definition'
+import { circleThink, squareThink } from './think/definition'
 import { squareRead } from './read/definition'
 import { squareEdit } from './edit/definition'
 import { squareStream } from './stream/definition'
 import { squarePlan } from './plan/definition'
-import { circleGather } from './gather/definition'
+import { circleUpload } from './upload/definition'
 import { circleAwait } from './await/definition'
-import { circleRadar } from './radar/definition'
-import { circleWave, squareWave } from './wave/definition'
+import { circleSearch } from './search/definition'
+import { circleProcess, squareProcess } from './process/definition'
 import type { AnimationOption, Shape, StateDefinition, StateInput } from './types'
 
 /** The prop a group switches animations with. */
@@ -102,25 +102,25 @@ export const dotGlobe = defineGroup({
   name: 'Dot Globe',
   summary: 'Every dot-sphere animation in one component; the animation prop switches between them.',
   description:
-    'The whole globe row as one component. Pick spin, cascade, lift, tide, twist, scan, rise, sweep, compact or swarm with the animation prop; changing it cross-fades from one animation to the next, and the shared props glide instead of jumping.',
+    'The whole globe row as one component. Pick think, ponder, process, work, reason, read, transfer, search, compact or parallel with the animation prop; changing it cross-fades from one animation to the next, and the shared props glide instead of jumping.',
   cardProps: { size: 150 },
   defaults: { duration: 1, gap: 0.4, stagger: 0.1 },
   animations: [
-    { value: 'spin', label: 'Spin', from: dotOrb },
-    { value: 'cascade', label: 'Cascade', from: dotCascade },
-    // The shared 1s / 0.1s would set ~10 rings pushing at once; Dot Lift's own timing keeps it to ~3.5.
-    { value: 'lift', label: 'Lift', from: dotLift, defaults: { duration: 0.5, stagger: 0.14 } },
-    { value: 'tide', label: 'Tide', from: dotTide },
-    { value: 'twist', label: 'Twist', from: dotTwist },
+    { value: 'think', label: 'Think', from: dotThink },
+    { value: 'ponder', label: 'Ponder', from: dotPonder },
+    // The shared 1s / 0.1s would set ~10 rings pushing at once; Dot Process's own timing keeps it to ~3.5.
+    { value: 'process', label: 'Process', from: dotProcess, defaults: { duration: 0.5, stagger: 0.14 } },
+    { value: 'work', label: 'Work', from: dotWork },
+    { value: 'reason', label: 'Reason', from: dotReason },
     // At the shared 1s the band passes each row in ~0.1s, too fast to read as reading.
-    { value: 'scan', label: 'Scan', from: dotScan, defaults: { duration: 2 } },
-    { value: 'rise', label: 'Rise', from: dotRise },
+    { value: 'read', label: 'Read', from: dotRead, defaults: { duration: 2 } },
+    { value: 'transfer', label: 'Transfer', from: dotTransfer },
     // At the shared 1s the head passes ~24 columns a second and the trail blurs.
-    { value: 'sweep', label: 'Sweep', from: dotSweep, defaults: { duration: 2.4 } },
+    { value: 'search', label: 'Search', from: dotSearch, defaults: { duration: 2.4 } },
     // At the shared 1s the waves race to the waist and the hold and release are over in ~0.15s each.
     { value: 'compact', label: 'Compact', from: dotCompact, defaults: { duration: 1.8 } },
     // At the shared 1s each narrow band passes a row in ~0.1s.
-    { value: 'swarm', label: 'Swarm', from: dotSwarm, defaults: { duration: 2 } },
+    { value: 'parallel', label: 'Parallel', from: dotParallel, defaults: { duration: 2 } },
   ],
 })
 
@@ -129,13 +129,13 @@ export const dotSquare = defineGroup({
   name: 'Dot Square',
   summary: 'Every square-sheet animation in one component; the animation prop switches between them.',
   description:
-    'The whole square row as one component. Pick pulse, breath, wave, fill, read, edit, stream or plan with the animation prop; changing it morphs the same dots from one animation into the next.',
+    'The whole square row as one component. Pick think, idle, process, load, read, edit, stream or plan with the animation prop; changing it morphs the same dots from one animation into the next.',
   cardProps: { size: 150 },
   animations: [
-    { value: 'pulse', label: 'Pulse', from: squarePulse },
-    { value: 'breath', label: 'Breath', from: squareBreath },
-    { value: 'wave', label: 'Wave', from: squareWave },
-    { value: 'fill', label: 'Fill', from: squareFill },
+    { value: 'think', label: 'Think', from: squareThink },
+    { value: 'idle', label: 'Idle', from: squareIdle },
+    { value: 'process', label: 'Process', from: squareProcess },
+    { value: 'load', label: 'Load', from: squareLoad },
     // At the shared 1.6s the read head races through the sheet faster than anything reads.
     { value: 'read', label: 'Read', from: squareRead, defaults: { duration: 3.5, gap: 0.4 } },
     { value: 'edit', label: 'Edit', from: squareEdit },
@@ -150,21 +150,21 @@ export const dotCircle = defineGroup({
   name: 'Dot Circle',
   summary: 'Every circle-sheet animation in one component; the animation prop switches between them.',
   description:
-    'The whole circle row as one component. Pick pulse, breath, wave, fill, ping, gather, await or radar with the animation prop; changing it morphs the same dots from one animation into the next.',
+    'The whole circle row as one component. Pick think, idle, process, load, ping, upload, await or search with the animation prop; changing it morphs the same dots from one animation into the next.',
   cardProps: { size: 150 },
   animations: [
-    { value: 'pulse', label: 'Pulse', from: circlePulse },
-    { value: 'breath', label: 'Breath', from: circleBreath },
-    { value: 'wave', label: 'Wave', from: circleWave },
-    { value: 'fill', label: 'Fill', from: circleFill },
+    { value: 'think', label: 'Think', from: circleThink },
+    { value: 'idle', label: 'Idle', from: circleIdle },
+    { value: 'process', label: 'Process', from: circleProcess },
+    { value: 'load', label: 'Load', from: circleLoad },
     // At the shared 1.6s a leg, a ping takes over 4s to come back and stops reading as one round trip.
     { value: 'ping', label: 'Ping', from: circlePing, defaults: { duration: 0.9, gap: 0.5, ringWidth: 0.3 } },
-    // At the shared 1.6s the gather drags.
-    { value: 'gather', label: 'Gather', from: circleGather, defaults: { duration: 1.1, gap: 0.4 } },
+    // At the shared 1.6s the upload drags.
+    { value: 'upload', label: 'Upload', from: circleUpload, defaults: { duration: 1.1, gap: 0.4 } },
     // At the shared 1.6s / 0.3s the heartbeat races; waiting should feel calm.
     { value: 'await', label: 'Await', from: circleAwait, defaults: { duration: 2.4, gap: 0.6 } },
     // At the shared 1.6s the sweep spins faster than it searches.
-    { value: 'radar', label: 'Radar', from: circleRadar, defaults: { duration: 2 } },
+    { value: 'search', label: 'Search', from: circleSearch, defaults: { duration: 2 } },
   ],
 })
 
@@ -173,18 +173,18 @@ export const barRing = defineGroup({
   name: 'Bar Ring',
   summary: 'Every bar-ring animation in one component; the animation prop switches between them.',
   description:
-    'The whole bars row as one component. Pick an animation for each AI state (read, comet, twin, write, seek, stream, transfer, ping or plan) with the animation prop, and outward or inward with direction; changing either glides the same bars from one motion into the next.',
+    'The whole bars row as one component. Pick an animation for each AI state (read, think, parallel, write, search, stream, transfer, ping or plan) with the animation prop, and outward or inward with direction; changing either glides the same bars from one motion into the next.',
   cardProps: { size: 150 },
   // Read is the default; the waves below that want brisker timing set their own.
   defaults: { duration: 0.32, stagger: 0.09 },
   animations: [
     { value: 'read', label: 'Read', from: barRead },
     // The shared 0.24s pushes only ~4 bars, too short to read as a tail.
-    { value: 'comet', label: 'Comet', from: barComet, defaults: { duration: 0.5, stagger: 0.05 } },
-    { value: 'twin', label: 'Twin', from: barTwin, defaults: { duration: 0.24, stagger: 0.06 } },
+    { value: 'think', label: 'Think', from: barThink, defaults: { duration: 0.5, stagger: 0.05 } },
+    { value: 'parallel', label: 'Parallel', from: barParallel, defaults: { duration: 0.24, stagger: 0.06 } },
     // The shared 0.06s keystrokes make a write take over 4s.
     { value: 'write', label: 'Write', from: barWrite, defaults: { duration: 0.2, stagger: 0.05 } },
-    { value: 'seek', label: 'Seek', from: barSeek, defaults: { duration: 0.24, stagger: 0.06 } },
+    { value: 'search', label: 'Search', from: barSearch, defaults: { duration: 0.24, stagger: 0.06 } },
     // At the shared timing each pulse covers four bars, so the gaps between tokens close up.
     { value: 'stream', label: 'Stream', from: barStream, defaults: { duration: 0.08, stagger: 0.03 } },
     // The shared 0.06s stagger makes one looping fill take over 2s.
@@ -200,20 +200,20 @@ export const noiseRings = defineGroup({
   name: 'Noise Rings',
   summary: 'Every noise-ring animation in one component; the animation prop switches between them.',
   description:
-    'The whole noise rings row as one component. Pick drift, ripple, breathe, swirl, converge, level, flow, stream, focus or scatter with the animation prop; changing it morphs the same rings from one motion into the next.',
+    'The whole noise rings row as one component. Pick think, respond, listen, ponder, decide, voice, transfer, stream, analyze or search with the animation prop; changing it morphs the same rings from one motion into the next.',
   cardProps: { size: 150 },
   defaults: { speed: 0.35 },
   animations: [
-    { value: 'drift', label: 'Drift', from: noiseDrift, defaults: { speed: 0.7 } },
-    { value: 'ripple', label: 'Ripple', from: noiseRipple },
-    { value: 'breathe', label: 'Breathe', from: noiseBreathe },
-    { value: 'swirl', label: 'Swirl', from: noiseSwirl },
-    { value: 'converge', label: 'Converge', from: noiseConverge },
-    { value: 'level', label: 'Level', from: noiseLevel, defaults: { speed: 0.7 } },
-    { value: 'flow', label: 'Flow', from: noiseFlow },
+    { value: 'think', label: 'Think', from: noiseThink, defaults: { speed: 0.7 } },
+    { value: 'respond', label: 'Respond', from: noiseRespond },
+    { value: 'listen', label: 'Listen', from: noiseListen },
+    { value: 'ponder', label: 'Ponder', from: noisePonder },
+    { value: 'decide', label: 'Decide', from: noiseDecide },
+    { value: 'voice', label: 'Voice', from: noiseVoice, defaults: { speed: 0.7 } },
+    { value: 'transfer', label: 'Transfer', from: noiseTransfer },
     { value: 'stream', label: 'Stream', from: noiseStream },
-    { value: 'focus', label: 'Focus', from: noiseFocus },
-    { value: 'scatter', label: 'Scatter', from: noiseScatter },
+    { value: 'analyze', label: 'Analyze', from: noiseAnalyze },
+    { value: 'search', label: 'Search', from: noiseSearch },
   ],
 })
 
@@ -222,20 +222,20 @@ export const arcRings = defineGroup({
   name: 'Arc Rings',
   summary: 'Every arc-ring animation in one component; the animation prop switches between them.',
   description:
-    'The whole arcs row as one component. Pick spin, chase, step, gather, ripple, gears, comet, unlock, write, tasks or progress with the animation prop; changing it morphs the same arcs from one motion into the next.',
+    'The whole arcs row as one component. Pick load, work, plan, assemble, process, run, think, search, write, parallel or transfer with the animation prop; changing it morphs the same arcs from one motion into the next.',
   cardProps: { size: 150 },
   animations: [
-    { value: 'spin', label: 'Spin', from: arcSpin },
-    { value: 'chase', label: 'Chase', from: arcChase },
-    { value: 'step', label: 'Step', from: arcStep },
-    { value: 'gather', label: 'Gather', from: arcGather },
-    { value: 'ripple', label: 'Ripple', from: arcRipple },
-    { value: 'gears', label: 'Gears', from: arcGears },
-    { value: 'comet', label: 'Comet', from: arcComet },
-    { value: 'unlock', label: 'Unlock', from: arcUnlock },
+    { value: 'load', label: 'Load', from: arcLoad },
+    { value: 'work', label: 'Work', from: arcWork },
+    { value: 'plan', label: 'Plan', from: arcPlan },
+    { value: 'assemble', label: 'Assemble', from: arcAssemble },
+    { value: 'process', label: 'Process', from: arcProcess },
+    { value: 'run', label: 'Run', from: arcRun },
+    { value: 'think', label: 'Think', from: arcThink },
+    { value: 'search', label: 'Search', from: arcSearch },
     { value: 'write', label: 'Write', from: arcWrite },
-    { value: 'tasks', label: 'Tasks', from: arcTasks },
-    { value: 'progress', label: 'Progress', from: arcProgress },
+    { value: 'parallel', label: 'Parallel', from: arcParallel },
+    { value: 'transfer', label: 'Transfer', from: arcTransfer },
   ],
 })
 

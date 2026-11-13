@@ -79,11 +79,11 @@ const params: ParamDef[] = [
   p.paused,
 ]
 
-export const arcSpin = defineState({
-  slug: 'arc-spin',
+export const arcLoad = defineState({
+  slug: 'arc-load',
   summary: 'Concentric rings broken into arcs, turning steadily around the center.',
   shape: 'arcs',
-  name: 'Arc Spin',
+  name: 'Arc Load',
   description:
     'Concentric rings broken into arcs by evenly spaced cuts, turning steadily around the center with neighbors spinning against each other.',
   dimension: '2D',
@@ -91,11 +91,11 @@ export const arcSpin = defineState({
   params,
 })
 
-export const arcChase = defineState({
-  slug: 'arc-chase',
+export const arcWork = defineState({
+  slug: 'arc-work',
   summary: 'Arcs whose heads run ahead and tails catch up, stretching and shrinking as they turn.',
   shape: 'arcs',
-  name: 'Arc Chase',
+  name: 'Arc Work',
   description:
     "Concentric rings of arcs where each arc's head runs ahead and its tail catches up, so the arcs stretch and shrink as they turn. Each ring runs a moment behind the one outside it.",
   dimension: '2D',
@@ -103,11 +103,11 @@ export const arcChase = defineState({
   params,
 })
 
-export const arcStep = defineState({
-  slug: 'arc-step',
+export const arcPlan = defineState({
+  slug: 'arc-plan',
   summary: 'Rings of arcs that each turn exactly one arc and hold, stepping inward like the dials of a lock.',
   shape: 'arcs',
-  name: 'Arc Step',
+  name: 'Arc Plan',
   description:
     'Concentric rings of arcs that each turn exactly one arc, then hold. The step starts at the outer ring and works inward like the dials of a combination lock, each ring brightening while it moves.',
   dimension: '2D',
@@ -115,11 +115,11 @@ export const arcStep = defineState({
   params,
 })
 
-export const arcGather = defineState({
-  slug: 'arc-gather',
+export const arcAssemble = defineState({
+  slug: 'arc-assemble',
   summary: 'Rings of arcs whose cuts close into whole rings and reopen, one ring after another going inward.',
   shape: 'arcs',
-  name: 'Arc Gather',
+  name: 'Arc Assemble',
   description:
     'Concentric rings of arcs drifting slowly while their cuts close until each ring is whole, then reopen. The closing travels inward, a few rings at a time.',
   dimension: '2D',
@@ -127,11 +127,11 @@ export const arcGather = defineState({
   params,
 })
 
-export const arcRipple = defineState({
-  slug: 'arc-ripple',
+export const arcProcess = defineState({
+  slug: 'arc-process',
   summary: 'Rings of arcs pulling inward and letting go, the pull travelling from the outer ring to the inner one.',
   shape: 'arcs',
-  name: 'Arc Ripple',
+  name: 'Arc Process',
   description:
     'Concentric rings of arcs drifting slowly while each ring pulls toward the center and lets go. The pull travels from the outer ring inward, brightening the rings it passes through.',
   dimension: '2D',
@@ -139,11 +139,11 @@ export const arcRipple = defineState({
   params,
 })
 
-export const arcGears = defineState({
-  slug: 'arc-gears',
+export const arcRun = defineState({
+  slug: 'arc-run',
   summary: 'Rings of arcs turning at whole-number speed ratios, so their cuts line up on a regular beat.',
   shape: 'arcs',
-  name: 'Arc Gears',
+  name: 'Arc Run',
   description:
     "Concentric rings of arcs turning like gears: each ring inward turns one step faster than the one outside it, so every ring's cuts line up again on a regular beat.",
   dimension: '2D',
@@ -151,11 +151,11 @@ export const arcGears = defineState({
   params,
 })
 
-export const arcComet = defineState({
-  slug: 'arc-comet',
+export const arcThink = defineState({
+  slug: 'arc-think',
   summary: 'Rings of arcs turning steadily, each arc fading from a bright head to a faint tail.',
   shape: 'arcs',
-  name: 'Arc Comet',
+  name: 'Arc Think',
   description:
     'Concentric rings of arcs turning steadily, each arc fading from a bright head to a faint tail so the direction of travel reads at a glance.',
   dimension: '2D',
@@ -163,11 +163,11 @@ export const arcComet = defineState({
   params,
 })
 
-export const arcUnlock = defineState({
-  slug: 'arc-unlock',
+export const arcSearch = defineState({
+  slug: 'arc-search',
   summary: 'Rings of arcs clicking round like a lock trying combinations, then lining up. For searching or matching.',
   shape: 'arcs',
-  name: 'Arc Unlock',
+  name: 'Arc Search',
   description:
     'Concentric rings of arcs that click round by whole arcs in different amounts, like a combination lock trying codes. Then every cut lines up, the rings glow while they hold, and they fall back to rest. Use it while an agent searches or looks for a match.',
   dimension: '2D',
@@ -187,11 +187,11 @@ export const arcWrite = defineState({
   params,
 })
 
-export const arcTasks = defineState({
-  slug: 'arc-tasks',
+export const arcParallel = defineState({
+  slug: 'arc-parallel',
   summary: 'Rings of arcs each turning at its own pace; finished rings close, dim and stop. For tool calls running in parallel.',
   shape: 'arcs',
-  name: 'Arc Tasks',
+  name: 'Arc Parallel',
   description:
     'Concentric rings of arcs, each one a running call turning at its own pace, surging and easing off on its own beat. As calls finish, rings close into whole circles, dim and stop, from the innermost outward. Use it while an agent runs several tool calls in parallel.',
   dimension: '2D',
@@ -211,11 +211,11 @@ export const arcTasks = defineState({
   ],
 })
 
-export const arcProgress = defineState({
-  slug: 'arc-progress',
+export const arcTransfer = defineState({
+  slug: 'arc-transfer',
   summary: "Rings of arcs whose outer ring lights clockwise from 12 o'clock up to a progress. For an upload or download.",
   shape: 'arcs',
-  name: 'Arc Progress',
+  name: 'Arc Transfer',
   description:
     "Concentric rings of arcs. The outer ring lights clockwise from 12 o'clock up to the progress over a faint track while the inner rings turn slowly to show it is working; leave progress out and it fills and empties on a loop. Use it while an agent uploads or downloads.",
   dimension: '2D',

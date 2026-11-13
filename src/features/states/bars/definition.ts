@@ -126,11 +126,11 @@ const params = ({ extend, duration, stagger, heads, extra = [], noExtend }: BarP
   p.paused,
 ]
 
-export const barComet = defineState({
-  slug: 'bar-comet',
+export const barThink = defineState({
+  slug: 'bar-think',
   summary: 'A fence of thin bars around a circle, with a bright head trailing a fading tail as it travels round.',
   shape: 'bars',
-  name: 'Bar Comet',
+  name: 'Bar Think',
   description:
     'A fence of thin bars standing around a circle. Each bar snaps longer, outward or inward, as the head reaches it and falls back slowly, so the head drags a tail that fades out behind it.',
   dimension: '2D',
@@ -142,11 +142,11 @@ export const barComet = defineState({
   }),
 })
 
-export const barTwin = defineState({
-  slug: 'bar-twin',
+export const barParallel = defineState({
+  slug: 'bar-parallel',
   summary: 'A fence of thin bars around a circle, with several evenly spaced waves moving them out or in as they travel round.',
   shape: 'bars',
-  name: 'Bar Twin',
+  name: 'Bar Parallel',
   description:
     'A fence of thin bars standing around a circle. Two or more narrow waves, evenly spaced, travel round the ring together, each moving a few bars outward or inward at a time.',
   dimension: '2D',
@@ -186,17 +186,17 @@ export const barWrite = defineState({
   }),
 })
 
-export const barSeek = defineState({
-  slug: 'bar-seek',
+export const barSearch = defineState({
+  slug: 'bar-search',
   summary: 'A fence of thin bars around a circle, with a wave that runs ahead, backs up and runs on, like searching.',
   shape: 'bars',
-  name: 'Bar Seek',
+  name: 'Bar Search',
   description:
     'A fence of thin bars standing around a circle. A narrow wave runs eight bars forward, slows, backs up three and runs on, like hunting back and forth for a match.',
   dimension: '2D',
   cardProps: { size: 150 },
   params: params({
-    extend: 'How far the seek moves a bar in px. The bar keeps its height.',
+    extend: 'How far the search head moves a bar in px. The bar keeps its height.',
     duration: { description: 'How wide the seek is, in seconds of travel: its width in bars is this ÷ stagger.', default: 0.24 },
     stagger: { description: 'Seconds the seek takes to run past one bar.', default: 0.06 },
   }),

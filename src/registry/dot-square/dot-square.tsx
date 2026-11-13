@@ -4,20 +4,20 @@ import type { HTMLAttributes } from "react";
 import { LoaderCanvas } from "../lib/loader-canvas";
 import { sheetMixScene, sheetSettle, sheetShape, sheetTargets } from "../lib/sheet";
 import type { SheetSettings } from "../lib/sheet";
-import { breathMotion, editMotion, fillMotion, planMotion, pulseMotion, readMotion, streamMotion, waveMotion } from "../lib/sheet-motions";
+import { idleMotion, editMotion, loadMotion, planMotion, thinkMotion, readMotion, streamMotion, processMotion } from "../lib/sheet-motions";
 import { mixTargets, withDefaults } from "../lib/mix";
 
 /**
- * - `pulse`: a ring of swollen dots spreads from the center to the edge.
- * - `breath`: every dot grows and shrinks together, with optional center-to-edge ripple.
- * - `wave`: the sheet breathes in a sweep from one side to the other.
- * - `fill`: the pulse ring leaves every dot swollen until the sheet is full, then a second ring shrinks them back.
+ * - `think`: a ring of swollen dots spreads from the center to the edge.
+ * - `idle`: every dot grows and shrinks together, with optional center-to-edge ripple.
+ * - `process`: the sheet breathes in a sweep from one side to the other.
+ * - `load`: the think ring leaves every dot swollen until the sheet is full, then a second ring shrinks them back.
  * - `read`: a read head runs along each row in turn, like eyes across text, leaving a few rows fading behind it.
  * - `edit`: a few whole rows are typed in dot by dot, the cursor blinks, and the block lets go.
  * - `stream`: output lines of uneven length land row by row from the top, the newest brightest, like a terminal.
  * - `plan`: ticks forward to a stop, blinks, then carries on or steps back; at the end the sheet clears and starts over; or shows `progress`.
  */
-export type DotSquareAnimation = "pulse" | "breath" | "wave" | "fill" | "read" | "edit" | "stream" | "plan";
+export type DotSquareAnimation = "think" | "idle" | "process" | "load" | "read" | "edit" | "stream" | "plan";
 
 export interface DotSquareProps extends Omit<HTMLAttributes<HTMLDivElement>, "color"> {
   /** Which animation the sheet runs. Changing it morphs the dots from the old animation into the new one; every other prop keeps its value. */
@@ -32,21 +32,21 @@ export interface DotSquareProps extends Omit<HTMLAttributes<HTMLDivElement>, "co
   density?: number;
   /** Canvas size in px (the sheet is square). */
   size?: number;
-  /** Seconds for one ring to cross the sheet (pulse), one breath (breath), one dot's breath (wave), one crossing of the fill or empty ring (fill), one read of the sheet (read), one edit (edit), one pass of output lines down the sheet (stream) or ticking the whole sheet (plan). */
+  /** Seconds for one ring to cross the sheet (think), one breath (idle), one dot's breath (process), one crossing of the fill or empty ring (load), one read of the sheet (read), one edit (edit), one pass of output lines down the sheet (stream) or ticking the whole sheet (plan). */
   duration?: number;
   /** Seconds to rest between loops (plan: seconds the full sheet holds before it clears). stream ignores it. */
   gap?: number;
-  /** pulse and fill: thickness of the ring of large (pulse) or changing (fill) dots, as a fraction of the sheet radius. */
+  /** think and load: thickness of the ring of large (think) or changing (load) dots, as a fraction of the sheet radius. */
   ringWidth?: number;
-  /** breath: seconds the edge lags behind the center. 0 breathes in sync. */
+  /** idle: seconds the edge lags behind the center. 0 breathes in sync. */
   ripple?: number;
-  /** wave: seconds the far side lags behind the near side. */
+  /** process: seconds the far side lags behind the near side. */
   spread?: number;
   /** read: rows the fading trail covers behind the read head. stream: older lines still lit behind the newest. */
   trail?: number;
   /** plan: how much of the plan is done (0–1), shown as that share of rows ticked; a change glides. Leave it out to tick and clear on a loop. */
   progress?: number;
-  /** pulse and fill: "out" or "in". wave: "right" or "left". A value the animation doesn't take is ignored. */
+  /** think and load: "out" or "in". process: "right" or "left". A value the animation doesn't take is ignored. */
   direction?: "out" | "in" | "right" | "left";
   /** Dot color, any CSS color. */
   color?: string;
@@ -66,14 +66,14 @@ type Motion = {
   spread: number;
   trail: number;
   progress: number | undefined;
-  pulseDirection: "out" | "in";
-  waveDirection: "right" | "left";
+  thinkDirection: "out" | "in";
+  processDirection: "right" | "left";
 };
 
-const ANIMATIONS: DotSquareAnimation[] = ["pulse", "breath", "wave", "fill", "read", "edit", "stream", "plan"];
+const ANIMATIONS: DotSquareAnimation[] = ["think", "idle", "process", "load", "read", "edit", "stream", "plan"];
 
 /** Used for any prop that isn't passed. The same for every animation, so switching animation changes nothing else. */
-const DEFAULTS: Motion = { duration: 1.6, gap: 0.3, ringWidth: 0.35, ripple: 0, spread: 0.9, trail: 3, progress: undefined, pulseDirection: "out", waveDirection: "right" };
+const DEFAULTS: Motion = { duration: 1.6, gap: 0.3, ringWidth: 0.35, ripple: 0, spread: 0.9, trail: 3, progress: undefined, thinkDirection: "out", processDirection: "right" };
 
 /**
  * Where the shared default would break an animation, its own default for props that aren't passed: at 1.6s the
@@ -88,9 +88,9 @@ type Settings = SheetSettings & Motion & { animation: DotSquareAnimation };
 function targetsOf(s: Settings) {
   return {
     ...sheetTargets(s),
-    ...pulseMotion.targets({ ...s, direction: s.pulseDirection }),
-    ...breathMotion.targets(s),
-    ...waveMotion.targets({ ...s, direction: s.waveDirection }),
+    ...thinkMotion.targets({ ...s, direction: s.thinkDirection }),
+    ...idleMotion.targets(s),
+    ...processMotion.targets({ ...s, direction: s.processDirection }),
     ...readMotion.targets(s),
     ...streamMotion.targets(s),
     ...planMotion.targets(s),
@@ -99,13 +99,13 @@ function targetsOf(s: Settings) {
 }
 
 function scene() {
-  return sheetMixScene({ pulse: pulseMotion, breath: breathMotion, wave: waveMotion, fill: fillMotion, read: readMotion, edit: editMotion, stream: streamMotion, plan: planMotion });
+  return sheetMixScene({ think: thinkMotion, idle: idleMotion, process: processMotion, load: loadMotion, read: readMotion, edit: editMotion, stream: streamMotion, plan: planMotion });
 }
 
 const shape = sheetShape("square");
 
 export function DotSquare({
-  animation = "pulse",
+  animation = "think",
   dotShape = "round",
   dotSize = 2.5,
   scale = 1.5,
@@ -125,7 +125,7 @@ export function DotSquare({
   label = "Thinking",
   ...rest
 }: DotSquareProps) {
-  const active = ANIMATIONS.includes(animation) ? animation : "pulse";
+  const active = ANIMATIONS.includes(animation) ? animation : "think";
   const motion = withDefaults({ ...DEFAULTS, ...OWN[active] }, {
     duration,
     gap,
@@ -134,8 +134,8 @@ export function DotSquare({
     spread,
     trail,
     progress,
-    pulseDirection: direction === "out" || direction === "in" ? direction : undefined,
-    waveDirection: direction === "right" || direction === "left" ? direction : undefined,
+    thinkDirection: direction === "out" || direction === "in" ? direction : undefined,
+    processDirection: direction === "right" || direction === "left" ? direction : undefined,
   });
   const settings: Settings = { animation: active, dotShape, dotSize, scale, density, size, color, minOpacity, paused, ...motion };
   return <LoaderCanvas settings={settings} targets={targetsOf} shape={shape} settle={sheetSettle} scene={scene} label={label} {...rest} />;

@@ -12,7 +12,7 @@ const AUTHOR_URL = 'https://x.com/lokidotdev'
 
 /** The demo walks one agent turn: find the file, read it, edit it. */
 const TURN: { animation: BarRingAnimation; label: string }[] = [
-  { animation: 'seek', label: 'Searching for auth.ts' },
+  { animation: 'search', label: 'Searching for auth.ts' },
   { animation: 'read', label: 'Reading auth.ts' },
   { animation: 'write', label: 'Editing auth.ts' },
 ]
