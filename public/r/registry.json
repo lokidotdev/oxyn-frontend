@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "oxyn",
-  "homepage": "https://oxyn.space",
+  "homepage": "http://localhost:3000",
   "items": [
     {
       "name": "dot-think",

@@ -6,6 +6,7 @@ import { catalogRows } from './layout'
 import type { Layout } from './layout'
 import { ShapeRow } from './shape-row'
 import { PlaceholderCard, StateCard } from './state-card'
+import { BackedBy, HomeSponsors } from '#/features/sponsors/home-sponsors'
 
 /** One more than fits on a wide screen, so every unfiltered row peeks past the edge. */
 const ROW_TILES = 4
@@ -35,6 +36,7 @@ export function HomePage({ layout, filter, onFilterChange }: HomePageProps) {
   return (
     <main className="mx-auto max-w-7xl px-4 pb-24 sm:px-6">
       <section className="flex flex-col items-center py-16 text-center sm:py-24">
+        <BackedBy className="mb-8" />
         <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
           Loaders for when your interface{' '}
           {/* Own line, so the cycling word's changing width never re-wraps the lines above. */}
@@ -71,6 +73,8 @@ export function HomePage({ layout, filter, onFilterChange }: HomePageProps) {
           )
         })}
       </div>
+
+      <HomeSponsors />
     </main>
   )
 }

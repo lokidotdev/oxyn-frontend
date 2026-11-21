@@ -57,6 +57,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/sponsors" className={linkClass}>
+                <span className={textClass}>Sponsors</span>
+              </Link>
+            </li>
+            <li>
               <a href={REPO_URL} target="_blank" rel="noreferrer" className={linkClass}>
                 <span className={textClass}>
                   GitHub

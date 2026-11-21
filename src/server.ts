@@ -3,7 +3,7 @@ import { env, waitUntil } from 'cloudflare:workers'
 
 // Installs are counted here: `npx shadcn add <site>/r/<slug>.json` fetches a static file, so
 // wrangler.jsonc routes /r/* through this Worker (run_worker_first) instead of straight to the asset.
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8787'
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8790'
 const ITEM = /^\/r\/([a-z0-9][a-z0-9-]*)\.json$/
 
 // The CLI fetches with Node; browsers and most crawlers announce themselves as Mozilla.

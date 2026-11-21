@@ -4,12 +4,14 @@ import type { DimensionFilter } from '#/features/catalog/home-page'
 import { layoutQuery } from '#/features/catalog/layout'
 import { seoHead, seoQuery } from '#/features/seo/seo'
 import { homeJsonLd } from '#/features/seo/structured-data'
+import { sponsorsQuery } from '#/features/sponsors/data'
 
 export const Route = createFileRoute('/')({
   validateSearch: (search: Record<string, unknown>): { d?: Exclude<DimensionFilter, 'all'> } =>
     search.d === '2d' || search.d === '2.5d' ? { d: search.d } : {},
   loader: async ({ context: { queryClient } }) => {
-    const [seo, layout] = await Promise.all([queryClient.ensureQueryData(seoQuery('/')), queryClient.fetchQuery(layoutQuery)])
+    // sponsors are prefetched so their logos are in the server-rendered HTML
+    const [seo, layout] = await Promise.all([queryClient.ensureQueryData(seoQuery('/')), queryClient.fetchQuery(layoutQuery), queryClient.ensureQueryData(sponsorsQuery)])
     return { seo, layout }
   },
   head: ({ loaderData }) =>

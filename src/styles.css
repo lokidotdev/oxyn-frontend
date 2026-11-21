@@ -340,6 +340,26 @@ html body[data-scroll-locked] {
   }
 }
 
+/* Theme switch (theme.ts setTheme): the new theme is revealed over the old one, so only the new
+   snapshot animates. The browser's default cross-fade is off, and color transitions pause so nothing
+   fades a second time inside the revealed area. The toggle icon's swap keeps its own motion. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+/* The dot dissolve's per-frame mask, set on :root as --theme-mask and inherited by the pseudo. */
+::view-transition-new(root) {
+  mask-image: var(--theme-mask, none);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+:root[data-theme-switching] *:not(.swap > *),
+:root[data-theme-switching] *::before,
+:root[data-theme-switching] *::after {
+  transition: none !important;
+}
+
 /* Select menu: unclips from the trigger's edge, so it grows in height while the options stay put.
    Radix waits for `animation` (not transitions) before unmounting, hence keyframes. */
 .select-content[data-state="open"] {
