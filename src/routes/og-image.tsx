@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 /**
- * The 1200×630 social card. Screenshot it to public/og-image.png; it is not linked from the site.
- * `?ghost=false` drops the mark's unlit dots; that version is public/og-image-no-ghost.webp.
+ * The 1200×630 social card; it is not linked from the site. The live card is `?ghost=false` (the mark without its
+ * unlit dots), screenshotted to public/og-image-no-ghost.webp.
  */
 export const Route = createFileRoute('/og-image')({
   validateSearch: (search: Record<string, unknown>) => ({ ghost: search.ghost !== false && search.ghost !== 'false' }),

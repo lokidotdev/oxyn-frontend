@@ -24,14 +24,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: 'og:site_name', content: 'oxyn' },
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: 'en_US' },
-      // PNG, not WebP: some link unfurlers still skip WebP cards.
-      { property: 'og:image', content: 'https://oxyn.space/og-image-no-ghost.png' },
-      { property: 'og:image:type', content: 'image/png' },
+      { property: 'og:image', content: 'https://oxyn.space/og-image-no-ghost.webp' },
+      { property: 'og:image:type', content: 'image/webp' },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
       { property: 'og:image:alt', content: 'oxyn: loaders that say what your AI agent is doing' },
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:image', content: 'https://oxyn.space/og-image-no-ghost.png' },
+      { name: 'twitter:image', content: 'https://oxyn.space/og-image-no-ghost.webp' },
       { name: 'twitter:image:alt', content: 'oxyn: loaders that say what your AI agent is doing' },
     ],
     links: [
