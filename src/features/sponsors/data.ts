@@ -12,8 +12,8 @@ export interface PublicSponsor {
 export interface Tier {
   id: string
   name: string
-  /** Cents. */
-  monthlyPrice: number
+  /** Cents. null, missing or 0 = not priced yet: the tier shows "Coming soon" and can't be bought. */
+  monthlyPrice: number | null
   perks: string[]
   highlight: boolean
   /** null = unlimited. */
@@ -117,6 +117,18 @@ export const sponsorFormSchema = z.object({
 export type SponsorFormValues = z.input<typeof sponsorFormSchema>
 export type SponsorFormField = keyof SponsorFormValues
 
+/** True once a tier has a real price. Until then nothing shows a price for it, not even $0. */
+export const isPriced = (tier: Tier): tier is Tier & { monthlyPrice: number } =>
+  typeof tier.monthlyPrice === 'number' && Number.isFinite(tier.monthlyPrice) && tier.monthlyPrice > 0
+
+/** One-time amounts that are real prices: positive suggested amounts, and a minimum above 0. */
+export function oneTimePricing(data: SponsorsData) {
+  const ok = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n) && n > 0
+  const suggested = (data.oneTime.suggested ?? []).filter(ok)
+  const min = ok(data.oneTime.min) ? data.oneTime.min : null
+  return { min, suggested, priced: min !== null || suggested.length > 0 }
+}
+
 export type Plan = { billing: 'monthly' | 'one_month'; tier: Tier } | { billing: 'one_time'; amount: number }
 
 export function checkout(plan: Plan, form: z.output<typeof sponsorFormSchema>) {
@@ -155,5 +167,6 @@ export const requestManageLink = (email: string) => postJson<{ ok: true }>('/spo
 /** "$250/month", "$250 for 1 month", "$40 once": what a plan costs, in words. */
 export function planPrice(plan: Plan) {
   if (plan.billing === 'one_time') return `${money(plan.amount)} once`
+  if (!isPriced(plan.tier)) return 'Coming soon'
   return plan.billing === 'monthly' ? `${money(plan.tier.monthlyPrice)}/month` : `${money(plan.tier.monthlyPrice)} for 1 month`
 }

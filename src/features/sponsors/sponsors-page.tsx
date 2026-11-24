@@ -5,7 +5,7 @@ import { states } from '#/features/states'
 import { cn } from '#/shared/lib/cn'
 import { ArrowUpRightIcon, CheckIcon } from '#/shared/ui/icons'
 import { LogoMark } from '#/shared/ui/logo-mark'
-import { compact, money, requestManageLink, sponsorsQuery, statsQuery, track } from './data'
+import { compact, isPriced, money, oneTimePricing, requestManageLink, sponsorsQuery, statsQuery, track } from './data'
 import type { Plan, PublicSponsor, SponsorsData, Tier } from './data'
 import { SponsorSheet } from './sponsor-sheet'
 
@@ -16,6 +16,7 @@ export function SponsorsPage({ checkout }: { checkout?: number }) {
   const [plan, setPlan] = useState<Plan | null>(null)
   const close = useCallback(() => setPlan(null), [])
   const choose = (next: Plan) => {
+    if (next.billing !== 'one_time' && !isPriced(next.tier)) return
     if (!data.open) return document.getElementById('plans')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     track('sponsor-open', next.billing === 'one_time' ? { billing: 'one_time' } : { billing: next.billing, tier: next.tier.id })
     setPlan(next)
@@ -166,7 +167,19 @@ function Wall({ data, onChoose }: { data: SponsorsData; onChoose: (p: Plan) => v
                   <SponsorTile sponsor={s} className={size.tile} logo={size.logo} name={size.name} />
                 </li>
               ))}
-              {tier.spotsLeft !== 0 && (
+              {tier.spotsLeft !== 0 && !isPriced(tier) && tier.sponsors.length === 0 && (
+                <li className="col-span-full mx-auto w-full max-w-md">
+                  <div
+                    className={cn(
+                      'flex w-full items-center justify-center rounded-2xl border border-dashed border-line font-mono text-[13px] text-faint',
+                      size.tile,
+                    )}
+                  >
+                    {tier.name} coming soon
+                  </div>
+                </li>
+              )}
+              {tier.spotsLeft !== 0 && isPriced(tier) && (
                 <li className={cn(tier.sponsors.length === 0 && 'col-span-full mx-auto w-full max-w-md')}>
                   <button
                     type="button"
@@ -322,6 +335,7 @@ function Segmented<T extends string>({
 
 function TierCard({ tier, billing, open, onChoose }: { tier: Tier; billing: 'monthly' | 'one_month'; open: boolean; onChoose: () => void }) {
   const soldOut = tier.spotsLeft === 0
+  const priced = isPriced(tier)
   return (
     <article className={cn('relative flex h-full flex-col rounded-3xl bg-surface p-6 shadow-card', tier.highlight && 'ring-1 ring-fg/25')}>
       {tier.highlight && (
@@ -331,8 +345,14 @@ function TierCard({ tier, billing, open, onChoose }: { tier: Tier; billing: 'mon
       )}
       <h3 className="text-[15px] font-semibold">{tier.name}</h3>
       <p className="mt-2 flex items-baseline gap-1">
-        <span className="text-4xl font-semibold tracking-[-0.03em] tabular-nums">{money(tier.monthlyPrice)}</span>
-        <span className="font-mono text-[13px] text-muted">{billing === 'monthly' ? '/month' : 'for 1 month'}</span>
+        {priced ? (
+          <>
+            <span className="text-4xl font-semibold tracking-[-0.03em] tabular-nums">{money(tier.monthlyPrice)}</span>
+            <span className="font-mono text-[13px] text-muted">{billing === 'monthly' ? '/month' : 'for 1 month'}</span>
+          </>
+        ) : (
+          <span className="text-4xl font-semibold tracking-[-0.03em]">Coming soon</span>
+        )}
       </p>
       <ul className="mt-5 flex flex-1 flex-col gap-2.5 border-t border-line pt-5">
         {tier.perks.map((p) => (
@@ -347,20 +367,35 @@ function TierCard({ tier, billing, open, onChoose }: { tier: Tier; billing: 'mon
       <button
         type="button"
         onClick={onChoose}
-        disabled={!open || soldOut}
+        disabled={!open || soldOut || !priced}
         className={cn(
           'press mt-6 h-11 cursor-pointer rounded-xl font-mono text-sm font-medium transition-opacity focus-visible:ring-2 focus-visible:ring-fg/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40',
           tier.highlight ? 'bg-fg text-bg hover:opacity-90' : 'bg-raised text-fg shadow-card hover:shadow-card-hover',
         )}
       >
-        {soldOut ? 'Sold out' : billing === 'monthly' ? `Sponsor as ${tier.name}` : `${tier.name} for 1 month`}
+        {soldOut ? 'Sold out' : !priced ? 'Coming soon' : billing === 'monthly' ? `Sponsor as ${tier.name}` : `${tier.name} for 1 month`}
       </button>
     </article>
   )
 }
 
 function OneTime({ data, onChoose }: { data: SponsorsData; onChoose: (p: Plan) => void }) {
-  const { min, suggested } = data.oneTime
+  if (!oneTimePricing(data).priced)
+    return (
+      <div className="mx-auto flex max-w-lg flex-col rounded-3xl bg-surface p-6 text-center shadow-card">
+        <h3 className="text-[15px] font-semibold">Give once</h3>
+        <p className="mt-4 text-4xl font-semibold tracking-[-0.03em]">Coming soon</p>
+        <p className="mt-2 font-mono text-[13px] text-muted">One-time giving opens once amounts are set.</p>
+      </div>
+    )
+  return <OneTimeForm data={data} onChoose={onChoose} />
+}
+
+function OneTimeForm({ data, onChoose }: { data: SponsorsData; onChoose: (p: Plan) => void }) {
+  const pricing = oneTimePricing(data)
+  const suggested = pricing.suggested
+  // No minimum set: the smallest suggested amount is the floor, so nothing below a real price can be chosen.
+  const min = pricing.min ?? Math.min(...suggested)
   const [picked, setPicked] = useState<number | 'custom'>(suggested[0] ?? 'custom')
   const [custom, setCustom] = useState('')
   const input = useRef<HTMLInputElement>(null)
