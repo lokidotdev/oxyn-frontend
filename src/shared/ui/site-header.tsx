@@ -44,6 +44,9 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="-mr-2 flex items-center gap-1 text-[13px] text-muted">
+          <Link to="/sponsors" className={cn(linkClass, 'hidden md:inline-flex')} activeProps={{ className: 'text-fg' }}>
+            <span className="link-underline">Sponsor</span>
+          </Link>
           <ThemeToggle />
           <GitHubStarButton />
           <MenuButton open={open} onToggle={() => setOpen((o) => !o)} />
@@ -151,6 +154,21 @@ function MobileMenu({ open }: { open: boolean }) {
                 </Link>
               </m.li>
             ))}
+            <m.li
+              key="sponsor"
+              initial={{ opacity: 0, y: reduce ? 0 : -8, filter: reduce ? 'none' : 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { ...SHEET_SPRING, delay: reduce ? 0 : 0.04 * NAV.length } }}
+              exit={{ opacity: 0, transition: { duration: 0.12 } }}
+              className="mt-2 border-t border-line pt-2"
+            >
+              <Link
+                to="/sponsors"
+                className="press flex origin-left items-center py-2.5 font-mono text-2xl font-semibold tracking-tight text-muted transition-colors hover:text-fg"
+                activeProps={{ className: 'text-fg' }}
+              >
+                Sponsor
+              </Link>
+            </m.li>
           </ul>
         </m.div>
       )}
@@ -162,7 +180,14 @@ function ThemeToggle() {
   const theme = useTheme()
   const next = theme === 'dark' ? 'light' : 'dark'
   return (
-    <button type="button" onClick={() => setTheme(next)} aria-label={`Switch to ${next} theme`} className={iconButtonClass}>
+    <button
+      type="button"
+      onClick={(e) => {
+        // The button's center, not the pointer, so keyboard toggles reveal from the same place.
+        const r = e.currentTarget.getBoundingClientRect()
+        setTheme(next, { x: r.left + r.width / 2, y: r.top + r.height / 2 })
+      }}
+      aria-label={`Switch to ${next} theme`} className={iconButtonClass}>
       <span className="swap" aria-hidden="true">
         <span data-off={theme !== 'dark' || undefined} className="[&[data-off]]:rotate-90">
           <SunIcon />

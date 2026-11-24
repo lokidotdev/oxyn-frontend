@@ -29,7 +29,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "sugar-high": "^2.6.4",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.67.0",

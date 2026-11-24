@@ -6,6 +6,7 @@ import { absoluteUrl } from '#/shared/lib/site'
 const urls = [
   { loc: absoluteUrl('/'), priority: '1.0' },
   { loc: absoluteUrl('/about'), priority: '0.5' },
+  { loc: absoluteUrl('/sponsors'), priority: '0.5' },
   ...components.map((s) => ({ loc: absoluteUrl(`/components/${s.slug}`), priority: s.animations ? '0.9' : '0.8' })),
 ]
 
