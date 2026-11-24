@@ -24,38 +24,63 @@ export function GlitchWord({ suffix = '' }: { suffix?: string }) {
     return () => observer.disconnect()
   }, [])
 
+  // One timer chain: hold, then scramble frame by frame, then hold again. Only one timeout is ever pending, so a slow
+  // frame (throttled background tab, busy main thread after a route change) can't start a second swap on top of the
+  // first, which used to leave an orphaned interval scrambling forever. Hidden tabs pause and resume on a clean word.
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     let index = 0
-    let frame: ReturnType<typeof setInterval> | undefined
-    const hold = setInterval(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined
+
+    const settle = () => {
+      setText(WORDS[index])
+      setTarget(WORDS[index])
+      setGlitching(false)
+    }
+
+    const scramble = (from: string, to: string, tick: number) => {
+      const length = Math.max(from.length, to.length)
+      if (tick >= SCRAMBLE_FRAMES) {
+        settle()
+        timer = setTimeout(swap, HOLD_MS)
+        return
+      }
+      // Letters resolve left to right; unresolved slots show noise.
+      const resolved = Math.floor((tick / SCRAMBLE_FRAMES) * length)
+      let next = ''
+      for (let i = 0; i < length; i++) {
+        if (i < resolved) next += to[i] ?? ''
+        else next += GLYPHS[Math.floor(Math.random() * GLYPHS.length)]
+      }
+      setText(next)
+      timer = setTimeout(() => scramble(from, to, tick + 1), FRAME_MS)
+    }
+
+    const swap = () => {
       const from = WORDS[index]
       index = (index + 1) % WORDS.length
       const to = WORDS[index]
-      const length = Math.max(from.length, to.length)
-      let tick = 0
       setTarget(to)
       setGlitching(true)
-      frame = setInterval(() => {
-        tick++
-        // Letters resolve left to right; unresolved slots show noise.
-        const resolved = Math.floor((tick / SCRAMBLE_FRAMES) * length)
-        let next = ''
-        for (let i = 0; i < length; i++) {
-          if (i < resolved) next += to[i] ?? ''
-          else next += GLYPHS[Math.floor(Math.random() * GLYPHS.length)]
-        }
-        setText(next)
-        if (tick >= SCRAMBLE_FRAMES) {
-          clearInterval(frame)
-          setText(to)
-          setGlitching(false)
-        }
-      }, FRAME_MS)
-    }, HOLD_MS)
+      scramble(from, to, 1)
+    }
+
+    const stop = () => {
+      clearTimeout(timer)
+      timer = undefined
+    }
+    const start = () => {
+      stop()
+      settle()
+      timer = setTimeout(swap, HOLD_MS)
+    }
+    const onVisibility = () => (document.hidden ? stop() : start())
+
+    start()
+    document.addEventListener('visibilitychange', onVisibility)
     return () => {
-      clearInterval(hold)
-      clearInterval(frame)
+      stop()
+      document.removeEventListener('visibilitychange', onVisibility)
     }
   }, [])
 

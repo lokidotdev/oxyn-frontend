@@ -32,7 +32,9 @@ export interface SponsorsData {
   platform: { name: string; logoUrl: string; href: string; label: string }[]
   contactEmail: string | null
   currency: string
-  /** False until the backend has its Dodo keys; the page then shows the plans but not the form. */
+  /** The admin's switch. Off: the API sends no prices, so every plan shows "Coming soon" and nothing can be bought. */
+  live: boolean
+  /** True when live and the backend has its Dodo keys; otherwise the page shows the plans but not the form. */
   open: boolean
 }
 
@@ -51,6 +53,7 @@ const EMPTY: SponsorsData = {
   platform: [],
   contactEmail: null,
   currency: 'USD',
+  live: false,
   open: false,
 }
 
@@ -117,15 +120,11 @@ export const sponsorFormSchema = z.object({
 export type SponsorFormValues = z.input<typeof sponsorFormSchema>
 export type SponsorFormField = keyof SponsorFormValues
 
-/**
- * Pricing is hidden everywhere until this is true: tiers and one-time giving show "Coming soon" and nothing can be
- * bought, whatever prices the API sends. Flip to true once the real prices are in.
- */
-export const PRICING_LIVE = false
+// Going live is a switch in the admin (Pricing → Status). While it's off the API sends no prices, so the checks below
+// show "Coming soon" everywhere and nothing can be bought.
 
 /** True once a tier has a real price. Until then nothing shows a price for it, not even $0. */
 export const isPriced = (tier: Tier): tier is Tier & { monthlyPrice: number } =>
-  PRICING_LIVE &&
   typeof tier.monthlyPrice === 'number' && Number.isFinite(tier.monthlyPrice) && tier.monthlyPrice > 0
 
 /** One-time amounts that are real prices: positive suggested amounts, and a minimum above 0. */
@@ -133,7 +132,7 @@ export function oneTimePricing(data: SponsorsData) {
   const ok = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n) && n > 0
   const suggested = (data.oneTime.suggested ?? []).filter(ok)
   const min = ok(data.oneTime.min) ? data.oneTime.min : null
-  return { min, suggested, priced: PRICING_LIVE && (min !== null || suggested.length > 0) }
+  return { min, suggested, priced: data.live === true && (min !== null || suggested.length > 0) }
 }
 
 export type Plan = { billing: 'monthly' | 'one_month'; tier: Tier } | { billing: 'one_time'; amount: number }
