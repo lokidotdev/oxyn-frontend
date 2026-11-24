@@ -117,8 +117,15 @@ export const sponsorFormSchema = z.object({
 export type SponsorFormValues = z.input<typeof sponsorFormSchema>
 export type SponsorFormField = keyof SponsorFormValues
 
+/**
+ * Pricing is hidden everywhere until this is true: tiers and one-time giving show "Coming soon" and nothing can be
+ * bought, whatever prices the API sends. Flip to true once the real prices are in.
+ */
+export const PRICING_LIVE = false
+
 /** True once a tier has a real price. Until then nothing shows a price for it, not even $0. */
 export const isPriced = (tier: Tier): tier is Tier & { monthlyPrice: number } =>
+  PRICING_LIVE &&
   typeof tier.monthlyPrice === 'number' && Number.isFinite(tier.monthlyPrice) && tier.monthlyPrice > 0
 
 /** One-time amounts that are real prices: positive suggested amounts, and a minimum above 0. */
@@ -126,7 +133,7 @@ export function oneTimePricing(data: SponsorsData) {
   const ok = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n) && n > 0
   const suggested = (data.oneTime.suggested ?? []).filter(ok)
   const min = ok(data.oneTime.min) ? data.oneTime.min : null
-  return { min, suggested, priced: min !== null || suggested.length > 0 }
+  return { min, suggested, priced: PRICING_LIVE && (min !== null || suggested.length > 0) }
 }
 
 export type Plan = { billing: 'monthly' | 'one_month'; tier: Tier } | { billing: 'one_time'; amount: number }
