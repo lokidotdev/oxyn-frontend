@@ -62,6 +62,18 @@ const USE_CASES: Record<string, string> = {
   'bar-transfer': 'Uploading or downloading',
   'bar-ping': 'API call or MCP request',
   'bar-plan': 'Working through a plan',
+  'wave-think': 'Thinking or speaking',
+  'wave-idle': 'Idle or listening',
+  'wave-process': 'Processing',
+  'wave-load': 'Loading',
+  'wave-read': 'Reading a file',
+  'wave-write': 'Writing a file',
+  'wave-upload': 'Uploading',
+  'wave-edit': 'Editing a file',
+  'wave-plan': 'Working through a plan',
+  'wave-reason': 'Reasoning through a problem',
+  'wave-search': 'Searching',
+  'wave-ping': 'API call or MCP request',
 }
 
 /** What the loader is for. A group stands for every state its animations cover. */

@@ -33,6 +33,7 @@ import { circleUpload } from './upload/definition'
 import { circleAwait } from './await/definition'
 import { circleSearch } from './search/definition'
 import { circleProcess, squareProcess } from './process/definition'
+import { waveThink, waveIdle, waveProcess, waveLoad, waveRead, waveWrite, waveUpload, waveEdit, wavePlan, waveReason, waveSearch, wavePing } from './waves/definition'
 import { groups } from './groups'
 import type { StateDefinition } from './types'
 
@@ -97,6 +98,18 @@ export const states: StateDefinition[] = [
   barTransfer,
   barPing,
   barPlan,
+  waveThink,
+  waveIdle,
+  waveProcess,
+  waveLoad,
+  waveRead,
+  waveWrite,
+  waveUpload,
+  waveEdit,
+  wavePlan,
+  waveReason,
+  waveSearch,
+  wavePing,
 ]
 
 /** Every component that ships: each single state, then each group. */

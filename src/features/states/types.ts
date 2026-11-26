@@ -3,7 +3,7 @@ import type { RegistryEntry } from './define-state'
 
 export type Dimension = '2.5D' | '2D'
 
-export type Shape = 'globe' | 'square' | 'circle' | 'rings' | 'arcs' | 'bars'
+export type Shape = 'globe' | 'square' | 'circle' | 'rings' | 'arcs' | 'bars' | 'waves'
 
 export interface StateDefinition extends RegistryEntry {
   slug: string
