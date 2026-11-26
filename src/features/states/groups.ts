@@ -12,6 +12,7 @@ import {
   barParallel,
   barWrite,
 } from './bars/definition'
+import { waveThink, waveIdle, waveProcess, waveLoad, waveRead, waveWrite, waveUpload, waveEdit, wavePlan, waveReason, waveSearch, wavePing } from './waves/definition'
 import { circleIdle, squareIdle } from './idle/definition'
 import { dotPonder } from './dot-ponder/definition'
 import { dotProcess } from './dot-process/definition'
@@ -239,7 +240,32 @@ export const arcRings = defineGroup({
   ],
 })
 
-export const groups: StateDefinition[] = [dotGlobe, dotSquare, dotCircle, noiseRings, arcRings, barRing]
+export const waveBars = defineGroup({
+  slug: 'wave-bars',
+  name: 'Wave Bars',
+  summary: 'Every wave-bar animation in one component; the animation prop switches between them.',
+  description:
+    'The whole waves row as one component: a row of upright bars, like a voice meter. Pick think, idle, process, load, read, write, upload, edit, plan, reason, search or ping with the animation prop; changing it glides the same bars from one motion into the next.',
+  cardProps: { size: 150 },
+  // Think is the default; every other animation keeps its own pace, as WAVE_TIMING does in the component.
+  defaults: { duration: 2.4, stagger: 0.3 },
+  animations: [
+    { value: 'think', label: 'Think', from: waveThink },
+    { value: 'idle', label: 'Idle', from: waveIdle, defaults: { duration: 2.6, stagger: 0.08 } },
+    { value: 'process', label: 'Process', from: waveProcess, defaults: { duration: 1.2, stagger: 0.14 } },
+    { value: 'load', label: 'Load', from: waveLoad, defaults: { duration: 0.42, stagger: 0.1 } },
+    { value: 'read', label: 'Read', from: waveRead, defaults: { duration: 0.36, stagger: 0.12 } },
+    { value: 'write', label: 'Write', from: waveWrite, defaults: { duration: 0.2, stagger: 0.07 } },
+    { value: 'upload', label: 'Upload', from: waveUpload, defaults: { duration: 0.2, stagger: 0.07 } },
+    { value: 'edit', label: 'Edit', from: waveEdit, defaults: { duration: 0.5, stagger: 0.06 } },
+    { value: 'plan', label: 'Plan', from: wavePlan, defaults: { duration: 0.3, stagger: 0.09 } },
+    { value: 'reason', label: 'Reason', from: waveReason, defaults: { duration: 0.4, stagger: 0.1 } },
+    { value: 'search', label: 'Search', from: waveSearch, defaults: { duration: 0.3, stagger: 0.09 } },
+    { value: 'ping', label: 'Ping', from: wavePing, defaults: { duration: 0.3, stagger: 0.07 } },
+  ],
+})
+
+export const groups: StateDefinition[] = [dotGlobe, dotSquare, dotCircle, noiseRings, arcRings, barRing, waveBars]
 
 /** The group that stands for a home row, if the row has one. */
 export function groupFor(shape: Shape): StateDefinition | undefined {

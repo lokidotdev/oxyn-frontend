@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "oxyn",
-  "homepage": "http://localhost:3000",
+  "homepage": "https://oxyn.space",
   "items": [
     {
       "name": "dot-think",
@@ -676,6 +676,150 @@
       ]
     },
     {
+      "name": "wave-think",
+      "type": "registry:component",
+      "title": "Wave Think",
+      "description": "A row of upright bars swaying like a voice, each on its own blend of slow waves.",
+      "files": [
+        {
+          "path": "generated/registry/wave-think/wave-think.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-idle",
+      "type": "registry:component",
+      "title": "Wave Idle",
+      "description": "A row of upright bars breathing together, barely rising, like a mic waiting for input.",
+      "files": [
+        {
+          "path": "generated/registry/wave-idle/wave-idle.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-process",
+      "type": "registry:component",
+      "title": "Wave Process",
+      "description": "A row of upright bars with a steady wave marching through every bar, left to right.",
+      "files": [
+        {
+          "path": "generated/registry/wave-process/wave-process.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-load",
+      "type": "registry:component",
+      "title": "Wave Load",
+      "description": "A row of upright bars bouncing in turn, left to right, then resting.",
+      "files": [
+        {
+          "path": "generated/registry/wave-load/wave-load.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-read",
+      "type": "registry:component",
+      "title": "Wave Read",
+      "description": "A row of upright bars with a small wave scanning left to right, like eyes down a line.",
+      "files": [
+        {
+          "path": "generated/registry/wave-read/wave-read.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-write",
+      "type": "registry:component",
+      "title": "Wave Write",
+      "description": "A row of upright bars typed in bursts, each leaving a mark, then wiped in order.",
+      "files": [
+        {
+          "path": "generated/registry/wave-write/wave-write.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-upload",
+      "type": "registry:component",
+      "title": "Wave Upload",
+      "description": "A row of upright bars rising from their floor to a progress, the leading bar pulsing.",
+      "files": [
+        {
+          "path": "generated/registry/wave-upload/wave-upload.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-edit",
+      "type": "registry:component",
+      "title": "Wave Edit",
+      "description": "A row of upright bars where a cursor jumps between spots and the bar there pops.",
+      "files": [
+        {
+          "path": "generated/registry/wave-edit/wave-edit.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-plan",
+      "type": "registry:component",
+      "title": "Wave Plan",
+      "description": "A row of upright bars cut into steps: done steps hold, the current one sweeps, the rest wait.",
+      "files": [
+        {
+          "path": "generated/registry/wave-plan/wave-plan.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-reason",
+      "type": "registry:component",
+      "title": "Wave Reason",
+      "description": "A row of upright bars with two waves setting off from either end and crossing in the middle.",
+      "files": [
+        {
+          "path": "generated/registry/wave-reason/wave-reason.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-search",
+      "type": "registry:component",
+      "title": "Wave Search",
+      "description": "A row of upright bars with a narrow head hunting across, running ahead and backing up.",
+      "files": [
+        {
+          "path": "generated/registry/wave-search/wave-search.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-ping",
+      "type": "registry:component",
+      "title": "Wave Ping",
+      "description": "A row of upright bars with a pulse going out from the middle to both ends and back.",
+      "files": [
+        {
+          "path": "generated/registry/wave-ping/wave-ping.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "dot-globe",
       "type": "registry:component",
       "title": "Dot Globe",
@@ -743,6 +887,18 @@
       "files": [
         {
           "path": "generated/registry/bar-ring/bar-ring.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "wave-bars",
+      "type": "registry:component",
+      "title": "Wave Bars",
+      "description": "Every wave-bar animation in one component; the animation prop switches between them.",
+      "files": [
+        {
+          "path": "generated/registry/wave-bars/wave-bars.tsx",
           "type": "registry:component"
         }
       ]

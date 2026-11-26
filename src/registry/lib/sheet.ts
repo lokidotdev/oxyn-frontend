@@ -182,18 +182,28 @@ export function sheetMixScene<A extends string, K extends string>(
   motions: Record<A, SheetMotion<K>>,
 ): Scene<SheetSettings, K | SheetKey | MixKey<A>, SheetDot[]> {
   const live = (Object.keys(motions) as A[]).map((name) => ({ key: `mix_${name}` as MixKey<A>, clock: sheetClock(motions[name]) }));
+  // The motions on screen this frame, refilled in place rather than filtered and mapped into new lists.
+  const weights: number[] = [];
+  const swells: ((dot: SheetDot) => number)[] = [];
+  const blended = (dot: SheetDot) => {
+    let s = 0;
+    for (let p = 0; p < swells.length; p++) s += weights[p] * swells[p](dot);
+    return s;
+  };
   return {
     advance(dt, { v }) {
       for (const { key, clock } of live) if (v[key] > 0) clock.advance(dt, v);
     },
     draw(ctx, frame) {
       const { v } = frame;
-      const parts = live.filter(({ key }) => v[key] > 0).map(({ key, clock }) => ({ weight: v[key], swellOf: clock.swellOf(v) }));
-      drawSheet(ctx, frame, (dot) => {
-        let s = 0;
-        for (const { weight, swellOf } of parts) s += weight * swellOf(dot);
-        return s;
-      });
+      weights.length = 0;
+      swells.length = 0;
+      for (const { key, clock } of live) {
+        if (!(v[key] > 0)) continue;
+        weights.push(v[key]);
+        swells.push(clock.swellOf(v));
+      }
+      drawSheet(ctx, frame, blended);
     },
   };
 }

@@ -2,7 +2,7 @@
 
 import type { HTMLAttributes } from "react";
 import { barScene, barSettle, barShape, barTargets } from "../lib/bars";
-import type { BarDirection, BarSettings } from "../lib/bars";
+import type { BarDirection, BarMix, BarSettings } from "../lib/bars";
 import { LoaderCanvas } from "../lib/loader-canvas";
 
 export interface BarParallelProps extends Omit<HTMLAttributes<HTMLDivElement>, "color"> {
@@ -36,8 +36,11 @@ export interface BarParallelProps extends Omit<HTMLAttributes<HTMLDivElement>, "
   label?: string;
 }
 
+/** Only parallel is on screen. One object for every frame, so drawing allocates nothing. */
+const MIX: BarMix = { parallel: 1 };
+
 function scene() {
-  return barScene<BarSettings, never>(() => ({ parallel: 1 }));
+  return barScene<BarSettings, never>(() => MIX);
 }
 
 export function BarParallel({

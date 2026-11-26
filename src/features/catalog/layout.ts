@@ -4,8 +4,8 @@ import type { Shape, StateDefinition } from '#/features/states'
 import { getJson } from '#/shared/lib/api'
 
 /** The registry's own row order, top to bottom: one row per silhouette. */
-const SHAPE_ROWS: Shape[] = ['globe', 'square', 'circle', 'rings', 'arcs', 'bars']
-const SHAPE_LABELS: Record<Shape, string> = { globe: 'Globe', square: 'Square', circle: 'Circle', rings: 'Rings', arcs: 'Arcs', bars: 'Bars' }
+const SHAPE_ROWS: Shape[] = ['globe', 'square', 'circle', 'rings', 'arcs', 'bars', 'waves']
+const SHAPE_LABELS: Record<Shape, string> = { globe: 'Globe', square: 'Square', circle: 'Circle', rings: 'Rings', arcs: 'Arcs', bars: 'Bars', waves: 'Waves' }
 
 /** The admin's arrangement: row ids (shapes) and slugs, in the order to show them. */
 export type Layout = { id: string; items: string[] }[]

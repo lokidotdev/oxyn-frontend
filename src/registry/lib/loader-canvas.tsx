@@ -105,12 +105,23 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
       return { ...targets(s), size: s.size, rate: s.paused ? 0 : 1 } as Record<string, number>;
     };
     for (const [k, value] of Object.entries(targetsNow())) glides[k] = glide(value);
+    // Target keys stay the same while mounted, so the loop walks these lists instead of building new ones a frame.
+    const glideKeys = Object.keys(glides);
+    const glideList = glideKeys.map((k) => glides[k]);
+    // The layers the scene sees, refilled in place each frame.
+    const layers: { shape: L; fade: number }[] = [];
+    frameInfo.layers = layers;
 
     /** Refreshes what the scene reads from the glides and shapes. */
     const read = () => {
-      for (const k in glides) (v as Record<string, number>)[k] = glides[k].value;
+      for (let i = 0; i < glideKeys.length; i++) (v as Record<string, number>)[glideKeys[i]] = glideList[i].value;
       frameInfo.settings = latest.current.settings;
-      frameInfo.layers = shapes.map(({ shape, fade }) => ({ shape, fade: fade.value }));
+      layers.length = shapes.length;
+      for (let i = 0; i < shapes.length; i++) {
+        const layer = (layers[i] ??= { shape: shapes[i].shape, fade: 0 });
+        layer.shape = shapes[i].shape;
+        layer.fade = shapes[i].fade.value;
+      }
       frameInfo.size = Math.max(1, v.size);
       frameInfo.reduced = reduceMotion.matches;
     };
@@ -160,7 +171,9 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
       let moving = false;
       const times: Partial<Record<string, number>> = latest.current.settle ?? {};
       const pauseTimes = latest.current.pause;
-      for (const [k, g] of Object.entries(glides)) {
+      for (let i = 0; i < glideKeys.length; i++) {
+        const k = glideKeys[i];
+        const g = glideList[i];
         // Stopping and starting take their own times; every other target its own, else `SETTLE`.
         const time =
           k === "rate"
@@ -171,8 +184,13 @@ export function LoaderCanvas<S extends { size: number; paused: boolean }, K exte
         if (stepGlide(g, dt, time)) moving = true;
       }
       const shapeSettle = latest.current.shape?.settle ?? BLEND_SETTLE;
-      for (const shape of shapes) if (stepGlide(shape.fade, dt, shapeSettle)) moving = true;
-      shapes = shapes.filter((shape) => shape.fade.target > 0 || shape.fade.value > 0);
+      let gone = false;
+      for (const shape of shapes) {
+        if (stepGlide(shape.fade, dt, shapeSettle)) moving = true;
+        if (shape.fade.target <= 0 && shape.fade.value <= 0) gone = true;
+      }
+      // Only rebuilt on the frame a faded-out shape finishes, not every frame.
+      if (gone) shapes = shapes.filter((shape) => shape.fade.target > 0 || shape.fade.value > 0);
 
       if (sceneNow.advance) {
         read();

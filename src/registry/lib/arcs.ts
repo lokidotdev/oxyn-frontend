@@ -266,12 +266,22 @@ export function arcScene<S extends ArcSettings, K extends string>(motion: (v: Va
   const shifts: number[][] = [];
   const pivots: number[] = [];
 
+  // Each animation's share this frame, reused so drawing allocates nothing.
+  const weights: number[] = ARC_ANIMATIONS.map(() => 0);
+
   /** True when one animation is fully on screen and the rings' direction has settled. */
   const steadyAt = (v: Values<K | ArcKey>) => {
     if (Math.abs(v.direction) !== 1) return false;
     const mix = motion(v);
-    const on = ARC_ANIMATIONS.filter((name) => mix[name] > 0);
-    return on.length === 1 && mix[on[0]] === 1;
+    // Exactly one animation on, and that one fully: counted in place rather than through a filtered list.
+    let on = 0;
+    let full = false;
+    for (const name of ARC_ANIMATIONS) {
+      if (!(mix[name] > 0)) continue;
+      on++;
+      full = mix[name] === 1;
+    }
+    return on === 1 && full;
   };
 
   return {
@@ -296,10 +306,15 @@ export function arcScene<S extends ArcSettings, K extends string>(motion: (v: Va
       const color = rgb(v);
 
       const mix = motion(v);
-      const weights = ARC_ANIMATIONS.map((name) => Math.max(0, mix[name]));
-      const total = weights.reduce((a, b) => a + b, 0) || 1;
+      // The weights, their sum, and the first strongest, as `indexOf(Math.max(...weights))` would find it.
+      let sum = 0;
+      let active = 0;
+      for (let a = 0; a < ARC_ANIMATIONS.length; a++) {
+        sum += weights[a] = Math.max(0, mix[ARC_ANIMATIONS[a]]);
+        if (weights[a] > weights[active]) active = a;
+      }
+      const total = sum || 1;
       const steady = steadyAt(v);
-      const active = weights.indexOf(Math.max(...weights));
 
       ctx.lineWidth = lineWidth;
       ctx.lineCap = "round";

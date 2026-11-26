@@ -2,7 +2,7 @@
 
 import type { HTMLAttributes } from "react";
 import { BAR_ANIMATIONS, barScene, barSettle, barShape, barTargets } from "../lib/bars";
-import type { BarAnimation, BarDirection, BarSettings } from "../lib/bars";
+import type { BarAnimation, BarDirection, BarMix, BarSettings } from "../lib/bars";
 import { BLEND_SETTLE } from "../lib/glide";
 import { LoaderCanvas } from "../lib/loader-canvas";
 import { mixTargets } from "../lib/mix";
@@ -69,17 +69,20 @@ function targetsOf(s: Settings) {
 
 function scene() {
   // Every animation pushes the same bars, so a switch glides each bar's push from one animation into the next.
-  return barScene<Settings, MixKey<BarRingAnimation>>((v) => ({
-    think: v.mix_think,
-    parallel: v.mix_parallel,
-    read: v.mix_read,
-    write: v.mix_write,
-    search: v.mix_search,
-    stream: v.mix_stream,
-    transfer: v.mix_transfer,
-    ping: v.mix_ping,
-    plan: v.mix_plan,
-  }));
+  // One weights object per loader, refilled each frame, so drawing allocates nothing.
+  const mix = {} as BarMix;
+  return barScene<Settings, MixKey<BarRingAnimation>>((v) => {
+    mix.think = v.mix_think;
+    mix.parallel = v.mix_parallel;
+    mix.read = v.mix_read;
+    mix.write = v.mix_write;
+    mix.search = v.mix_search;
+    mix.stream = v.mix_stream;
+    mix.transfer = v.mix_transfer;
+    mix.ping = v.mix_ping;
+    mix.plan = v.mix_plan;
+    return mix;
+  });
 }
 
 export function BarRing({
