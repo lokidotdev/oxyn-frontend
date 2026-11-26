@@ -201,9 +201,16 @@ export function drawGlobe<S, K extends string, L extends GlobeShape>(
   const cosT = Math.cos(tiltRad);
 
   const placers = new Map<L, (point: GlobePoint, out: Placed) => void>();
+  // The last orb asked for and its placer: nearly every lookup is the same orb as the one before, so this skips
+  // the map for almost every dot.
+  let lastShape: L | null = null;
+  let lastPlace: ((point: GlobePoint, out: Placed) => void) | null = null;
   const placerOf = (shape: L) => {
+    if (shape === lastShape) return lastPlace!;
     let place = placers.get(shape);
     if (!place) placers.set(shape, (place = placeFor(shape)));
+    lastShape = shape;
+    lastPlace = place;
     return place;
   };
   const scratch: Placed[] = [];

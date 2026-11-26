@@ -2,7 +2,7 @@
 
 import type { HTMLAttributes } from "react";
 import { barScene, barSettle, barShape, barTargets } from "../lib/bars";
-import type { BarDirection, BarSettings } from "../lib/bars";
+import type { BarDirection, BarMix, BarSettings } from "../lib/bars";
 import { LoaderCanvas } from "../lib/loader-canvas";
 
 export interface BarTransferProps extends Omit<HTMLAttributes<HTMLDivElement>, "color"> {
@@ -36,8 +36,11 @@ export interface BarTransferProps extends Omit<HTMLAttributes<HTMLDivElement>, "
   label?: string;
 }
 
+/** Only transfer is on screen. One object for every frame, so drawing allocates nothing. */
+const MIX: BarMix = { transfer: 1 };
+
 function scene() {
-  return barScene<BarSettings, never>(() => ({ transfer: 1 }));
+  return barScene<BarSettings, never>(() => MIX);
 }
 
 export function BarTransfer({

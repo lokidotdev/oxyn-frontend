@@ -189,12 +189,16 @@ function grad(hash: number, x: number, y: number, z: number) {
 
 /** Smooth noise in roughly -1..1. */
 function noise3(x: number, y: number, z: number) {
-  const X = Math.floor(x) & 255;
-  const Y = Math.floor(y) & 255;
-  const Z = Math.floor(z) & 255;
-  x -= Math.floor(x);
-  y -= Math.floor(y);
-  z -= Math.floor(z);
+  // Each floor once: this runs for every point of every ring, every frame.
+  const fx = Math.floor(x);
+  const fy = Math.floor(y);
+  const fz = Math.floor(z);
+  const X = fx & 255;
+  const Y = fy & 255;
+  const Z = fz & 255;
+  x -= fx;
+  y -= fy;
+  z -= fz;
   const u = fade(x);
   const v = fade(y);
   const w = fade(z);
@@ -217,6 +221,26 @@ function noise3(x: number, y: number, z: number) {
     ),
     w,
   );
+}
+
+/**
+ * cos and sin of each sample's angle round the ring, for `samples` points. The angles never change, so they are
+ * worked out once per point count and shared by every ring, every frame and every loader on the page.
+ */
+const NOISE_CIRCLES = new Map<number, { cos: Float64Array; sin: Float64Array }>();
+
+function noiseCircle(samples: number) {
+  let circle = NOISE_CIRCLES.get(samples);
+  if (!circle) {
+    circle = { cos: new Float64Array(samples), sin: new Float64Array(samples) };
+    for (let i = 0; i < samples; i++) {
+      const a = (i / samples) * TAU;
+      circle.cos[i] = Math.cos(a);
+      circle.sin[i] = Math.sin(a);
+    }
+    NOISE_CIRCLES.set(samples, circle);
+  }
+  return circle;
 }
 
 /** 0 → 1 → 0 over the first `width` of each cycle, resting at 0 for the rest. */
@@ -265,6 +289,8 @@ export function noiseScene<S extends NoiseSettings, K extends string>(
   let ys = new Float32Array(0);
   let rs = new Float32Array(0);
   const pose: Pose = { spacing: 1, z: 0, wobble: 1, turn: 0, push: 0, glow: 0, rest: 1, fade: 1, detail: 1 };
+  // Each animation's share this frame, reused so drawing allocates nothing.
+  const weights = new Float64Array(NOISE_ANIMATIONS.length);
 
   return {
     advance(dt, { v }) {
@@ -310,8 +336,10 @@ export function noiseScene<S extends NoiseSettings, K extends string>(
       }
 
       const mix = motion(v);
-      const weights = NOISE_ANIMATIONS.map((name) => Math.max(0, mix[name]));
-      const total = weights.reduce((a, b) => a + b, 0) || 1;
+      let sum = 0;
+      for (let a = 0; a < NOISE_ANIMATIONS.length; a++) sum += weights[a] = Math.max(0, mix[NOISE_ANIMATIONS[a]]);
+      const total = sum || 1;
+      const { cos, sin } = noiseCircle(samples);
 
       ctx.strokeStyle = rgb(v);
       ctx.lineWidth = lineWidth;
@@ -455,22 +483,31 @@ export function noiseScene<S extends NoiseSettings, K extends string>(
 
           const r0 = Math.max(1, outer - j * spacing * pose.spacing) + pose.push;
           const amp = swing * pose.wobble;
-          for (let i = 0; i < samples; i++) {
-            let r = r0;
-            if (amp > 0) {
-              const t = (i / samples) * TAU - pose.turn;
-              const f = frequency * pose.detail;
-              r += Math.tanh(noise3(Math.cos(t) * f, Math.sin(t) * f, pose.z) * NOISE_GAIN) * amp;
+          if (amp > 0) {
+            const f = frequency * pose.detail;
+            const pz = pose.z;
+            if (pose.turn === 0) {
+              // Unturned (every animation but ponder): the angles are the table's.
+              for (let i = 0; i < samples; i++) rs[i] += (r0 + Math.tanh(noise3(cos[i] * f, sin[i] * f, pz) * NOISE_GAIN) * amp) * w;
+            } else {
+              // Turned back by `turn`: rotate the table instead of calling cos and sin for every point.
+              const ct = Math.cos(pose.turn);
+              const st = Math.sin(pose.turn);
+              for (let i = 0; i < samples; i++) {
+                const c = cos[i] * ct + sin[i] * st;
+                const s = sin[i] * ct - cos[i] * st;
+                rs[i] += (r0 + Math.tanh(noise3(c * f, s * f, pz) * NOISE_GAIN) * amp) * w;
+              }
             }
-            rs[i] += r * w;
+          } else {
+            for (let i = 0; i < samples; i++) rs[i] += r0 * w;
           }
           opacity += w * pose.fade * (pose.rest + (1 - pose.rest) * Math.min(1, pose.glow));
         }
 
         for (let i = 0; i < samples; i++) {
-          const a = (i / samples) * TAU;
-          xs[i] = center + Math.cos(a) * rs[i];
-          ys[i] = center + Math.sin(a) * rs[i];
+          xs[i] = center + cos[i] * rs[i];
+          ys[i] = center + sin[i] * rs[i];
         }
 
         // Curve through segment midpoints for a stroke with no visible corners.

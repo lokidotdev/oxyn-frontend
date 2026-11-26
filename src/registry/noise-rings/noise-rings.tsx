@@ -5,7 +5,7 @@ import { LoaderCanvas } from "../lib/loader-canvas";
 import { mixTargets } from "../lib/mix";
 import type { MixKey } from "../lib/mix";
 import { NOISE_ANIMATIONS, noiseScene, noiseSettle, noiseTargets } from "../lib/noise-rings";
-import type { NoiseAnimation, NoiseSettings } from "../lib/noise-rings";
+import type { NoiseAnimation, NoiseMotion, NoiseSettings } from "../lib/noise-rings";
 
 export type NoiseRingsAnimation = NoiseAnimation;
 
@@ -79,18 +79,21 @@ function targetsOf(s: Settings) {
 
 function scene() {
   // Every animation bends the same rings, so a switch glides one shape into the next.
-  return noiseScene<Settings, MixKey<NoiseRingsAnimation>>((v) => ({
-    think: v.mix_think,
-    respond: v.mix_respond,
-    listen: v.mix_listen,
-    ponder: v.mix_ponder,
-    decide: v.mix_decide,
-    voice: v.mix_voice,
-    transfer: v.mix_transfer,
-    stream: v.mix_stream,
-    analyze: v.mix_analyze,
-    search: v.mix_search,
-  }));
+  // One weights object per loader, refilled each frame, so drawing allocates nothing.
+  const mix = {} as NoiseMotion;
+  return noiseScene<Settings, MixKey<NoiseRingsAnimation>>((v) => {
+    mix.think = v.mix_think;
+    mix.respond = v.mix_respond;
+    mix.listen = v.mix_listen;
+    mix.ponder = v.mix_ponder;
+    mix.decide = v.mix_decide;
+    mix.voice = v.mix_voice;
+    mix.transfer = v.mix_transfer;
+    mix.stream = v.mix_stream;
+    mix.analyze = v.mix_analyze;
+    mix.search = v.mix_search;
+    return mix;
+  });
 }
 
 export function NoiseRings({

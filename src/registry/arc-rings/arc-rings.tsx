@@ -2,7 +2,7 @@
 
 import type { HTMLAttributes } from "react";
 import { ARC_ANIMATIONS, arcMixSettle, arcScene, arcShape, arcTargets } from "../lib/arcs";
-import type { ArcAnimation, ArcSettings } from "../lib/arcs";
+import type { ArcAnimation, ArcMotion, ArcSettings } from "../lib/arcs";
 import { LoaderCanvas } from "../lib/loader-canvas";
 import { mixTargets } from "../lib/mix";
 import type { MixKey } from "../lib/mix";
@@ -60,19 +60,22 @@ function targetsOf(s: Settings) {
 
 function scene() {
   // Every animation moves the same arcs, so a switch glides one pose into the next.
-  return arcScene<Settings, MixKey<ArcRingsAnimation>>((v) => ({
-    load: v.mix_load,
-    work: v.mix_work,
-    plan: v.mix_plan,
-    assemble: v.mix_assemble,
-    process: v.mix_process,
-    run: v.mix_run,
-    think: v.mix_think,
-    search: v.mix_search,
-    write: v.mix_write,
-    parallel: v.mix_parallel,
-    transfer: v.mix_transfer,
-  }));
+  // One weights object per loader, refilled each frame, so drawing allocates nothing.
+  const mix = {} as ArcMotion;
+  return arcScene<Settings, MixKey<ArcRingsAnimation>>((v) => {
+    mix.load = v.mix_load;
+    mix.work = v.mix_work;
+    mix.plan = v.mix_plan;
+    mix.assemble = v.mix_assemble;
+    mix.process = v.mix_process;
+    mix.run = v.mix_run;
+    mix.think = v.mix_think;
+    mix.search = v.mix_search;
+    mix.write = v.mix_write;
+    mix.parallel = v.mix_parallel;
+    mix.transfer = v.mix_transfer;
+    return mix;
+  });
 }
 
 export function ArcRings({

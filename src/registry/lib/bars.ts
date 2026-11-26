@@ -147,36 +147,62 @@ function barSwell(local: number, duration: number) {
 }
 
 /** Seconds each animation's loop takes, so its phase can advance by rate and stay put when timing changes. */
-function barCycles(bars: number, v: Values<BarKey>) {
+interface BarCycles {
+  wave: number;
+  fill: number;
+  write: number;
+  seek: number;
+  ping: number;
+  plan: number;
+  pulse: number;
+}
+
+/** The loops `advance` steps; seek is stepped on its own, since each round also moves the seek on. */
+const BAR_CLOCKS = ["wave", "fill", "write", "ping", "plan", "pulse"] as const;
+
+/**
+ * Fills `out` with each loop's length for `bars` bars. It writes in place, since it runs every frame for every loader
+ * on the page and a fresh object each time would only feed the garbage collector.
+ */
+function barCyclesInto(out: BarCycles, bars: number, v: Values<BarKey>) {
   const stagger = Math.max(0.01, v.stagger);
   const duration = Math.max(0.05, v.duration);
-  return {
-    // One lap is every bar taking its turn.
-    wave: bars * stagger,
-    // A looping transfer: fill clockwise, hold full for one push, drain in the same order, hold empty for one push.
-    fill: 2 * ((bars - 1) * stagger + 2 * duration),
-    write: barWriteTimes(bars, stagger, duration).cycle,
-    // One seek round: run ahead at the wave's pace, then back up at two thirds of it.
-    seek: (BAR_SEEK_AHEAD + 1.5 * BAR_SEEK_BACK) * stagger,
-    // Out to 6 o'clock, wait two pushes, back to 12, wait two pushes before the next request.
-    ping: bars * stagger + 4 * duration + duration,
-    // One sweep through the current step.
-    plan: (bars / Math.min(8, Math.max(2, v.steps))) * stagger + duration,
-    // The transfer's leading bar pulses every four pushes.
-    pulse: 4 * duration,
-  };
+  // One lap is every bar taking its turn.
+  out.wave = bars * stagger;
+  // A looping transfer: fill clockwise, hold full for one push, drain in the same order, hold empty for one push.
+  out.fill = 2 * ((bars - 1) * stagger + 2 * duration);
+  out.write = barWriteCycle(bars, stagger, duration);
+  // One seek round: run ahead at the wave's pace, then back up at two thirds of it.
+  out.seek = (BAR_SEEK_AHEAD + 1.5 * BAR_SEEK_BACK) * stagger;
+  // Out to 6 o'clock, wait two pushes, back to 12, wait two pushes before the next request.
+  out.ping = bars * stagger + 4 * duration + duration;
+  // One sweep through the current step.
+  out.plan = (bars / Math.min(8, Math.max(2, v.steps))) * stagger + duration;
+  // The transfer's leading bar pulses every four pushes.
+  out.pulse = 4 * duration;
+  return out;
 }
 
 /**
  * When a write types each bar: bursts of `BAR_WRITE_BURST` keystrokes `stagger` apart, with a burst-long pause between.
  * Once every bar is typed it holds for a pause, wipes the marks clockwise at twice the pace, and pauses again.
  */
-function barWriteTimes(bars: number, stagger: number, duration: number) {
+function barWriteBurst(stagger: number) {
   const pause = BAR_WRITE_BURST * stagger;
-  const burst = BAR_WRITE_BURST * stagger + pause;
-  const lastKey = Math.floor((bars - 1) / BAR_WRITE_BURST) * burst + ((bars - 1) % BAR_WRITE_BURST) * stagger;
-  const wipe = lastKey + duration + pause;
-  return { burst, wipe, cycle: wipe + ((bars - 1) * stagger) / 2 + duration + pause };
+  return BAR_WRITE_BURST * stagger + pause;
+}
+
+/** When the wipe starts: once the last bar is typed, has popped, and the row has held for a pause. */
+function barWriteWipe(bars: number, stagger: number, duration: number) {
+  const pause = BAR_WRITE_BURST * stagger;
+  const lastKey = Math.floor((bars - 1) / BAR_WRITE_BURST) * barWriteBurst(stagger) + ((bars - 1) % BAR_WRITE_BURST) * stagger;
+  return lastKey + duration + pause;
+}
+
+/** One whole write: typing, the wipe at twice the pace, and a pause. Numbers, not an object, since it runs every frame. */
+function barWriteCycle(bars: number, stagger: number, duration: number) {
+  const pause = BAR_WRITE_BURST * stagger;
+  return barWriteWipe(bars, stagger, duration) + ((bars - 1) * stagger) / 2 + duration + pause;
 }
 
 /**
@@ -190,11 +216,16 @@ export function barScene<S extends BarSettings, K extends string>(mix: (v: Value
   const phase = { wave: 0, fill: 0, write: 0, seek: 0, ping: 0, plan: 0, pulse: 0 };
   // Bars the seek has netted so far; each round moves it on by ahead − back.
   let seekBase = 0;
+  // Reused every frame, so a running ring allocates nothing.
+  const cycles: BarCycles = { wave: 0, fill: 0, write: 0, seek: 0, ping: 0, plan: 0, pulse: 0 };
+  // The animations on screen this frame, with their weights. Usually one; two while a switch blends.
+  const live: BarAnimation[] = [];
+  const liveWeight: number[] = [];
 
   return {
     advance(dt, { v, settings }) {
-      const cycles = barCycles(barCountOf(settings), v);
-      for (const k of ["wave", "fill", "write", "ping", "plan", "pulse"] as const) phase[k] = (phase[k] + (dt * v.rate) / cycles[k]) % 1;
+      barCyclesInto(cycles, barCountOf(settings), v);
+      for (const k of BAR_CLOCKS) phase[k] = (phase[k] + (dt * v.rate) / cycles[k]) % 1;
       phase.seek += (dt * v.rate) / cycles.seek;
       if (phase.seek >= 1) {
         phase.seek %= 1;
@@ -205,6 +236,15 @@ export function barScene<S extends BarSettings, K extends string>(mix: (v: Value
       const height = Math.max(0, v.barHeight);
       const extend = Math.max(0, v.extend);
       const weights = mix(v);
+      live.length = 0;
+      liveWeight.length = 0;
+      for (const name of BAR_ANIMATIONS) {
+        const w = weights[name] ?? 0;
+        if (w <= 0) continue;
+        live.push(name);
+        liveWeight.push(w);
+      }
+      const searching = (weights.search ?? 0) > 0;
       const center = size / 2;
       const inward = barClamp(v.inward);
       // Room is left outside for the farthest an outward push reaches, so it never carries past the canvas edge.
@@ -218,7 +258,7 @@ export function barScene<S extends BarSettings, K extends string>(mix: (v: Value
       ctx.translate(center, center);
       for (const { shape: bars, fade } of layers) {
         const step = TAU / bars;
-        const cycles = barCycles(bars, v);
+        barCyclesInto(cycles, bars, v);
         // A bar never grows wider than its slot at the inner end, so neighbors can touch but not overlap.
         const width = Math.min(Math.max(0, v.barWidth), 2 * inner * Math.sin(step / 2));
         // A bar's push can't outlast the lap, and a twin's can't run into the next head.
@@ -228,15 +268,18 @@ export function barScene<S extends BarSettings, K extends string>(mix: (v: Value
         const fillTime = phase.fill * cycles.fill;
         const drain = cycles.fill / 2;
         const writeTime = phase.write * cycles.write;
-        const writes = barWriteTimes(bars, stagger, duration);
+        const writeBurst = barWriteBurst(stagger);
+        const writeWipe = barWriteWipe(bars, stagger, duration);
         // The seek head moves on screen, so both legs take the strong ease-in-out.
         const seekTime = phase.seek * cycles.seek;
         const ahead = BAR_SEEK_AHEAD * stagger;
-        const seekHead =
-          seekBase +
-          (seekTime < ahead
-            ? BAR_SEEK_AHEAD * easeInOut(seekTime / ahead)
-            : BAR_SEEK_AHEAD - BAR_SEEK_BACK * easeInOut((seekTime - ahead) / (cycles.seek - ahead)));
+        // Only worked out while search is showing: the ease is a curve solve, not worth paying for otherwise.
+        const seekHead = !searching
+          ? 0
+          : seekBase +
+            (seekTime < ahead
+              ? BAR_SEEK_AHEAD * easeInOut(seekTime / ahead)
+              : BAR_SEEK_AHEAD - BAR_SEEK_BACK * easeInOut((seekTime - ahead) / (cycles.seek - ahead)));
         // The seek's bump is `duration ÷ stagger` bars wide, centered on the head, since it travels both ways.
         const seekWidth = duration / stagger;
         const pingTime = phase.ping * cycles.ping;
@@ -253,9 +296,9 @@ export function barScene<S extends BarSettings, K extends string>(mix: (v: Value
           let rise = 0;
           let glow = 0;
 
-          for (const name of BAR_ANIMATIONS) {
-            const w = weights[name] ?? 0;
-            if (w <= 0) continue;
+          for (let a = 0; a < live.length; a++) {
+            const name = live[a];
+            const w = liveWeight[a];
             let lift = 0;
             // How lit the bar is, when that differs from how far it is pushed.
             let light: number | undefined;
@@ -279,12 +322,12 @@ export function barScene<S extends BarSettings, K extends string>(mix: (v: Value
                 lift = barSwell(local, duration);
                 break;
               case "write": {
-                const key = writeTime - (Math.floor(i / BAR_WRITE_BURST) * writes.burst + (i % BAR_WRITE_BURST) * stagger);
+                const key = writeTime - (Math.floor(i / BAR_WRITE_BURST) * writeBurst + (i % BAR_WRITE_BURST) * stagger);
                 if (key < 0) break;
                 // A keystroke pops out on the strong ease-out and settles back to its mark; the wipe eases it away.
                 const u = key / duration;
                 const stroke = u < BAR_COMET_ATTACK ? easeOut(u / BAR_COMET_ATTACK) : 1 - (1 - BAR_WRITE_INK) * easeOut(barClamp((u - BAR_COMET_ATTACK) / (1 - BAR_COMET_ATTACK)));
-                lift = stroke * (1 - easeOut(barClamp((writeTime - writes.wipe - (i * stagger) / 2) / duration)));
+                lift = stroke * (1 - easeOut(barClamp((writeTime - writeWipe - (i * stagger) / 2) / duration)));
                 break;
               }
               case "search": {

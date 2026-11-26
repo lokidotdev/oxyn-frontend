@@ -2,7 +2,7 @@
 
 import type { HTMLAttributes } from "react";
 import { barScene, barSettle, barShape, barTargets } from "../lib/bars";
-import type { BarDirection, BarSettings } from "../lib/bars";
+import type { BarDirection, BarMix, BarSettings } from "../lib/bars";
 import { LoaderCanvas } from "../lib/loader-canvas";
 
 export interface BarReadProps extends Omit<HTMLAttributes<HTMLDivElement>, "color"> {
@@ -34,8 +34,11 @@ export interface BarReadProps extends Omit<HTMLAttributes<HTMLDivElement>, "colo
   label?: string;
 }
 
+/** Only read is on screen. One object for every frame, so drawing allocates nothing. */
+const MIX: BarMix = { read: 1 };
+
 function scene() {
-  return barScene<BarSettings, never>(() => ({ read: 1 }));
+  return barScene<BarSettings, never>(() => MIX);
 }
 
 export function BarRead({
